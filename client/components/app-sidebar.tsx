@@ -5,12 +5,10 @@ import {
   IconChartBar,
   IconDashboard,
   IconFileDescription,
-  IconHelp,
   IconInnerShadowTop,
   IconPuzzle,
   IconScale,
   IconSearch,
-  IconSettings,
   IconUsers,
 } from "@tabler/icons-react";
 
