@@ -40,7 +40,7 @@ export function NavMain({
                 >
                   <a href={item.url}>
                     {item.icon && <item.icon />}
-                    <span>{item.title}</span>
+                    <span className="font-medium">{item.title}</span>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>

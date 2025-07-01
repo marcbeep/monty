@@ -68,10 +68,14 @@ export function DataTable({ data }: { data: Portfolio[] }) {
         <Table>
           <TableHeader className="bg-muted sticky top-0 z-10">
             <TableRow>
-              <TableHead>Security Name</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead className="text-right">Current Value</TableHead>
-              <TableHead className="text-right">% Change</TableHead>
+              <TableHead className="font-semibold">Security Name</TableHead>
+              <TableHead className="font-semibold">Type</TableHead>
+              <TableHead className="text-right font-semibold">
+                Current Value
+              </TableHead>
+              <TableHead className="text-right font-semibold">
+                % Change
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

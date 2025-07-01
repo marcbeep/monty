@@ -17,7 +17,7 @@ export function SectionCards() {
             <CardDescription>Total Portfolio Value</CardDescription>
             <IconTrendingUp className="size-4" />
           </div>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+          <CardTitle className="text-2xl font-extrabold tabular-nums @[250px]/card:text-3xl">
             $12,450.78
           </CardTitle>
         </CardHeader>
@@ -31,7 +31,7 @@ export function SectionCards() {
             <CardDescription>Average CAGR</CardDescription>
             <IconTrendingUp className="size-4" />
           </div>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+          <CardTitle className="text-2xl font-extrabold tabular-nums @[250px]/card:text-3xl">
             6.8%
           </CardTitle>
         </CardHeader>
@@ -45,7 +45,7 @@ export function SectionCards() {
             <CardDescription>Max Drawdown (YTD)</CardDescription>
             <IconTrendingDown className="size-4" />
           </div>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+          <CardTitle className="text-2xl font-extrabold tabular-nums @[250px]/card:text-3xl">
             -10.3%
           </CardTitle>
         </CardHeader>
@@ -59,7 +59,7 @@ export function SectionCards() {
             <CardDescription>Sharpe Ratio</CardDescription>
             <IconTrendingUp className="size-4" />
           </div>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+          <CardTitle className="text-2xl font-extrabold tabular-nums @[250px]/card:text-3xl">
             1.05
           </CardTitle>
         </CardHeader>

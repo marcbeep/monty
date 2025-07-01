@@ -165,7 +165,7 @@ export function ChartAreaInteractive() {
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Portfolio Value</CardTitle>
+        <CardTitle className="font-bold">Portfolio Value</CardTitle>
         <CardDescription>
           <span className="hidden @[540px]/card:block">
             Total portfolio value over time
@@ -180,9 +180,15 @@ export function ChartAreaInteractive() {
             variant="outline"
             className="hidden *:data-[slot=toggle-group-item]:!px-4 @[767px]/card:flex"
           >
-            <ToggleGroupItem value="7d">Past Week</ToggleGroupItem>
-            <ToggleGroupItem value="30d">Past Month</ToggleGroupItem>
-            <ToggleGroupItem value="90d">Past 3 Months</ToggleGroupItem>
+            <ToggleGroupItem value="7d" className="font-medium">
+              Past Week
+            </ToggleGroupItem>
+            <ToggleGroupItem value="30d" className="font-medium">
+              Past Month
+            </ToggleGroupItem>
+            <ToggleGroupItem value="90d" className="font-medium">
+              Past 3 Months
+            </ToggleGroupItem>
           </ToggleGroup>
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger
@@ -193,13 +199,13 @@ export function ChartAreaInteractive() {
               <SelectValue placeholder="Past Week" />
             </SelectTrigger>
             <SelectContent className="rounded-xl">
-              <SelectItem value="7d" className="rounded-lg">
+              <SelectItem value="7d" className="rounded-lg font-medium">
                 Past Week
               </SelectItem>
-              <SelectItem value="30d" className="rounded-lg">
+              <SelectItem value="30d" className="rounded-lg font-medium">
                 Past Month
               </SelectItem>
-              <SelectItem value="90d" className="rounded-lg">
+              <SelectItem value="90d" className="rounded-lg font-medium">
                 Past 3 Months
               </SelectItem>
             </SelectContent>
@@ -207,71 +213,78 @@ export function ChartAreaInteractive() {
         </CardAction>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        <ChartContainer
-          config={chartConfig}
-          className="aspect-auto h-[250px] w-full"
-        >
-          <AreaChart data={filteredData}>
-            <YAxis domain={[yMin, yMax]} hide />
-            <defs>
-              <linearGradient id="fillPortfolio" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-portfolio)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-portfolio)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-            </defs>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              minTickGap={32}
-              tickFormatter={(value) => {
-                const date = new Date(value);
-                return date.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                });
-              }}
-            />
-            <ChartTooltip
-              cursor={false}
-              defaultIndex={isMobile ? -1 : 10}
-              content={
-                <ChartTooltipContent
-                  labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    });
-                  }}
-                  formatter={(value) => {
-                    return new Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                      minimumFractionDigits: 2,
-                    }).format(value as number);
-                  }}
-                  indicator="dot"
-                />
-              }
-            />
-            <Area
-              dataKey="portfolio"
-              type="natural"
-              fill="url(#fillPortfolio)"
-              stroke="var(--color-portfolio)"
-            />
-          </AreaChart>
-        </ChartContainer>
+        <div className="transition-opacity duration-300 ease-in-out">
+          <ChartContainer
+            config={chartConfig}
+            className="aspect-auto h-[250px] w-full"
+          >
+            <AreaChart
+              data={filteredData}
+              key={timeRange} // Force clean re-render on time range change
+            >
+              <YAxis domain={[yMin, yMax]} hide />
+              <defs>
+                <linearGradient id="fillPortfolio" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-portfolio)"
+                    stopOpacity={0.8}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-portfolio)"
+                    stopOpacity={0.1}
+                  />
+                </linearGradient>
+              </defs>
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="date"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                minTickGap={32}
+                tickFormatter={(value) => {
+                  const date = new Date(value);
+                  return date.toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  });
+                }}
+              />
+              <ChartTooltip
+                cursor={false}
+                defaultIndex={isMobile ? -1 : 10}
+                content={
+                  <ChartTooltipContent
+                    labelFormatter={(value) => {
+                      return new Date(value).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      });
+                    }}
+                    formatter={(value) => {
+                      return new Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                        minimumFractionDigits: 2,
+                      }).format(value as number);
+                    }}
+                    indicator="dot"
+                  />
+                }
+              />
+              <Area
+                dataKey="portfolio"
+                type="monotone"
+                fill="url(#fillPortfolio)"
+                stroke="var(--color-portfolio)"
+                strokeWidth={2}
+                isAnimationActive={false}
+              />
+            </AreaChart>
+          </ChartContainer>
+        </div>
       </CardContent>
     </Card>
   );
