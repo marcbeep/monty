@@ -37,7 +37,7 @@ export function SiteHeader() {
           orientation="vertical"
           className="mx-2 data-[orientation=vertical]:h-4"
         />
-        <h1 className="text-base font-semibold">Monty {getPageTitle()}</h1>
+        <h1 className="text-base font-semibold">{getPageTitle()}</h1>
       </div>
     </header>
   );
