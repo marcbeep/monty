@@ -5,12 +5,12 @@ import {
   IconChartBar,
   IconDashboard,
   IconFileDescription,
-  IconInnerShadowTop,
   IconPuzzle,
   IconScale,
   IconSearch,
   IconUsers,
 } from "@tabler/icons-react";
+import Image from "next/image";
 
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -80,7 +80,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <a href="#">
-                <IconInnerShadowTop className="!size-5" />
+                <div className="relative w-5 h-5 rounded-full overflow-hidden flex-shrink-0">
+                  <Image
+                    src="/logo.png"
+                    alt="Monty Logo"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
                 <span className="text-base font-semibold">Monty</span>
               </a>
             </SidebarMenuButton>
