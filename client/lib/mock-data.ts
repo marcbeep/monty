@@ -29,13 +29,13 @@ export interface PortfolioMetrics {
   currentValue: number; // Current total portfolio value
   totalReturn: number; // Total gain/loss in dollars
   totalReturnPercent: number; // Total return percentage
-  ytdReturn: number; // Year-to-date return in dollars
-  ytdReturnPercent: number; // Year-to-date return percentage
+  annualizedReturn: number; // Annualized return in dollars
+  annualizedReturnPercent: number; // Annualized return percentage - better for backtesting
+  volatility: number; // Portfolio volatility (annualized standard deviation %)
+  sortinoRatio: number; // Downside risk-adjusted return ratio - better than Sharpe
+  maxDrawdown: number; // Maximum peak-to-trough decline percentage
   dayChange: number; // Today's change in dollars
   dayChangePercent: number; // Today's change percentage
-  maxDrawdown: number; // Maximum peak-to-trough decline percentage
-  volatility: number; // Portfolio volatility (standard deviation)
-  sharpeRatio: number; // Risk-adjusted return ratio
   startDate: string; // Portfolio simulation start date
   lastUpdated: string;
 }
@@ -329,11 +329,22 @@ function generateMetrics(portfolioId: number): PortfolioMetrics {
   const totalReturn = currentValue - BASE_AMOUNT;
   const totalReturnPercent = (totalReturn / BASE_AMOUNT) * 100;
 
-  // Portfolio-specific risk metrics
+  // Calculate days since start for annualization
+  const daysSinceStart = getDaysFromYTD();
+  const yearFraction = daysSinceStart / 365;
+
+  // Calculate annualized metrics (better for backtesting)
+  const annualizedReturnPercent =
+    yearFraction > 0
+      ? Math.pow(1 + totalReturnPercent / 100, 1 / yearFraction) - 1
+      : 0;
+  const annualizedReturn = BASE_AMOUNT * annualizedReturnPercent;
+
+  // Portfolio-specific risk metrics (updated with better backtesting metrics)
   const riskMetrics = {
-    1: { maxDrawdown: -3.2, volatility: 6.1, sharpeRatio: 1.25 }, // Conservative
-    2: { maxDrawdown: -8.7, volatility: 12.3, sharpeRatio: 1.15 }, // Moderate
-    3: { maxDrawdown: -18.5, volatility: 20.1, sharpeRatio: 0.95 }, // Aggressive
+    1: { maxDrawdown: -3.2, volatility: 6.1, sortinoRatio: 1.85 }, // Conservative: Lower volatility, higher Sortino
+    2: { maxDrawdown: -8.7, volatility: 12.3, sortinoRatio: 1.42 }, // Moderate: Balanced risk-return
+    3: { maxDrawdown: -18.5, volatility: 20.1, sortinoRatio: 1.15 }, // Aggressive: Higher volatility, lower Sortino
   };
 
   const metrics = riskMetrics[portfolioId as keyof typeof riskMetrics];
@@ -350,13 +361,13 @@ function generateMetrics(portfolioId: number): PortfolioMetrics {
     currentValue,
     totalReturn,
     totalReturnPercent,
-    ytdReturn: totalReturn, // Same as total return since we start YTD
-    ytdReturnPercent: totalReturnPercent,
+    annualizedReturn,
+    annualizedReturnPercent: annualizedReturnPercent * 100, // Convert to percentage
+    volatility: metrics.volatility,
+    sortinoRatio: metrics.sortinoRatio,
+    maxDrawdown: metrics.maxDrawdown,
     dayChange,
     dayChangePercent,
-    maxDrawdown: metrics.maxDrawdown,
-    volatility: metrics.volatility,
-    sharpeRatio: metrics.sharpeRatio,
     startDate: YTD_START_DATE,
     lastUpdated: "2024-12-15T16:00:00Z",
   };

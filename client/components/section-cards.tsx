@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, Target } from "lucide-react";
+import { TrendingUp, TrendingDown, Target, BarChart3 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -32,7 +32,6 @@ export function SectionCards({
             <CardFooter className="flex-col items-start gap-1.5 text-sm pt-0">
               <div className="flex items-center gap-2 w-full">
                 <Skeleton className="h-6 w-16" />
-                <Skeleton className="h-4 w-20" />
               </div>
               <Skeleton className="h-4 w-40" />
             </CardFooter>
@@ -42,24 +41,70 @@ export function SectionCards({
     );
   }
 
+  // Helper function to get performance evaluation
+  const getPerformanceEvaluation = (
+    value: number,
+    type: "return" | "volatility" | "ratio" | "drawdown"
+  ) => {
+    switch (type) {
+      case "return":
+        if (value >= 15)
+          return {
+            label: "Excellent",
+            color: "text-green-600 border-green-200",
+          };
+        if (value >= 8)
+          return { label: "Good", color: "text-blue-600 border-blue-200" };
+        if (value >= 0)
+          return { label: "Fair", color: "text-amber-600 border-amber-200" };
+        return { label: "Poor", color: "text-red-600 border-red-200" };
+
+      case "volatility":
+        if (value <= 8)
+          return {
+            label: "Low Risk",
+            color: "text-green-600 border-green-200",
+          };
+        if (value <= 15)
+          return {
+            label: "Moderate",
+            color: "text-amber-600 border-amber-200",
+          };
+        return { label: "High Risk", color: "text-red-600 border-red-200" };
+
+      case "ratio":
+        if (value >= 1.5)
+          return {
+            label: "Excellent",
+            color: "text-green-600 border-green-200",
+          };
+        if (value >= 1.0)
+          return { label: "Good", color: "text-blue-600 border-blue-200" };
+        if (value >= 0.5)
+          return { label: "Fair", color: "text-amber-600 border-amber-200" };
+        return { label: "Poor", color: "text-red-600 border-red-200" };
+
+      case "drawdown":
+        if (value >= -5)
+          return {
+            label: "Low Risk",
+            color: "text-green-600 border-green-200",
+          };
+        if (value >= -15)
+          return {
+            label: "Moderate",
+            color: "text-amber-600 border-amber-200",
+          };
+        return { label: "High Risk", color: "text-red-600 border-red-200" };
+    }
+  };
+
   const getPerformanceIcon = (value: number) => {
     return value >= 0 ? (
       <TrendingUp className="size-3" />
     ) : (
       <TrendingDown className="size-3" />
     );
-  };
-
-  const getPerformanceColor = (value: number) => {
-    return value >= 0 ? "text-green-600" : "text-red-600";
-  };
-
-  const getBadgeVariant = (
-    value: number
-  ): "default" | "secondary" | "destructive" | "outline" => {
-    if (value > 10) return "default";
-    if (value > 0) return "secondary";
-    return "destructive";
   };
 
   return (
@@ -78,115 +123,116 @@ export function SectionCards({
           </CardTitle>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm pt-0">
-          <div className="line-clamp-1 flex items-center gap-2 font-medium w-full min-w-0">
+          <div className="flex items-center gap-2">
             <Badge
-              variant={getBadgeVariant(metrics.totalReturnPercent)}
-              className="shrink-0"
+              variant="outline"
+              className={
+                getPerformanceEvaluation(metrics.totalReturnPercent, "return")
+                  .color
+              }
             >
               {getPerformanceIcon(metrics.totalReturn)}
-              <span
-                className={`currency ${getPerformanceColor(
-                  metrics.totalReturn
-                )}`}
-              >
-                {metrics.totalReturn >= 0 ? "+" : ""}
-                {metrics.totalReturn.toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                })}
-              </span>
+              {
+                getPerformanceEvaluation(metrics.totalReturnPercent, "return")
+                  .label
+              }
             </Badge>
-            <span className="truncate">from $10K start</span>
           </div>
           <div className="text-muted-foreground line-clamp-1 truncate">
-            {metrics.totalReturnPercent >= 0 ? "+" : ""}
-            {metrics.totalReturnPercent.toFixed(1)}% total return since YTD
+            Total portfolio value from $10K start
           </div>
         </CardFooter>
       </Card>
 
-      {/* YTD Performance Card */}
+      {/* Annualized Return Card */}
       <Card className="@container/card overflow-hidden">
         <CardHeader className="pb-3">
           <CardDescription className="line-clamp-1 truncate">
-            YTD Return
+            Annualized Return
           </CardDescription>
           <CardTitle className="text-lg font-semibold percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
-            {metrics.ytdReturnPercent >= 0 ? "+" : ""}
-            {metrics.ytdReturnPercent.toFixed(1)}%
+            {metrics.annualizedReturnPercent >= 0 ? "+" : ""}
+            {metrics.annualizedReturnPercent.toFixed(1)}%
           </CardTitle>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm pt-0">
-          <div className="line-clamp-1 flex items-center gap-2 font-medium w-full min-w-0">
-            <Badge variant="outline" className="shrink-0">
-              {getPerformanceIcon(metrics.dayChangePercent)}
-              <span
-                className={`percentage ${getPerformanceColor(
-                  metrics.dayChangePercent
-                )}`}
-              >
-                {metrics.dayChangePercent >= 0 ? "+" : ""}
-                {metrics.dayChangePercent.toFixed(2)}%
-              </span>
+          <div className="flex items-center gap-2">
+            <Badge
+              variant="outline"
+              className={
+                getPerformanceEvaluation(
+                  metrics.annualizedReturnPercent,
+                  "return"
+                ).color
+              }
+            >
+              <BarChart3 className="size-3" />
+              {
+                getPerformanceEvaluation(
+                  metrics.annualizedReturnPercent,
+                  "return"
+                ).label
+              }
             </Badge>
-            <span className="truncate">today&apos;s change</span>
           </div>
           <div className="text-muted-foreground line-clamp-1 truncate">
-            Year-to-date performance since Jan 1
+            Expected yearly return rate
           </div>
         </CardFooter>
       </Card>
 
-      {/* Max Drawdown Card */}
+      {/* Volatility Card */}
       <Card className="@container/card overflow-hidden">
         <CardHeader className="pb-3">
           <CardDescription className="line-clamp-1 truncate">
-            Max Drawdown
+            Volatility
           </CardDescription>
           <CardTitle className="text-lg font-semibold percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
-            {metrics.maxDrawdown.toFixed(1)}%
+            {metrics.volatility.toFixed(1)}%
           </CardTitle>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm pt-0">
-          <div className="line-clamp-1 flex items-center gap-2 font-medium w-full min-w-0">
-            <Badge variant="outline" className="shrink-0">
+          <div className="flex items-center gap-2">
+            <Badge
+              variant="outline"
+              className={
+                getPerformanceEvaluation(metrics.volatility, "volatility").color
+              }
+            >
               <TrendingDown className="size-3" />
-              <span className="percentage">Risk metric</span>
+              {getPerformanceEvaluation(metrics.volatility, "volatility").label}
             </Badge>
-            <span className="truncate">worst decline</span>
           </div>
           <div className="text-muted-foreground line-clamp-1 truncate">
-            Largest peak-to-trough decline YTD
+            Annualized price fluctuation
           </div>
         </CardFooter>
       </Card>
 
-      {/* Sharpe Ratio Card */}
+      {/* Sortino Ratio Card */}
       <Card className="@container/card overflow-hidden">
         <CardHeader className="pb-3">
           <CardDescription className="line-clamp-1 truncate">
-            Sharpe Ratio
+            Sortino Ratio
           </CardDescription>
           <CardTitle className="text-lg font-semibold metric truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
-            {metrics.sharpeRatio.toFixed(2)}
+            {metrics.sortinoRatio.toFixed(2)}
           </CardTitle>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm pt-0">
-          <div className="line-clamp-1 flex items-center gap-2 font-medium w-full min-w-0">
-            <Badge variant="outline" className="shrink-0">
+          <div className="flex items-center gap-2">
+            <Badge
+              variant="outline"
+              className={
+                getPerformanceEvaluation(metrics.sortinoRatio, "ratio").color
+              }
+            >
               <Target className="size-3" />
-              <span className="metric">
-                {metrics.sharpeRatio > 1
-                  ? "Excellent"
-                  : metrics.sharpeRatio > 0.5
-                  ? "Good"
-                  : "Fair"}
-              </span>
+              {getPerformanceEvaluation(metrics.sortinoRatio, "ratio").label}
             </Badge>
-            <span className="truncate">risk-adjusted</span>
           </div>
           <div className="text-muted-foreground line-clamp-1 truncate">
-            Risk-adjusted return efficiency
+            Downside risk-adjusted returns
           </div>
         </CardFooter>
       </Card>
