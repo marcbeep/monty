@@ -22,9 +22,12 @@ export function SectionCards({
 }: SectionCardsProps) {
   if (isLoading || !metrics) {
     return (
-      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
         {[1, 2, 3, 4].map((index) => (
-          <Card key={index} className="@container/card overflow-hidden">
+          <Card
+            key={index}
+            className="@container/card overflow-hidden bg-gradient-to-br from-green-surface via-card to-green-subtle shadow-sm"
+          >
             <CardHeader className="pb-3">
               <Skeleton className="h-4 w-32" />
               <Skeleton className="h-8 w-24" />
@@ -41,7 +44,7 @@ export function SectionCards({
     );
   }
 
-  // Helper function to get performance evaluation
+  // Helper function to get performance evaluation using green monochrome palette
   const getPerformanceEvaluation = (
     value: number,
     type: "return" | "volatility" | "ratio" | "drawdown"
@@ -51,51 +54,63 @@ export function SectionCards({
         if (value >= 15)
           return {
             label: "Excellent",
-            color: "text-green-600 border-green-200",
+            color: "text-positive border-positive",
           };
         if (value >= 8)
-          return { label: "Good", color: "text-blue-600 border-blue-200" };
+          return {
+            label: "Good",
+            color: "text-positive-muted border-positive",
+          };
         if (value >= 0)
-          return { label: "Fair", color: "text-amber-600 border-amber-200" };
-        return { label: "Poor", color: "text-red-600 border-red-200" };
+          return {
+            label: "Fair",
+            color: "text-neutral-green border-neutral-green",
+          };
+        return { label: "Poor", color: "text-negative border-negative" };
 
       case "volatility":
         if (value <= 8)
           return {
             label: "Low Risk",
-            color: "text-green-600 border-green-200",
+            color: "text-positive border-positive",
           };
         if (value <= 15)
           return {
             label: "Moderate",
-            color: "text-amber-600 border-amber-200",
+            color: "text-neutral-green border-neutral-green",
           };
-        return { label: "High Risk", color: "text-red-600 border-red-200" };
+        return { label: "High Risk", color: "text-negative border-negative" };
 
       case "ratio":
         if (value >= 1.5)
           return {
             label: "Excellent",
-            color: "text-green-600 border-green-200",
+            color: "text-positive border-positive",
           };
         if (value >= 1.0)
-          return { label: "Good", color: "text-blue-600 border-blue-200" };
+          return {
+            label: "Good",
+            color: "text-positive-muted border-positive",
+          };
         if (value >= 0.5)
-          return { label: "Fair", color: "text-amber-600 border-amber-200" };
-        return { label: "Poor", color: "text-red-600 border-red-200" };
+          return {
+            label: "Fair",
+            color: "text-neutral-green border-neutral-green",
+          };
+        return { label: "Poor", color: "text-negative border-negative" };
 
       case "drawdown":
         if (value >= -5)
           return {
             label: "Low Risk",
-            color: "text-green-600 border-green-200",
+            color: "text-positive border-positive",
           };
         if (value >= -15)
           return {
             label: "Moderate",
-            color: "text-amber-600 border-amber-200",
+            color: "text-neutral-green border-neutral-green",
           };
-        return { label: "High Risk", color: "text-red-600 border-red-200" };
+        return { label: "High Risk", color: "text-negative border-negative" };
     }
   };
 
@@ -108,9 +123,9 @@ export function SectionCards({
   };
 
   return (
-    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       {/* Portfolio Value Card */}
-      <Card className="@container/card overflow-hidden">
+      <Card className="@container/card overflow-hidden bg-gradient-to-br from-green-surface via-card to-green-subtle shadow-sm border-green-subtle/50">
         <CardHeader className="pb-3">
           <CardDescription className="line-clamp-1 truncate">
             Portfolio Value
@@ -139,18 +154,25 @@ export function SectionCards({
             </Badge>
           </div>
           <div className="text-muted-foreground line-clamp-1 truncate">
-            Total portfolio value from $10K start
+            Total portfolio value from <span className="currency">$10K</span>{" "}
+            start
           </div>
         </CardFooter>
       </Card>
 
       {/* Annualized Return Card */}
-      <Card className="@container/card overflow-hidden">
+      <Card className="@container/card overflow-hidden bg-gradient-to-br from-green-surface via-card to-green-subtle shadow-sm border-green-subtle/50">
         <CardHeader className="pb-3">
           <CardDescription className="line-clamp-1 truncate">
             Annualized Return
           </CardDescription>
-          <CardTitle className="text-lg font-semibold percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
+          <CardTitle
+            className={`text-lg font-semibold percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl ${
+              metrics.annualizedReturnPercent >= 0
+                ? "text-positive"
+                : "text-negative"
+            }`}
+          >
             {metrics.annualizedReturnPercent >= 0 ? "+" : ""}
             {metrics.annualizedReturnPercent.toFixed(1)}%
           </CardTitle>
@@ -182,12 +204,12 @@ export function SectionCards({
       </Card>
 
       {/* Volatility Card */}
-      <Card className="@container/card overflow-hidden">
+      <Card className="@container/card overflow-hidden bg-gradient-to-br from-green-surface via-card to-green-subtle shadow-sm border-green-subtle/50">
         <CardHeader className="pb-3">
           <CardDescription className="line-clamp-1 truncate">
             Volatility
           </CardDescription>
-          <CardTitle className="text-lg font-semibold percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
+          <CardTitle className="text-lg font-semibold percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl text-neutral-green">
             {metrics.volatility.toFixed(1)}%
           </CardTitle>
         </CardHeader>
@@ -210,12 +232,12 @@ export function SectionCards({
       </Card>
 
       {/* Sortino Ratio Card */}
-      <Card className="@container/card overflow-hidden">
+      <Card className="@container/card overflow-hidden bg-gradient-to-br from-green-surface via-card to-green-subtle shadow-sm border-green-subtle/50">
         <CardHeader className="pb-3">
           <CardDescription className="line-clamp-1 truncate">
             Sortino Ratio
           </CardDescription>
-          <CardTitle className="text-lg font-semibold metric truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
+          <CardTitle className="text-lg font-semibold metric truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl text-neutral-green">
             {metrics.sortinoRatio.toFixed(2)}
           </CardTitle>
         </CardHeader>

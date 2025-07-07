@@ -27,28 +27,28 @@ import {
 } from "lucide-react";
 import type { Allocation, AssetType } from "@/lib/mock-data";
 
-// Helper function to get the appropriate icon for simplified asset types
+// Helper function to get the appropriate icon for simplified asset types - now in green monochrome
 const getAssetIcon = (type: AssetType) => {
   switch (type) {
     case "Equities":
-      return <Building2 className="size-4 text-blue-600" />;
+      return <Building2 className="size-4 text-positive" />;
     case "Fixed Income":
-      return <Landmark className="size-4 text-green-600" />;
+      return <Landmark className="size-4 text-positive-muted" />;
     case "Alternatives":
-      return <BarChart3 className="size-4 text-purple-600" />;
+      return <BarChart3 className="size-4 text-neutral-green" />;
     case "Cash":
-      return <Banknote className="size-4 text-gray-600" />;
+      return <Banknote className="size-4 text-neutral-green" />;
     default:
-      return <Building2 className="size-4" />;
+      return <Building2 className="size-4 text-neutral-green" />;
   }
 };
 
-// Helper function to get return indicator icon
+// Helper function to get return indicator icon - now using green variants
 const getReturnIndicator = (returnPercent: number) => {
   if (returnPercent > 0) {
-    return <TrendingUp className="size-3 text-green-600" />;
+    return <TrendingUp className="size-3 text-positive" />;
   } else if (returnPercent < 0) {
-    return <TrendingDown className="size-3 text-red-600" />;
+    return <TrendingDown className="size-3 text-negative" />;
   }
   return null;
 };
@@ -87,15 +87,15 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
 
   if (isLoading) {
     return (
-      <Card className="@container/card">
+      <Card className="@container/card bg-gradient-to-br from-green-surface via-card to-green-subtle shadow-sm border-green-subtle/50">
         <CardHeader>
           <Skeleton className="h-6 w-48" />
           <Skeleton className="h-4 w-64" />
         </CardHeader>
         <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-          <div className="overflow-hidden rounded-lg border">
+          <div className="overflow-hidden rounded-lg border border-green-subtle/30">
             <Table>
-              <TableHeader className="bg-muted sticky top-0 z-10">
+              <TableHeader className="bg-green-subtle/30 sticky top-0 z-10">
                 <TableRow>
                   <TableHead className="font-semibold">Asset</TableHead>
                   <TableHead className="font-semibold text-center">
@@ -144,7 +144,7 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
   }
 
   return (
-    <Card className="@container/card">
+    <Card className="@container/card bg-gradient-to-br from-green-surface via-card to-green-subtle shadow-sm border-green-subtle/50">
       <CardHeader>
         <CardTitle className="font-bold">Portfolio Holdings</CardTitle>
         <CardDescription>
@@ -155,9 +155,9 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        <div className="overflow-hidden rounded-lg border">
+        <div className="overflow-hidden rounded-lg border border-green-subtle/30">
           <Table>
-            <TableHeader className="bg-muted sticky top-0 z-10">
+            <TableHeader className="bg-green-subtle/30 sticky top-0 z-10">
               <TableRow>
                 <TableHead className="font-semibold">Asset</TableHead>
                 <TableHead className="font-semibold text-center">
@@ -179,7 +179,10 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
                     totalPortfolioValue
                   );
                   return (
-                    <TableRow key={allocation.id} className="hover:bg-muted/50">
+                    <TableRow
+                      key={allocation.id}
+                      className="hover:bg-green-subtle/20"
+                    >
                       <TableCell>
                         <div className="flex items-center gap-3">
                           {getAssetIcon(allocation.type)}
@@ -188,7 +191,9 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
                               {allocation.name}
                             </span>
                             <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                              <span>{allocation.symbol}</span>
+                              <span className="font-mono">
+                                {allocation.symbol}
+                              </span>
                               <span>•</span>
                               <span>{allocation.type}</span>
                             </div>
@@ -196,31 +201,39 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
                         </div>
                       </TableCell>
                       <TableCell className="text-center">
-                        <span className="font-medium">
+                        <span className="font-medium percentage">
                           {allocation.allocationPercent}%
                         </span>
                       </TableCell>
                       <TableCell className="text-right font-medium">
-                        {allocation.currentValue.toLocaleString("en-US", {
-                          style: "currency",
-                          currency: "USD",
-                        })}
+                        <span className="currency">
+                          {allocation.currentValue.toLocaleString("en-US", {
+                            style: "currency",
+                            currency: "USD",
+                          })}
+                        </span>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
                           {getReturnIndicator(allocation.totalReturnPercent)}
                           <div className="flex flex-col items-end">
                             <span
-                              className={`font-medium ${
+                              className={`font-medium percentage ${
                                 allocation.totalReturnPercent >= 0
-                                  ? "text-green-600"
-                                  : "text-red-600"
+                                  ? "text-positive"
+                                  : "text-negative"
                               }`}
                             >
                               {allocation.totalReturnPercent >= 0 ? "+" : ""}
                               {allocation.totalReturnPercent.toFixed(1)}%
                             </span>
-                            <span className="text-xs text-muted-foreground">
+                            <span
+                              className={`text-xs text-muted-foreground percentage ${
+                                contribution >= 0
+                                  ? "text-positive-muted"
+                                  : "text-negative-muted"
+                              }`}
+                            >
                               {contribution >= 0 ? "+" : ""}
                               {contribution.toFixed(1)}% to portfolio
                             </span>
@@ -244,7 +257,7 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
           <div className="mt-4 text-center">
             <span className="text-sm text-muted-foreground">
               Showing top {Math.min(sortedAllocations.length, 10)} of{" "}
-              {allocations.length} holdings
+              <span className="metric">{allocations.length}</span> holdings
             </span>
           </div>
         )}

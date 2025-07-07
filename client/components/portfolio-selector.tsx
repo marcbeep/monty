@@ -43,17 +43,17 @@ const getRiskBadgeVariant = (): "outline" => {
   return "outline";
 };
 
-// Helper function to get risk level color for consistent theming
+// Helper function to get risk level color using green monochrome system
 const getRiskLevelColor = (riskLevel: string): string => {
   switch (riskLevel.toLowerCase()) {
     case "low":
-      return "text-blue-600 border-blue-200";
+      return "text-positive border-positive";
     case "medium":
-      return "text-amber-600 border-amber-200";
+      return "text-neutral-green border-neutral-green";
     case "high":
-      return "text-red-600 border-red-200";
+      return "text-negative border-negative";
     default:
-      return "text-gray-600 border-gray-200";
+      return "text-neutral-green border-neutral-green";
   }
 };
 
@@ -79,7 +79,7 @@ export function PortfolioSelector({
 
   if (isLoading) {
     return (
-      <Card className="@container/card">
+      <Card className="@container/card bg-gradient-to-br from-green-surface via-card to-green-subtle shadow-sm border-green-subtle/50">
         <CardHeader>
           <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
             <div className="space-y-1.5">
@@ -102,7 +102,7 @@ export function PortfolioSelector({
   }
 
   return (
-    <Card className="@container/card">
+    <Card className="@container/card bg-gradient-to-br from-green-surface via-card to-green-subtle shadow-sm border-green-subtle/50">
       <CardHeader>
         <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
           <div className="space-y-1.5">
@@ -110,8 +110,8 @@ export function PortfolioSelector({
               Portfolio Allocation Simulator
             </CardTitle>
             <CardDescription>
-              Compare allocation strategies and their performance from $10,000
-              starting amount
+              Compare allocation strategies and their performance from{" "}
+              <span className="currency">$10,000</span> starting amount
             </CardDescription>
             {selectedPortfolio && (
               <div className="flex flex-col gap-2 pt-1">
