@@ -3,11 +3,7 @@
   "/analytics/page": "app/analytics/page.js",
   "/dashboard/page": "app/dashboard/page.js",
   "/login/page": "app/login/page.js",
-  "/portfolio-builder/page": "app/portfolio-builder/page.js",
-  "/portfolio-comparison/page": "app/portfolio-comparison/page.js",
-  "/simulator/page": "app/simulator/page.js",
-  "/scenario-explorer/page": "app/scenario-explorer/page.js",
-  "/register/page": "app/register/page.js",
   "/page": "app/page.js",
-  "/docs/page": "app/docs/page.js"
+  "/portfolio-builder/page": "app/portfolio-builder/page.js",
+  "/register/page": "app/register/page.js"
 }

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { BarChart3 } from "lucide-react";
 
 export default function Home() {
@@ -30,20 +31,38 @@ export default function Home() {
           </div>
         </div>
 
-        {/* CTA Button */}
-        <div className="pt-4">
-          <Button asChild size="lg" className="text-base px-8 py-3 h-12">
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <BarChart3 className="size-5" />
-              Go to Dashboard
-            </Link>
-          </Button>
+        {/* CTA Buttons */}
+        <div className="pt-4 space-y-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Button asChild size="lg" className="text-base px-8 py-3 h-12">
+              <Link href="/register" className="flex items-center gap-2">
+                <BarChart3 className="size-5" />
+                Get Started
+              </Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="text-base px-8 py-3 h-12"
+            >
+              <Link href="/login">Sign In</Link>
+            </Button>
+          </div>
         </div>
 
-        {/* Subtle feature hint */}
-        <p className="text-sm text-muted-foreground/80 pt-8">
-          Portfolio building • Market analysis • Investment simulation
-        </p>
+        {/* Feature Tags */}
+        <div className="pt-8 flex flex-wrap items-center justify-center gap-2">
+          <Badge variant="secondary" className="text-xs">
+            Portfolio building
+          </Badge>
+          <Badge variant="secondary" className="text-xs">
+            Market analysis
+          </Badge>
+          <Badge variant="secondary" className="text-xs">
+            Investment simulation
+          </Badge>
+        </div>
       </div>
     </div>
   );

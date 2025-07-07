@@ -54,19 +54,22 @@ export function RegisterForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email Address</FormLabel>
+              <FormLabel className="text-sm font-medium">
+                Email Address
+              </FormLabel>
               <FormControl>
                 <Input
                   id="email"
                   type="email"
                   placeholder="you@example.com"
                   autoComplete="email"
+                  className="h-11"
                   {...field}
                 />
               </FormControl>
@@ -79,13 +82,14 @@ export function RegisterForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel className="text-sm font-medium">Password</FormLabel>
               <FormControl>
                 <Input
                   id="password"
                   type="password"
                   placeholder="••••••••"
                   autoComplete="new-password"
+                  className="h-11"
                   {...field}
                 />
               </FormControl>
@@ -98,13 +102,16 @@ export function RegisterForm() {
           name="confirmPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Confirm Password</FormLabel>
+              <FormLabel className="text-sm font-medium">
+                Confirm Password
+              </FormLabel>
               <FormControl>
                 <Input
                   id="confirmPassword"
                   type="password"
                   placeholder="••••••••"
                   autoComplete="new-password"
+                  className="h-11"
                   {...field}
                 />
               </FormControl>
@@ -112,7 +119,7 @@ export function RegisterForm() {
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit">
+        <Button className="w-full h-11" type="submit">
           Create Account
         </Button>
       </form>
