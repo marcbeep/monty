@@ -264,11 +264,15 @@ export function ChartAreaInteractive() {
                       });
                     }}
                     formatter={(value) => {
-                      return new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        currency: "USD",
-                        minimumFractionDigits: 2,
-                      }).format(value as number);
+                      return (
+                        <span className="currency">
+                          {new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            currency: "USD",
+                            minimumFractionDigits: 2,
+                          }).format(value as number)}
+                        </span>
+                      );
                     }}
                     indicator="dot"
                   />

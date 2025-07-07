@@ -3,7 +3,6 @@ import { TrendingUp, TrendingDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
-  CardAction,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -18,23 +17,20 @@ export function SectionCards() {
           <CardDescription className="line-clamp-1 truncate">
             Total Portfolio Value
           </CardDescription>
-          <CardTitle className="text-xl font-semibold tabular-nums truncate @[200px]/card:text-2xl @[250px]/card:text-3xl">
+          <CardTitle className="text-lg font-semibold currency truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
             $12,450.78
           </CardTitle>
-          <CardAction className="shrink-0">
-            <Badge variant="outline" className="shrink-0">
-              <TrendingUp className="size-3" />
-              +2.5%
-            </Badge>
-          </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm pt-0">
           <div className="line-clamp-1 flex items-center gap-2 font-medium w-full min-w-0">
-            <span className="truncate">Trending up this month</span>
-            <TrendingUp className="size-4 shrink-0" />
+            <Badge variant="outline" className="shrink-0">
+              <TrendingUp className="size-3" />
+              <span className="percentage">+2.5%</span>
+            </Badge>
+            <span className="truncate">vs last month</span>
           </div>
           <div className="text-muted-foreground line-clamp-1 truncate">
-            Portfolio growth continues strong
+            Combined value of all holdings
           </div>
         </CardFooter>
       </Card>
@@ -43,23 +39,20 @@ export function SectionCards() {
           <CardDescription className="line-clamp-1 truncate">
             Average CAGR
           </CardDescription>
-          <CardTitle className="text-xl font-semibold tabular-nums truncate @[200px]/card:text-2xl @[250px]/card:text-3xl">
+          <CardTitle className="text-lg font-semibold percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
             6.8%
           </CardTitle>
-          <CardAction className="shrink-0">
-            <Badge variant="outline" className="shrink-0">
-              <TrendingUp className="size-3" />
-              +0.3%
-            </Badge>
-          </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm pt-0">
           <div className="line-clamp-1 flex items-center gap-2 font-medium w-full min-w-0">
-            <span className="truncate">Steady performance increase</span>
-            <TrendingUp className="size-4 shrink-0" />
+            <Badge variant="outline" className="shrink-0">
+              <TrendingUp className="size-3" />
+              <span className="percentage">+0.3%</span>
+            </Badge>
+            <span className="truncate">vs last quarter</span>
           </div>
           <div className="text-muted-foreground line-clamp-1 truncate">
-            Across 3 portfolios
+            Annualized growth rate (3 years)
           </div>
         </CardFooter>
       </Card>
@@ -68,23 +61,20 @@ export function SectionCards() {
           <CardDescription className="line-clamp-1 truncate">
             Max Drawdown (YTD)
           </CardDescription>
-          <CardTitle className="text-xl font-semibold tabular-nums truncate @[200px]/card:text-2xl @[250px]/card:text-3xl">
+          <CardTitle className="text-lg font-semibold percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
             -10.3%
           </CardTitle>
-          <CardAction className="shrink-0">
-            <Badge variant="outline" className="shrink-0">
-              <TrendingDown className="size-3" />
-              -2.1%
-            </Badge>
-          </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm pt-0">
           <div className="line-clamp-1 flex items-center gap-2 font-medium w-full min-w-0">
-            <span className="truncate">Improved risk management</span>
-            <TrendingUp className="size-4 shrink-0" />
+            <Badge variant="outline" className="shrink-0">
+              <TrendingUp className="size-3" />
+              <span className="percentage">+2.1%</span>
+            </Badge>
+            <span className="truncate">improvement YTD</span>
           </div>
           <div className="text-muted-foreground line-clamp-1 truncate">
-            Recovered in 35 days
+            Largest peak-to-trough decline
           </div>
         </CardFooter>
       </Card>
@@ -93,23 +83,20 @@ export function SectionCards() {
           <CardDescription className="line-clamp-1 truncate">
             Sharpe Ratio
           </CardDescription>
-          <CardTitle className="text-xl font-semibold tabular-nums truncate @[200px]/card:text-2xl @[250px]/card:text-3xl">
+          <CardTitle className="text-lg font-semibold metric truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
             1.05
           </CardTitle>
-          <CardAction className="shrink-0">
-            <Badge variant="outline" className="shrink-0">
-              <TrendingUp className="size-3" />
-              +0.15
-            </Badge>
-          </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm pt-0">
           <div className="line-clamp-1 flex items-center gap-2 font-medium w-full min-w-0">
-            <span className="truncate">Strong risk-adjusted returns</span>
-            <TrendingUp className="size-4 shrink-0" />
+            <Badge variant="outline" className="shrink-0">
+              <TrendingUp className="size-3" />
+              <span className="metric">+0.15</span>
+            </Badge>
+            <span className="truncate">vs last quarter</span>
           </div>
           <div className="text-muted-foreground line-clamp-1 truncate">
-            Risk-free: 3M Treasury
+            Risk-adjusted returns (1 year)
           </div>
         </CardFooter>
       </Card>

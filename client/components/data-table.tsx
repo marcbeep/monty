@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardAction,
@@ -25,6 +26,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Building2,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  CircleDollarSign,
+  BarChart3,
+  Landmark,
+} from "lucide-react";
 
 // Types for the new data structure
 interface Security {
@@ -40,6 +50,45 @@ interface Portfolio {
   portfolio: string;
   securities: Security[];
 }
+
+// Helper function to get the appropriate icon for security type
+const getSecurityIcon = (type: string) => {
+  switch (type.toLowerCase()) {
+    case "stock":
+      return <Building2 className="size-4" />;
+    case "etf":
+      return <BarChart3 className="size-4" />;
+    case "bond etf":
+      return <Landmark className="size-4" />;
+    default:
+      return <CircleDollarSign className="size-4" />;
+  }
+};
+
+// Helper function to get badge variant for security type
+const getSecurityBadgeVariant = (type: string) => {
+  switch (type.toLowerCase()) {
+    case "stock":
+      return "default";
+    case "etf":
+      return "secondary";
+    case "bond etf":
+      return "outline";
+    default:
+      return "outline";
+  }
+};
+
+// Helper function to get performance indicator
+const getPerformanceIndicator = (percentChange: number) => {
+  if (percentChange > 0) {
+    return <TrendingUp className="size-3 text-green-600" />;
+  } else if (percentChange < 0) {
+    return <TrendingDown className="size-3 text-red-600" />;
+  } else {
+    return <Minus className="size-3 text-muted-foreground" />;
+  }
+};
 
 export function DataTable({ data }: { data: Portfolio[] }) {
   const [selectedPortfolioId, setSelectedPortfolioId] = React.useState<number>(
@@ -89,39 +138,54 @@ export function DataTable({ data }: { data: Portfolio[] }) {
           <Table>
             <TableHeader className="bg-muted sticky top-0 z-10">
               <TableRow>
-                <TableHead className="font-semibold">Security Name</TableHead>
+                <TableHead className="font-semibold">Security</TableHead>
                 <TableHead className="font-semibold">Type</TableHead>
                 <TableHead className="text-right font-semibold">
                   Current Value
                 </TableHead>
                 <TableHead className="text-right font-semibold">
-                  % Change
+                  Performance
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {selectedPortfolio?.securities?.length ? (
                 selectedPortfolio.securities.map((security) => (
-                  <TableRow key={security.id}>
-                    <TableCell>{security.name}</TableCell>
-                    <TableCell>{security.type}</TableCell>
-                    <TableCell className="text-right">
+                  <TableRow key={security.id} className="hover:bg-muted/50">
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        {getSecurityIcon(security.type)}
+                        <span className="font-medium">{security.name}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={getSecurityBadgeVariant(security.type) as any}
+                        className="font-medium"
+                      >
+                        {security.type}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right currency font-medium">
                       {security.currentValue.toLocaleString("en-US", {
                         style: "currency",
                         currency: "USD",
                       })}
                     </TableCell>
                     <TableCell className="text-right">
-                      <span
-                        className={
-                          security.percentChange >= 0
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        {security.percentChange >= 0 ? "+" : ""}
-                        {security.percentChange.toFixed(2)}%
-                      </span>
+                      <div className="flex items-center justify-end gap-2">
+                        {getPerformanceIndicator(security.percentChange)}
+                        <span
+                          className={`percentage font-medium ${
+                            security.percentChange >= 0
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }`}
+                        >
+                          {security.percentChange >= 0 ? "+" : ""}
+                          {security.percentChange.toFixed(2)}%
+                        </span>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
