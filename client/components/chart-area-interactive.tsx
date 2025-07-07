@@ -25,142 +25,77 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import type { ChartDataPoint } from "@/lib/mock-data";
 
-export const description = "An interactive portfolio value area chart";
-
-const chartData = [
-  { date: "2024-04-01", portfolio: 11250.45 },
-  { date: "2024-04-02", portfolio: 11320.78 },
-  { date: "2024-04-03", portfolio: 11180.23 },
-  { date: "2024-04-04", portfolio: 11450.67 },
-  { date: "2024-04-05", portfolio: 11680.34 },
-  { date: "2024-04-06", portfolio: 11590.12 },
-  { date: "2024-04-07", portfolio: 11420.89 },
-  { date: "2024-04-08", portfolio: 11890.56 },
-  { date: "2024-04-09", portfolio: 10980.23 },
-  { date: "2024-04-10", portfolio: 11260.78 },
-  { date: "2024-04-11", portfolio: 11530.45 },
-  { date: "2024-04-12", portfolio: 11390.67 },
-  { date: "2024-04-13", portfolio: 11740.23 },
-  { date: "2024-04-14", portfolio: 11080.45 },
-  { date: "2024-04-15", portfolio: 10950.78 },
-  { date: "2024-04-16", portfolio: 11120.34 },
-  { date: "2024-04-17", portfolio: 11980.67 },
-  { date: "2024-04-18", portfolio: 11840.23 },
-  { date: "2024-04-19", portfolio: 11430.89 },
-  { date: "2024-04-20", portfolio: 10890.56 },
-  { date: "2024-04-21", portfolio: 11020.34 },
-  { date: "2024-04-22", portfolio: 11340.78 },
-  { date: "2024-04-23", portfolio: 11180.45 },
-  { date: "2024-04-24", portfolio: 11780.23 },
-  { date: "2024-04-25", portfolio: 11450.67 },
-  { date: "2024-04-26", portfolio: 10980.34 },
-  { date: "2024-04-27", portfolio: 11890.12 },
-  { date: "2024-04-28", portfolio: 11120.89 },
-  { date: "2024-04-29", portfolio: 11650.56 },
-  { date: "2024-04-30", portfolio: 12040.23 },
-  { date: "2024-05-01", portfolio: 11280.78 },
-  { date: "2024-05-02", portfolio: 11670.45 },
-  { date: "2024-05-03", portfolio: 11430.67 },
-  { date: "2024-05-04", portfolio: 11890.23 },
-  { date: "2024-05-05", portfolio: 12180.89 },
-  { date: "2024-05-06", portfolio: 12340.56 },
-  { date: "2024-05-07", portfolio: 11890.34 },
-  { date: "2024-05-08", portfolio: 11150.78 },
-  { date: "2024-05-09", portfolio: 11340.23 },
-  { date: "2024-05-10", portfolio: 11670.45 },
-  { date: "2024-05-11", portfolio: 11820.67 },
-  { date: "2024-05-12", portfolio: 11560.89 },
-  { date: "2024-05-13", portfolio: 11560.34 },
-  { date: "2024-05-14", portfolio: 12240.78 },
-  { date: "2024-05-15", portfolio: 12450.23 },
-  { date: "2024-05-16", portfolio: 12180.67 },
-  { date: "2024-05-17", portfolio: 12560.34 },
-  { date: "2024-05-18", portfolio: 11890.12 },
-  { date: "2024-05-19", portfolio: 11450.89 },
-  { date: "2024-05-20", portfolio: 11280.56 },
-  { date: "2024-05-21", portfolio: 10890.23 },
-  { date: "2024-05-22", portfolio: 10870.78 },
-  { date: "2024-05-23", portfolio: 11560.45 },
-  { date: "2024-05-24", portfolio: 11780.67 },
-  { date: "2024-05-25", portfolio: 11420.23 },
-  { date: "2024-05-26", portfolio: 11540.89 },
-  { date: "2024-05-27", portfolio: 12240.56 },
-  { date: "2024-05-28", portfolio: 11560.34 },
-  { date: "2024-05-29", portfolio: 10980.78 },
-  { date: "2024-05-30", portfolio: 11980.23 },
-  { date: "2024-05-31", portfolio: 11240.67 },
-  { date: "2024-06-01", portfolio: 11240.45 },
-  { date: "2024-06-02", portfolio: 12450.89 },
-  { date: "2024-06-03", portfolio: 11080.34 },
-  { date: "2024-06-04", portfolio: 12180.78 },
-  { date: "2024-06-05", portfolio: 10980.23 },
-  { date: "2024-06-06", portfolio: 11780.67 },
-  { date: "2024-06-07", portfolio: 12040.45 },
-  { date: "2024-06-08", portfolio: 11890.23 },
-  { date: "2024-06-09", portfolio: 12340.89 },
-  { date: "2024-06-10", portfolio: 11250.56 },
-  { date: "2024-06-11", portfolio: 11020.34 },
-  { date: "2024-06-12", portfolio: 12560.78 },
-  { date: "2024-06-13", portfolio: 10980.23 },
-  { date: "2024-06-14", portfolio: 12180.67 },
-  { date: "2024-06-15", portfolio: 11980.45 },
-  { date: "2024-06-16", portfolio: 12140.89 },
-  { date: "2024-06-17", portfolio: 12450.23 },
-  { date: "2024-06-18", portfolio: 11080.78 },
-  { date: "2024-06-19", portfolio: 11980.34 },
-  { date: "2024-06-20", portfolio: 12240.67 },
-  { date: "2024-06-21", portfolio: 11340.45 },
-  { date: "2024-06-22", portfolio: 12040.89 },
-  { date: "2024-06-23", portfolio: 12560.23 },
-  { date: "2024-06-24", portfolio: 11120.78 },
-  { date: "2024-06-25", portfolio: 11240.34 },
-  { date: "2024-06-26", portfolio: 12180.67 },
-  { date: "2024-06-27", portfolio: 12340.45 },
-  { date: "2024-06-28", portfolio: 11250.89 },
-  { date: "2024-06-29", portfolio: 11080.23 },
-  { date: "2024-06-30", portfolio: 12450.78 },
-];
+export const description =
+  "Portfolio value evolution from $10K starting amount";
 
 const chartConfig = {
   portfolio: {
     label: "Portfolio Value",
-    color: "var(--primary)",
+    color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
 
-export function ChartAreaInteractive() {
+interface ChartAreaInteractiveProps {
+  chartData: ChartDataPoint[];
+  timeframe: string;
+  onTimeframeChange: (timeframe: string) => void;
+  isLoading?: boolean;
+}
+
+export function ChartAreaInteractive({
+  chartData,
+  timeframe,
+  onTimeframeChange,
+  isLoading = false,
+}: ChartAreaInteractiveProps) {
   const isMobile = useIsMobile();
-  const [timeRange, setTimeRange] = React.useState("7d");
 
-  React.useEffect(() => {
-    if (isMobile) {
-      setTimeRange("7d");
-    }
-  }, [isMobile]);
+  // Transform data for recharts
+  const transformedData = React.useMemo(() => {
+    return chartData.map((point) => ({
+      date: point.date,
+      portfolio: point.value,
+    }));
+  }, [chartData]);
 
-  const filteredData = chartData.filter((item) => {
-    const date = new Date(item.date);
-    const referenceDate = new Date("2024-06-30");
-    let daysToSubtract = 90;
-    if (timeRange === "30d") {
-      daysToSubtract = 30;
-    } else if (timeRange === "7d") {
-      daysToSubtract = 7;
-    }
-    const startDate = new Date(referenceDate);
-    startDate.setDate(startDate.getDate() - daysToSubtract);
-    return date >= startDate;
-  });
+  // Calculate Y-axis domain with padding
+  const yDomain = React.useMemo(() => {
+    if (transformedData.length === 0) return [9500, 12000]; // Default range around $10K base
 
-  // Calculate dynamic min/max for Y-axis
-  const values = filteredData.map((d) => d.portfolio);
-  const minValue = Math.min(...values);
-  const maxValue = Math.max(...values);
-  const margin = (maxValue - minValue) * 0.08 || 100; // fallback margin if flat
-  const yMin = Math.floor(minValue - margin);
-  const yMax = Math.ceil(maxValue + margin);
+    const values = transformedData.map((d) => d.portfolio);
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const padding = (max - min) * 0.1 || 500; // Minimum $500 padding
+
+    return [Math.max(0, min - padding), max + padding];
+  }, [transformedData]);
+
+  if (isLoading) {
+    return (
+      <Card className="@container/card">
+        <CardHeader>
+          <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
+            <div className="space-y-1.5">
+              <Skeleton className="h-6 w-32" />
+              <Skeleton className="h-4 w-48" />
+            </div>
+            <div className="flex items-center space-x-2">
+              <Skeleton className="h-8 w-20" />
+              <Skeleton className="h-8 w-20" />
+              <Skeleton className="h-8 w-24" />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+          <Skeleton className="h-[250px] w-full" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="@container/card">
@@ -168,45 +103,63 @@ export function ChartAreaInteractive() {
         <CardTitle className="font-bold">Portfolio Value</CardTitle>
         <CardDescription>
           <span className="hidden @[540px]/card:block">
-            Total portfolio value over time
+            Portfolio value evolution from $10,000 starting amount
           </span>
-          <span className="@[540px]/card:hidden">Portfolio performance</span>
+          <span className="@[540px]/card:hidden">Value over time</span>
         </CardDescription>
         <CardAction>
           <ToggleGroup
             type="single"
-            value={timeRange}
-            onValueChange={setTimeRange}
+            value={timeframe}
+            onValueChange={onTimeframeChange}
             variant="outline"
-            className="hidden *:data-[slot=toggle-group-item]:!px-4 @[767px]/card:flex"
+            className="hidden *:data-[slot=toggle-group-item]:!px-3 @[767px]/card:flex"
           >
-            <ToggleGroupItem value="7d" className="font-medium">
-              Past Week
+            <ToggleGroupItem value="1W" className="font-medium text-xs">
+              1W
             </ToggleGroupItem>
-            <ToggleGroupItem value="30d" className="font-medium">
-              Past Month
+            <ToggleGroupItem value="1M" className="font-medium text-xs">
+              1M
             </ToggleGroupItem>
-            <ToggleGroupItem value="90d" className="font-medium">
-              Past 3 Months
+            <ToggleGroupItem value="3M" className="font-medium text-xs">
+              3M
+            </ToggleGroupItem>
+            <ToggleGroupItem value="YTD" className="font-medium text-xs">
+              YTD
+            </ToggleGroupItem>
+            <ToggleGroupItem value="1Y" className="font-medium text-xs">
+              1Y
             </ToggleGroupItem>
           </ToggleGroup>
-          <Select value={timeRange} onValueChange={setTimeRange}>
+          <Select value={timeframe} onValueChange={onTimeframeChange}>
             <SelectTrigger
               className="flex w-40 **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate @[767px]/card:hidden"
               size="sm"
-              aria-label="Select a value"
+              aria-label="Select a time period"
             >
-              <SelectValue placeholder="Past Week" />
+              <SelectValue placeholder="Year to Date" />
             </SelectTrigger>
             <SelectContent className="rounded-xl">
-              <SelectItem value="7d" className="rounded-lg font-medium">
-                Past Week
+              <SelectItem value="1D" className="rounded-lg font-medium">
+                1 Day
               </SelectItem>
-              <SelectItem value="30d" className="rounded-lg font-medium">
-                Past Month
+              <SelectItem value="1W" className="rounded-lg font-medium">
+                1 Week
               </SelectItem>
-              <SelectItem value="90d" className="rounded-lg font-medium">
-                Past 3 Months
+              <SelectItem value="1M" className="rounded-lg font-medium">
+                1 Month
+              </SelectItem>
+              <SelectItem value="3M" className="rounded-lg font-medium">
+                3 Months
+              </SelectItem>
+              <SelectItem value="6M" className="rounded-lg font-medium">
+                6 Months
+              </SelectItem>
+              <SelectItem value="YTD" className="rounded-lg font-medium">
+                Year to Date
+              </SelectItem>
+              <SelectItem value="1Y" className="rounded-lg font-medium">
+                1 Year
               </SelectItem>
             </SelectContent>
           </Select>
@@ -219,10 +172,10 @@ export function ChartAreaInteractive() {
             className="aspect-auto h-[250px] w-full"
           >
             <AreaChart
-              data={filteredData}
-              key={timeRange} // Force clean re-render on time range change
+              data={transformedData}
+              key={timeframe} // Force clean re-render on time range change
             >
-              <YAxis domain={[yMin, yMax]} hide />
+              <YAxis domain={yDomain} hide />
               <defs>
                 <linearGradient id="fillPortfolio" x1="0" y1="0" x2="0" y2="1">
                   <stop
@@ -246,21 +199,39 @@ export function ChartAreaInteractive() {
                 minTickGap={32}
                 tickFormatter={(value) => {
                   const date = new Date(value);
-                  return date.toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                  });
+                  // Format based on timeframe
+                  if (timeframe === "1D") {
+                    return date.toLocaleDateString("en-US", {
+                      hour: "numeric",
+                      minute: "2-digit",
+                    });
+                  } else if (timeframe === "1W" || timeframe === "1M") {
+                    return date.toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    });
+                  } else {
+                    return date.toLocaleDateString("en-US", {
+                      month: "short",
+                      year: "2-digit",
+                    });
+                  }
                 }}
               />
               <ChartTooltip
                 cursor={false}
-                defaultIndex={isMobile ? -1 : 10}
+                defaultIndex={
+                  isMobile ? -1 : Math.floor(transformedData.length / 2)
+                }
                 content={
                   <ChartTooltipContent
                     labelFormatter={(value) => {
-                      return new Date(value).toLocaleDateString("en-US", {
+                      const date = new Date(value);
+                      return date.toLocaleDateString("en-US", {
+                        weekday: "short",
                         month: "short",
                         day: "numeric",
+                        year: "numeric",
                       });
                     }}
                     formatter={(value) => {

@@ -9,41 +9,66 @@ import { SectionCards } from "@/components/section-cards";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-import data from "./data.json";
-
-// Types for the portfolio data structure
-interface Security {
-  id: number;
-  name: string;
-  type: string;
-  currentValue: number;
-  percentChange: number;
-}
-
-interface Portfolio {
-  id: number;
-  portfolio: string;
-  securities: Security[];
-}
+import {
+  getMockDashboardData,
+  getMockPortfolios,
+  mockApiCall,
+  type DashboardData,
+  type Portfolio,
+} from "@/lib/mock-data";
 
 export default function Page() {
-  const portfolios = data as Portfolio[];
-  const [selectedPortfolioId, setSelectedPortfolioId] = React.useState<number>(
-    portfolios[0]?.id || 0
-  );
+  const [selectedPortfolioId, setSelectedPortfolioId] =
+    React.useState<number>(1);
+  const [timeframe, setTimeframe] = React.useState<string>("YTD");
+  const [dashboardData, setDashboardData] =
+    React.useState<DashboardData | null>(null);
+  const [portfolios, setPortfolios] = React.useState<Portfolio[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
 
-  // Simulate loading state
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
+  // Simulate dashboard API call
+  const fetchDashboardData = React.useCallback(
+    async (portfolioId: number, selectedTimeframe: string) => {
+      setIsLoading(true);
+      try {
+        // Simulate API call with delay
+        const data = await mockApiCall(
+          getMockDashboardData(portfolioId, selectedTimeframe),
+          600
+        );
+        setDashboardData(data);
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
 
-    return () => clearTimeout(timer);
+  // Load portfolios on mount
+  React.useEffect(() => {
+    const loadPortfolios = async () => {
+      const portfolioList = await mockApiCall(getMockPortfolios(), 300);
+      setPortfolios(portfolioList);
+    };
+    loadPortfolios();
   }, []);
 
-  const selectedPortfolio =
-    portfolios.find((p) => p.id === selectedPortfolioId) || portfolios[0];
+  // Fetch dashboard data when portfolio or timeframe changes
+  React.useEffect(() => {
+    if (selectedPortfolioId && timeframe) {
+      fetchDashboardData(selectedPortfolioId, timeframe);
+    }
+  }, [selectedPortfolioId, timeframe, fetchDashboardData]);
+
+  const handlePortfolioChange = (portfolioId: number) => {
+    setSelectedPortfolioId(portfolioId);
+  };
+
+  const handleTimeframeChange = (newTimeframe: string) => {
+    setTimeframe(newTimeframe);
+  };
 
   const handleAddPortfolio = () => {
     // Placeholder for add portfolio functionality
@@ -67,13 +92,24 @@ export default function Page() {
             <PortfolioSelector
               portfolios={portfolios}
               selectedPortfolioId={selectedPortfolioId}
-              onPortfolioChange={setSelectedPortfolioId}
+              onPortfolioChange={handlePortfolioChange}
               onAddPortfolio={handleAddPortfolio}
               isLoading={isLoading}
             />
-            <SectionCards />
-            <ChartAreaInteractive />
-            {!isLoading && <DataTable selectedPortfolio={selectedPortfolio} />}
+            <SectionCards
+              metrics={dashboardData?.metrics}
+              isLoading={isLoading}
+            />
+            <ChartAreaInteractive
+              chartData={dashboardData?.chartData || []}
+              timeframe={timeframe}
+              onTimeframeChange={handleTimeframeChange}
+              isLoading={isLoading}
+            />
+            <DataTable
+              allocations={dashboardData?.allocations || []}
+              isLoading={isLoading}
+            />
           </div>
         </div>
       </SidebarInset>

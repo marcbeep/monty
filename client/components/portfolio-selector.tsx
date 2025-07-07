@@ -2,9 +2,9 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -17,22 +17,38 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus } from "lucide-react";
+import { Plus, TrendingUp, Shield, Zap } from "lucide-react";
+import type { Portfolio } from "@/lib/mock-data";
 
-// Types for the portfolio data structure
-interface Security {
-  id: number;
-  name: string;
-  type: string;
-  currentValue: number;
-  percentChange: number;
-}
+// Helper function to get risk level icon
+const getRiskIcon = (riskLevel: string) => {
+  switch (riskLevel.toLowerCase()) {
+    case "low":
+      return <Shield className="size-3" />;
+    case "medium":
+      return <TrendingUp className="size-3" />;
+    case "high":
+      return <Zap className="size-3" />;
+    default:
+      return <TrendingUp className="size-3" />;
+  }
+};
 
-interface Portfolio {
-  id: number;
-  portfolio: string;
-  securities: Security[];
-}
+// Helper function to get risk level badge variant
+const getRiskBadgeVariant = (
+  riskLevel: string
+): "default" | "secondary" | "destructive" | "outline" => {
+  switch (riskLevel.toLowerCase()) {
+    case "low":
+      return "secondary";
+    case "medium":
+      return "default";
+    case "high":
+      return "destructive";
+    default:
+      return "outline";
+  }
+};
 
 interface PortfolioSelectorProps {
   portfolios: Portfolio[];
@@ -49,51 +65,60 @@ export function PortfolioSelector({
   onAddPortfolio,
   isLoading = false,
 }: PortfolioSelectorProps) {
-  const selectedPortfolio = portfolios.find(
-    (p) => p.id === selectedPortfolioId
-  );
+  // Get selected portfolio for displaying strategy info
+  const selectedPortfolio = React.useMemo(() => {
+    return portfolios.find((p) => p.id === selectedPortfolioId);
+  }, [portfolios, selectedPortfolioId]);
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="@container/card">
         <CardHeader>
-          <div className="space-y-4">
-            <div className="flex flex-col space-y-3 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
-              <div className="space-y-2">
-                <Skeleton className="h-6 w-48" />
-                <Skeleton className="h-4 w-64" />
+          <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
+            <div className="space-y-1.5">
+              <Skeleton className="h-6 w-48" />
+              <Skeleton className="h-4 w-80" />
+              <div className="flex items-center gap-2 pt-1">
+                <Skeleton className="h-5 w-16" />
+                <Skeleton className="h-4 w-32" />
               </div>
-              <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-3">
-                <Skeleton className="h-9 w-full sm:w-48" />
-                <Skeleton className="h-9 w-full sm:w-32" />
-              </div>
+            </div>
+            <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-3">
+              <Skeleton className="h-9 w-full sm:w-48" />
+              <Skeleton className="h-9 w-full sm:w-32" />
             </div>
           </div>
         </CardHeader>
-        <CardContent className="pt-0">
-          <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-4 w-1" />
-            <Skeleton className="h-4 w-20" />
-            <Skeleton className="h-4 w-1" />
-            <Skeleton className="h-4 w-32" />
-          </div>
-        </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card>
+    <Card className="@container/card">
       <CardHeader>
         <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
-          <div className="space-y-1">
-            <CardTitle className="text-xl font-bold">
-              Portfolio Dashboard
+          <div className="space-y-1.5">
+            <CardTitle className="font-bold">
+              Portfolio Allocation Simulator
             </CardTitle>
             <CardDescription>
-              Select a portfolio to view its holdings and performance
+              Compare allocation strategies and their performance from $10,000
+              starting amount
             </CardDescription>
+            {selectedPortfolio && (
+              <div className="flex items-center gap-2 pt-1">
+                <Badge
+                  variant={getRiskBadgeVariant(selectedPortfolio.riskLevel)}
+                  className="flex items-center gap-1"
+                >
+                  {getRiskIcon(selectedPortfolio.riskLevel)}
+                  {selectedPortfolio.riskLevel} Risk
+                </Badge>
+                <span className="text-sm text-muted-foreground">
+                  {selectedPortfolio.strategy}
+                </span>
+              </div>
+            )}
           </div>
           <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-3">
             <Select
@@ -101,15 +126,21 @@ export function PortfolioSelector({
               onValueChange={(value) => onPortfolioChange(Number(value))}
             >
               <SelectTrigger className="w-full sm:w-48" id="portfolio-selector">
-                <SelectValue placeholder="Select a portfolio" />
+                <SelectValue placeholder="Select allocation strategy" />
               </SelectTrigger>
               <SelectContent>
                 {portfolios.map((portfolio) => (
                   <SelectItem
                     key={portfolio.id}
                     value={portfolio.id.toString()}
+                    className="space-y-1"
                   >
-                    {portfolio.portfolio}
+                    <div className="flex flex-col">
+                      <span className="font-medium">{portfolio.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {portfolio.strategy}
+                      </span>
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -121,34 +152,11 @@ export function PortfolioSelector({
               className="flex items-center gap-2 w-full sm:w-auto"
             >
               <Plus className="size-4" />
-              Add Portfolio
+              New Strategy
             </Button>
           </div>
         </div>
       </CardHeader>
-      {selectedPortfolio && (
-        <CardContent className="pt-0">
-          <div className="flex flex-col space-y-1 text-sm text-muted-foreground sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
-            <span>
-              <strong className="text-foreground">
-                {selectedPortfolio.portfolio}
-              </strong>
-            </span>
-            <span className="hidden sm:inline">•</span>
-            <span>{selectedPortfolio.securities.length} securities</span>
-            <span className="hidden sm:inline">•</span>
-            <span>
-              Total value:{" "}
-              {selectedPortfolio.securities
-                .reduce((sum, security) => sum + security.currentValue, 0)
-                .toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                })}
-            </span>
-          </div>
-        </CardContent>
-      )}
     </Card>
   );
 }
