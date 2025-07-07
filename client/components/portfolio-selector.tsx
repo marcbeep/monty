@@ -3,7 +3,6 @@
 import * as React from "react";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -22,7 +21,7 @@ import {
   MiniPieChart,
   MiniPieChartLegend,
 } from "@/components/ui/mini-pie-chart";
-import { AlertTriangle, BarChart3, Shield, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { getRiskBadge } from "@/lib/badge-utils";
 import type { Portfolio } from "@/lib/mock-data";
 
@@ -36,20 +35,6 @@ interface PortfolioSelectorProps {
 
 // Helper function to get risk badge variant for styling consistency
 const getRiskBadgeVariant = () => "outline" as const;
-
-// Helper function to get appropriate risk icon (kept for backward compatibility)
-const getRiskIcon = (riskLevel: string) => {
-  switch (riskLevel.toLowerCase()) {
-    case "low":
-      return <Shield className="size-3" />;
-    case "medium":
-      return <BarChart3 className="size-3" />;
-    case "high":
-      return <AlertTriangle className="size-3" />;
-    default:
-      return <BarChart3 className="size-3" />;
-  }
-};
 
 export function PortfolioSelector({
   portfolios,

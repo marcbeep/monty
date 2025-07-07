@@ -6,7 +6,6 @@ import {
   Shield,
   AlertTriangle,
   CheckCircle,
-  XCircle,
   MinusCircle,
   LucideIcon,
 } from "lucide-react";

@@ -17,14 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Building2,
-  TrendingUp,
-  TrendingDown,
-  Landmark,
-  Banknote,
-  BarChart3,
-} from "lucide-react";
+import { Building2, Landmark, Banknote, BarChart3 } from "lucide-react";
 import type { Allocation, AssetType } from "@/lib/mock-data";
 
 // Helper function to get the appropriate icon for simplified asset types
@@ -43,27 +36,6 @@ const getAssetIcon = (type: AssetType) => {
   }
 };
 
-// Helper function to get return indicator icon with proper financial colors
-const getReturnIndicator = (returnPercent: number) => {
-  if (returnPercent > 0) {
-    return <TrendingUp className="size-3 text-financial-positive" />;
-  } else if (returnPercent < 0) {
-    return <TrendingDown className="size-3 text-financial-negative" />;
-  }
-  return null;
-};
-
-// Helper function to calculate contribution to portfolio performance
-const calculateContribution = (
-  allocation: Allocation,
-  totalPortfolioValue: number
-): number => {
-  return (
-    (allocation.totalReturn / (totalPortfolioValue - allocation.totalReturn)) *
-    100
-  );
-};
-
 interface DataTableProps {
   allocations: Allocation[];
   isLoading?: boolean;
@@ -75,14 +47,6 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
     return allocations
       .sort((a, b) => b.allocationPercent - a.allocationPercent)
       .slice(0, 10); // Top 10 holdings for large portfolios
-  }, [allocations]);
-
-  // Calculate total portfolio value for contribution calculations
-  const totalPortfolioValue = React.useMemo(() => {
-    return allocations.reduce(
-      (sum, allocation) => sum + allocation.currentValue,
-      0
-    );
   }, [allocations]);
 
   if (isLoading) {
@@ -177,10 +141,6 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
               <TableBody>
                 {sortedAllocations?.length ? (
                   sortedAllocations.map((allocation) => {
-                    const contribution = calculateContribution(
-                      allocation,
-                      totalPortfolioValue
-                    );
                     return (
                       <TableRow
                         key={allocation.id}
@@ -216,32 +176,17 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
                             })}
                           </span>
                         </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            {getReturnIndicator(allocation.totalReturnPercent)}
-                            <div className="flex flex-col items-end">
-                              <span
-                                className={`font-medium percentage ${
-                                  allocation.totalReturnPercent >= 0
-                                    ? "text-financial-positive"
-                                    : "text-financial-negative"
-                                }`}
-                              >
-                                {allocation.totalReturnPercent >= 0 ? "+" : ""}
-                                {allocation.totalReturnPercent.toFixed(1)}%
-                              </span>
-                              <span
-                                className={`text-xs font-medium percentage ${
-                                  contribution >= 0
-                                    ? "text-financial-positive"
-                                    : "text-financial-negative"
-                                }`}
-                              >
-                                {contribution >= 0 ? "+" : ""}
-                                {contribution.toFixed(1)}% to portfolio
-                              </span>
-                            </div>
-                          </div>
+                        <TableCell className="text-right font-medium">
+                          <span
+                            className={`font-medium percentage ${
+                              allocation.totalReturnPercent >= 0
+                                ? "text-financial-positive"
+                                : "text-financial-negative"
+                            }`}
+                          >
+                            {allocation.totalReturnPercent >= 0 ? "+" : ""}
+                            {allocation.totalReturnPercent.toFixed(1)}%
+                          </span>
                         </TableCell>
                       </TableRow>
                     );
