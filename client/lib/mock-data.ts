@@ -1,14 +1,8 @@
 // Mock data for Monty dashboard - Portfolio Allocation Simulator
 // Simulates portfolio performance from $10K base amount starting YTD
 
-// Standardized asset types for consistent UI
-export type AssetType =
-  | "Bonds"
-  | "Stocks"
-  | "Cash"
-  | "Growth"
-  | "International"
-  | "Crypto";
+// Simplified security types for clean categorization
+export type AssetType = "Cash" | "Equities" | "Fixed Income" | "Alternatives";
 
 export interface Allocation {
   id: number;
@@ -71,7 +65,7 @@ export interface DashboardData {
   timeframe: string;
 }
 
-// Portfolio strategy configurations with standardized allocations
+// Portfolio strategy configurations with simplified allocations
 const portfolios: Portfolio[] = [
   {
     id: 1,
@@ -79,8 +73,8 @@ const portfolios: Portfolio[] = [
     type: "Conservative",
     description: "Capital preservation with steady income generation",
     strategy: [
-      { type: "Bonds", percentage: 70, color: "#3b82f6" },
-      { type: "Stocks", percentage: 25, color: "#10b981" },
+      { type: "Fixed Income", percentage: 70, color: "#3b82f6" },
+      { type: "Equities", percentage: 25, color: "#10b981" },
       { type: "Cash", percentage: 5, color: "#6b7280" },
     ],
     riskLevel: "Low",
@@ -92,8 +86,8 @@ const portfolios: Portfolio[] = [
     type: "Moderate",
     description: "Balanced growth with moderate risk tolerance",
     strategy: [
-      { type: "Stocks", percentage: 60, color: "#10b981" },
-      { type: "Bonds", percentage: 35, color: "#3b82f6" },
+      { type: "Equities", percentage: 60, color: "#10b981" },
+      { type: "Fixed Income", percentage: 35, color: "#3b82f6" },
       { type: "Cash", percentage: 5, color: "#6b7280" },
     ],
     riskLevel: "Medium",
@@ -105,9 +99,9 @@ const portfolios: Portfolio[] = [
     type: "Aggressive",
     description: "Maximum growth potential with higher volatility",
     strategy: [
-      { type: "Growth", percentage: 80, color: "#8b5cf6" },
-      { type: "International", percentage: 15, color: "#f59e0b" },
-      { type: "Crypto", percentage: 5, color: "#ef4444" },
+      { type: "Equities", percentage: 80, color: "#10b981" },
+      { type: "Alternatives", percentage: 15, color: "#8b5cf6" },
+      { type: "Cash", percentage: 5, color: "#6b7280" },
     ],
     riskLevel: "High",
     lastUpdated: "2024-01-15T16:00:00Z",
@@ -118,15 +112,15 @@ const portfolios: Portfolio[] = [
 const BASE_AMOUNT = 10000; // $10,000 starting amount
 const YTD_START_DATE = "2024-01-01"; // Year-to-date start
 
-// Mock allocation strategies for each portfolio type (updated with standardized types)
+// Mock allocation strategies for each portfolio type (updated with simplified types)
 const mockAllocations = {
   1: [
-    // Conservative Portfolio - 70% Bonds, 25% Stocks, 5% Cash
+    // Conservative Portfolio - 70% Fixed Income, 25% Equities, 5% Cash
     {
       id: 101,
       symbol: "BND",
       name: "Vanguard Total Bond Market ETF",
-      type: "Bonds" as AssetType,
+      type: "Fixed Income" as AssetType,
       allocationPercent: 70,
       baseAmount: 7000,
       currentValue: 7105.5,
@@ -139,7 +133,7 @@ const mockAllocations = {
       id: 102,
       symbol: "VTI",
       name: "Vanguard Total Stock Market ETF",
-      type: "Stocks" as AssetType,
+      type: "Equities" as AssetType,
       allocationPercent: 25,
       baseAmount: 2500,
       currentValue: 2890.25,
@@ -163,12 +157,12 @@ const mockAllocations = {
     },
   ],
   2: [
-    // Moderate Portfolio - 60% Stocks, 35% Bonds, 5% Cash
+    // Moderate Portfolio - 60% Equities, 35% Fixed Income, 5% Cash
     {
       id: 201,
       symbol: "VTI",
       name: "Vanguard Total Stock Market ETF",
-      type: "Stocks" as AssetType,
+      type: "Equities" as AssetType,
       allocationPercent: 60,
       baseAmount: 6000,
       currentValue: 6936.6,
@@ -181,7 +175,7 @@ const mockAllocations = {
       id: 202,
       symbol: "BND",
       name: "Vanguard Total Bond Market ETF",
-      type: "Bonds" as AssetType,
+      type: "Fixed Income" as AssetType,
       allocationPercent: 35,
       baseAmount: 3500,
       currentValue: 3552.75,
@@ -205,12 +199,12 @@ const mockAllocations = {
     },
   ],
   3: [
-    // Aggressive Portfolio - 80% Growth, 15% International, 5% Crypto
+    // Aggressive Portfolio - 80% Equities, 15% Alternatives, 5% Cash
     {
       id: 301,
       symbol: "QQQ",
       name: "Invesco QQQ Trust (NASDAQ-100)",
-      type: "Growth" as AssetType,
+      type: "Equities" as AssetType,
       allocationPercent: 80,
       baseAmount: 8000,
       currentValue: 9440.0,
@@ -221,9 +215,9 @@ const mockAllocations = {
     },
     {
       id: 302,
-      symbol: "VXUS",
-      name: "Vanguard Total International Stock ETF",
-      type: "International" as AssetType,
+      symbol: "REIT",
+      name: "Real Estate Investment Trust",
+      type: "Alternatives" as AssetType,
       allocationPercent: 15,
       baseAmount: 1500,
       currentValue: 1665.0,
@@ -234,16 +228,16 @@ const mockAllocations = {
     },
     {
       id: 303,
-      symbol: "BTC-USD",
-      name: "Bitcoin Allocation",
-      type: "Crypto" as AssetType,
+      symbol: "CASH",
+      name: "Cash Reserves",
+      type: "Cash" as AssetType,
       allocationPercent: 5,
       baseAmount: 500,
-      currentValue: 635.0,
-      totalReturn: 135.0,
-      totalReturnPercent: 27.0,
-      dayChange: -12.7,
-      dayChangePercent: -1.96,
+      currentValue: 520.15,
+      totalReturn: 20.15,
+      totalReturnPercent: 4.03,
+      dayChange: 0.12,
+      dayChangePercent: 0.02,
     },
   ],
 };
