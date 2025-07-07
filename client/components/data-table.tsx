@@ -1,23 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -92,13 +83,11 @@ const getPerformanceIndicator = (percentChange: number): React.ReactNode => {
   }
 };
 
-export function DataTable({ data }: { data: Portfolio[] }) {
-  const [selectedPortfolioId, setSelectedPortfolioId] = React.useState<number>(
-    data[0]?.id || 0
-  );
-  const selectedPortfolio =
-    data.find((p) => p.id === selectedPortfolioId) || data[0];
-
+export function DataTable({
+  selectedPortfolio,
+}: {
+  selectedPortfolio: Portfolio;
+}) {
   return (
     <Card className="@container/card">
       <CardHeader>
@@ -109,31 +98,6 @@ export function DataTable({ data }: { data: Portfolio[] }) {
           </span>
           <span className="@[540px]/card:hidden">Holdings overview</span>
         </CardDescription>
-        <CardAction>
-          <div className="flex items-center gap-2">
-            <Select
-              value={selectedPortfolioId.toString()}
-              onValueChange={(value) => setSelectedPortfolioId(Number(value))}
-            >
-              <SelectTrigger className="w-48" id="portfolio-selector">
-                <SelectValue placeholder="Select a portfolio" />
-              </SelectTrigger>
-              <SelectContent>
-                {data.map((portfolio) => (
-                  <SelectItem
-                    key={portfolio.id}
-                    value={portfolio.id.toString()}
-                  >
-                    {portfolio.portfolio}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button variant="outline" size="sm">
-              + Add Portfolio
-            </Button>
-          </div>
-        </CardAction>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         <div className="overflow-hidden rounded-lg border">
