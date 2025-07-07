@@ -1,6 +1,5 @@
-import { TrendingUp, TrendingDown, Target, BarChart3 } from "lucide-react";
+"use client";
 
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardDescription,
@@ -8,11 +7,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { PortfolioMetrics } from "@/lib/mock-data";
+import { getPerformanceBadge } from "@/lib/badge-utils";
+
+interface Metrics {
+  currentValue: number;
+  totalReturn: number;
+  totalReturnPercent: number;
+  annualizedReturnPercent: number;
+  volatility: number;
+  sortinoRatio: number;
+}
 
 interface SectionCardsProps {
-  metrics?: PortfolioMetrics;
+  metrics?: Metrics;
   isLoading?: boolean;
 }
 
@@ -26,7 +35,7 @@ export function SectionCards({
         {[1, 2, 3, 4].map((index) => (
           <Card
             key={index}
-            className="@container/card overflow-hidden bg-gradient-to-br from-green-surface via-card to-green-subtle shadow-sm"
+            className="@container/card overflow-hidden bg-surface-primary shadow-sm"
           >
             <CardHeader className="pb-3">
               <Skeleton className="h-4 w-32" />
@@ -44,88 +53,10 @@ export function SectionCards({
     );
   }
 
-  // Helper function to get performance evaluation using green monochrome palette
-  const getPerformanceEvaluation = (
-    value: number,
-    type: "return" | "volatility" | "ratio" | "drawdown"
-  ) => {
-    switch (type) {
-      case "return":
-        if (value >= 15)
-          return {
-            label: "Excellent",
-            color: "text-positive border-positive",
-          };
-        if (value >= 8)
-          return {
-            label: "Good",
-            color: "text-positive-muted border-positive",
-          };
-        if (value >= 0)
-          return {
-            label: "Fair",
-            color: "text-neutral-green border-neutral-green",
-          };
-        return { label: "Poor", color: "text-negative border-negative" };
-
-      case "volatility":
-        if (value <= 8)
-          return {
-            label: "Low Risk",
-            color: "text-positive border-positive",
-          };
-        if (value <= 15)
-          return {
-            label: "Moderate",
-            color: "text-neutral-green border-neutral-green",
-          };
-        return { label: "High Risk", color: "text-negative border-negative" };
-
-      case "ratio":
-        if (value >= 1.5)
-          return {
-            label: "Excellent",
-            color: "text-positive border-positive",
-          };
-        if (value >= 1.0)
-          return {
-            label: "Good",
-            color: "text-positive-muted border-positive",
-          };
-        if (value >= 0.5)
-          return {
-            label: "Fair",
-            color: "text-neutral-green border-neutral-green",
-          };
-        return { label: "Poor", color: "text-negative border-negative" };
-
-      case "drawdown":
-        if (value >= -5)
-          return {
-            label: "Low Risk",
-            color: "text-positive border-positive",
-          };
-        if (value >= -15)
-          return {
-            label: "Moderate",
-            color: "text-neutral-green border-neutral-green",
-          };
-        return { label: "High Risk", color: "text-negative border-negative" };
-    }
-  };
-
-  const getPerformanceIcon = (value: number) => {
-    return value >= 0 ? (
-      <TrendingUp className="size-3" />
-    ) : (
-      <TrendingDown className="size-3" />
-    );
-  };
-
   return (
     <div className="grid grid-cols-1 gap-4 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       {/* Portfolio Value Card */}
-      <Card className="@container/card overflow-hidden bg-gradient-to-br from-green-surface via-card to-green-subtle shadow-sm border-green-subtle/50">
+      <Card className="@container/card overflow-hidden bg-surface-primary shadow-sm">
         <CardHeader className="pb-3">
           <CardDescription className="line-clamp-1 truncate">
             Portfolio Value
@@ -139,19 +70,22 @@ export function SectionCards({
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm pt-0">
           <div className="flex items-center gap-2">
-            <Badge
-              variant="outline"
-              className={
-                getPerformanceEvaluation(metrics.totalReturnPercent, "return")
-                  .color
-              }
-            >
-              {getPerformanceIcon(metrics.totalReturn)}
-              {
-                getPerformanceEvaluation(metrics.totalReturnPercent, "return")
-                  .label
-              }
-            </Badge>
+            {(() => {
+              const badgeConfig = getPerformanceBadge(
+                metrics.totalReturnPercent,
+                "return"
+              );
+              const Icon = badgeConfig.icon;
+              return (
+                <Badge
+                  variant={badgeConfig.variant}
+                  className={badgeConfig.className}
+                >
+                  <Icon className="size-3" />
+                  {badgeConfig.label}
+                </Badge>
+              );
+            })()}
           </div>
           <div className="text-muted-foreground line-clamp-1 truncate">
             Total portfolio value from <span className="currency">$10K</span>{" "}
@@ -161,41 +95,34 @@ export function SectionCards({
       </Card>
 
       {/* Annualized Return Card */}
-      <Card className="@container/card overflow-hidden bg-gradient-to-br from-green-surface via-card to-green-subtle shadow-sm border-green-subtle/50">
+      <Card className="@container/card overflow-hidden bg-surface-primary shadow-sm">
         <CardHeader className="pb-3">
           <CardDescription className="line-clamp-1 truncate">
             Annualized Return
           </CardDescription>
-          <CardTitle
-            className={`text-lg font-semibold percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl ${
-              metrics.annualizedReturnPercent >= 0
-                ? "text-positive"
-                : "text-negative"
-            }`}
-          >
+          <CardTitle className="text-lg font-semibold percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
             {metrics.annualizedReturnPercent >= 0 ? "+" : ""}
             {metrics.annualizedReturnPercent.toFixed(1)}%
           </CardTitle>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm pt-0">
           <div className="flex items-center gap-2">
-            <Badge
-              variant="outline"
-              className={
-                getPerformanceEvaluation(
-                  metrics.annualizedReturnPercent,
-                  "return"
-                ).color
-              }
-            >
-              <BarChart3 className="size-3" />
-              {
-                getPerformanceEvaluation(
-                  metrics.annualizedReturnPercent,
-                  "return"
-                ).label
-              }
-            </Badge>
+            {(() => {
+              const badgeConfig = getPerformanceBadge(
+                metrics.annualizedReturnPercent,
+                "return"
+              );
+              const Icon = badgeConfig.icon;
+              return (
+                <Badge
+                  variant={badgeConfig.variant}
+                  className={badgeConfig.className}
+                >
+                  <Icon className="size-3" />
+                  {badgeConfig.label}
+                </Badge>
+              );
+            })()}
           </div>
           <div className="text-muted-foreground line-clamp-1 truncate">
             Expected yearly return rate
@@ -204,26 +131,33 @@ export function SectionCards({
       </Card>
 
       {/* Volatility Card */}
-      <Card className="@container/card overflow-hidden bg-gradient-to-br from-green-surface via-card to-green-subtle shadow-sm border-green-subtle/50">
+      <Card className="@container/card overflow-hidden bg-surface-primary shadow-sm">
         <CardHeader className="pb-3">
           <CardDescription className="line-clamp-1 truncate">
             Volatility
           </CardDescription>
-          <CardTitle className="text-lg font-semibold percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl text-neutral-green">
+          <CardTitle className="text-lg font-semibold percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
             {metrics.volatility.toFixed(1)}%
           </CardTitle>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm pt-0">
           <div className="flex items-center gap-2">
-            <Badge
-              variant="outline"
-              className={
-                getPerformanceEvaluation(metrics.volatility, "volatility").color
-              }
-            >
-              <TrendingDown className="size-3" />
-              {getPerformanceEvaluation(metrics.volatility, "volatility").label}
-            </Badge>
+            {(() => {
+              const badgeConfig = getPerformanceBadge(
+                metrics.volatility,
+                "volatility"
+              );
+              const Icon = badgeConfig.icon;
+              return (
+                <Badge
+                  variant={badgeConfig.variant}
+                  className={badgeConfig.className}
+                >
+                  <Icon className="size-3" />
+                  {badgeConfig.label}
+                </Badge>
+              );
+            })()}
           </div>
           <div className="text-muted-foreground line-clamp-1 truncate">
             Annualized price fluctuation
@@ -232,26 +166,33 @@ export function SectionCards({
       </Card>
 
       {/* Sortino Ratio Card */}
-      <Card className="@container/card overflow-hidden bg-gradient-to-br from-green-surface via-card to-green-subtle shadow-sm border-green-subtle/50">
+      <Card className="@container/card overflow-hidden bg-surface-primary shadow-sm">
         <CardHeader className="pb-3">
           <CardDescription className="line-clamp-1 truncate">
             Sortino Ratio
           </CardDescription>
-          <CardTitle className="text-lg font-semibold metric truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl text-neutral-green">
+          <CardTitle className="text-lg font-semibold metric truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
             {metrics.sortinoRatio.toFixed(2)}
           </CardTitle>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm pt-0">
           <div className="flex items-center gap-2">
-            <Badge
-              variant="outline"
-              className={
-                getPerformanceEvaluation(metrics.sortinoRatio, "ratio").color
-              }
-            >
-              <Target className="size-3" />
-              {getPerformanceEvaluation(metrics.sortinoRatio, "ratio").label}
-            </Badge>
+            {(() => {
+              const badgeConfig = getPerformanceBadge(
+                metrics.sortinoRatio,
+                "ratio"
+              );
+              const Icon = badgeConfig.icon;
+              return (
+                <Badge
+                  variant={badgeConfig.variant}
+                  className={badgeConfig.className}
+                >
+                  <Icon className="size-3" />
+                  {badgeConfig.label}
+                </Badge>
+              );
+            })()}
           </div>
           <div className="text-muted-foreground line-clamp-1 truncate">
             Downside risk-adjusted returns

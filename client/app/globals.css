@@ -42,101 +42,120 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  /* Monochrome Green Design System */
-  --color-green-positive: var(--green-positive);
-  --color-green-positive-muted: var(--green-positive-muted);
-  --color-green-negative: var(--green-negative);
-  --color-green-negative-muted: var(--green-negative-muted);
-  --color-green-neutral: var(--green-neutral);
-  --color-green-surface: var(--green-surface);
-  --color-green-subtle: var(--green-subtle);
+  /* Balanced Design System - Green for highlights, Neutral for structure */
+  --color-financial-positive: var(--financial-positive);
+  --color-financial-positive-subtle: var(--financial-positive-subtle);
+  --color-financial-negative: var(--financial-negative);
+  --color-financial-negative-subtle: var(--financial-negative-subtle);
+  --color-financial-neutral: var(--financial-neutral);
+  --color-surface-primary: var(--surface-primary);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-surface-accent: var(--surface-accent);
 }
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(0.98 0.01 142);
-  --foreground: oklch(0.15 0.04 142);
+  --background: oklch(0.99 0.005 142);
+  --foreground: oklch(0.15 0.02 142);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.04 142);
+  --card-foreground: oklch(0.15 0.02 142);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.04 142);
+  --popover-foreground: oklch(0.15 0.02 142);
   --primary: oklch(0.54 0.12 142);
-  --primary-foreground: oklch(0.98 0.01 142);
-  --secondary: oklch(0.96 0.02 142);
-  --secondary-foreground: oklch(0.25 0.03 142);
-  --muted: oklch(0.96 0.02 142);
-  --muted-foreground: oklch(0.45 0.03 142);
-  --accent: oklch(0.93 0.03 142);
-  --accent-foreground: oklch(0.25 0.03 142);
-  --destructive: oklch(0.35 0.08 142);
-  --border: oklch(0.91 0.02 142);
-  --input: oklch(0.96 0.02 142);
+  --primary-foreground: oklch(0.99 0.005 142);
+  --secondary: oklch(0.96 0.01 142);
+  --secondary-foreground: oklch(0.25 0.02 142);
+  --muted: oklch(0.96 0.01 142);
+  --muted-foreground: oklch(0.45 0.02 142);
+  --accent: oklch(0.96 0.01 142);
+  --accent-foreground: oklch(0.25 0.02 142);
+  --destructive: oklch(0.62 0.2 15);
+  --border: oklch(0.89 0.01 142);
+  --input: oklch(0.96 0.01 142);
   --ring: oklch(0.54 0.12 142);
   --chart-1: oklch(0.75 0.08 142);
   --chart-2: oklch(0.65 0.1 142);
   --chart-3: oklch(0.55 0.12 142);
   --chart-4: oklch(0.45 0.1 142);
   --chart-5: oklch(0.35 0.08 142);
-  --sidebar: oklch(0.94 0.02 142);
-  --sidebar-foreground: oklch(0.15 0.04 142);
+  --sidebar: oklch(0.98 0.005 142);
+  --sidebar-foreground: oklch(0.15 0.02 142);
   --sidebar-primary: oklch(0.54 0.12 142);
-  --sidebar-primary-foreground: oklch(0.98 0.01 142);
-  --sidebar-accent: oklch(0.93 0.03 142);
-  --sidebar-accent-foreground: oklch(0.25 0.03 142);
-  --sidebar-border: oklch(0.91 0.02 142);
+  --sidebar-primary-foreground: oklch(0.99 0.005 142);
+  --sidebar-accent: oklch(0.96 0.01 142);
+  --sidebar-accent-foreground: oklch(0.25 0.02 142);
+  --sidebar-border: oklch(0.89 0.01 142);
   --sidebar-ring: oklch(0.54 0.12 142);
 
-  /* Monochrome Green System - Light Mode */
-  --green-positive: oklch(0.6 0.12 142); /* Bright green for positive values */
-  --green-positive-muted: oklch(0.7 0.08 142); /* Softer positive green */
-  --green-negative: oklch(0.3 0.06 142); /* Dark green for negative values */
-  --green-negative-muted: oklch(0.4 0.04 142); /* Muted negative green */
-  --green-neutral: oklch(0.5 0.08 142); /* Neutral green */
-  --green-surface: oklch(0.97 0.02 142); /* Very light green surfaces */
-  --green-subtle: oklch(0.93 0.03 142); /* Subtle green accents */
+  /* Financial Highlighting System - Green reserved for financial data */
+  --financial-positive: oklch(
+    0.6 0.12 142
+  ); /* Bright green for positive returns */
+  --financial-positive-subtle: oklch(
+    0.92 0.04 142
+  ); /* Very subtle green background */
+  --financial-negative: oklch(0.5 0.08 15); /* Red-orange for negative values */
+  --financial-negative-subtle: oklch(
+    0.96 0.02 15
+  ); /* Very subtle red background */
+  --financial-neutral: oklch(0.5 0.05 142); /* Muted green for neutral */
+
+  /* Neutral Surface System - Clean backgrounds and structure */
+  --surface-primary: oklch(1 0 0); /* Pure white for main cards */
+  --surface-secondary: oklch(0.98 0.005 142); /* Very subtle warm white */
+  --surface-accent: oklch(0.95 0.01 142); /* Light gray for subtle contrast */
 }
 
 .dark {
-  --background: oklch(0.12 0.02 142);
-  --foreground: oklch(0.92 0.02 142);
-  --card: oklch(0.16 0.03 142);
-  --card-foreground: oklch(0.92 0.02 142);
-  --popover: oklch(0.14 0.02 142);
-  --popover-foreground: oklch(0.92 0.02 142);
+  --background: oklch(0.12 0.015 142);
+  --foreground: oklch(0.92 0.01 142);
+  --card: oklch(0.16 0.02 142);
+  --card-foreground: oklch(0.92 0.01 142);
+  --popover: oklch(0.14 0.015 142);
+  --popover-foreground: oklch(0.92 0.01 142);
   --primary: oklch(0.6 0.12 142);
-  --primary-foreground: oklch(0.12 0.02 142);
-  --secondary: oklch(0.18 0.03 142);
-  --secondary-foreground: oklch(0.85 0.03 142);
-  --muted: oklch(0.18 0.03 142);
-  --muted-foreground: oklch(0.65 0.04 142);
-  --accent: oklch(0.22 0.04 142);
-  --accent-foreground: oklch(0.85 0.03 142);
-  --destructive: oklch(0.25 0.06 142);
-  --border: oklch(0.25 0.04 142);
-  --input: oklch(0.25 0.04 142);
+  --primary-foreground: oklch(0.12 0.015 142);
+  --secondary: oklch(0.18 0.02 142);
+  --secondary-foreground: oklch(0.85 0.02 142);
+  --muted: oklch(0.18 0.02 142);
+  --muted-foreground: oklch(0.65 0.02 142);
+  --accent: oklch(0.22 0.025 142);
+  --accent-foreground: oklch(0.85 0.02 142);
+  --destructive: oklch(0.7 0.2 15);
+  --border: oklch(0.25 0.02 142);
+  --input: oklch(0.25 0.02 142);
   --ring: oklch(0.6 0.12 142);
   --chart-1: oklch(0.75 0.08 142);
   --chart-2: oklch(0.65 0.1 142);
   --chart-3: oklch(0.55 0.12 142);
   --chart-4: oklch(0.45 0.1 142);
   --chart-5: oklch(0.35 0.08 142);
-  --sidebar: oklch(0.16 0.03 142);
-  --sidebar-foreground: oklch(0.92 0.02 142);
+  --sidebar: oklch(0.16 0.02 142);
+  --sidebar-foreground: oklch(0.92 0.01 142);
   --sidebar-primary: oklch(0.6 0.12 142);
-  --sidebar-primary-foreground: oklch(0.12 0.02 142);
-  --sidebar-accent: oklch(0.22 0.04 142);
-  --sidebar-accent-foreground: oklch(0.85 0.03 142);
-  --sidebar-border: oklch(0.25 0.04 142);
+  --sidebar-primary-foreground: oklch(0.12 0.015 142);
+  --sidebar-accent: oklch(0.22 0.025 142);
+  --sidebar-accent-foreground: oklch(0.85 0.02 142);
+  --sidebar-border: oklch(0.25 0.02 142);
   --sidebar-ring: oklch(0.6 0.12 142);
 
-  /* Monochrome Green System - Dark Mode */
-  --green-positive: oklch(0.7 0.1 142); /* Bright green for positive values */
-  --green-positive-muted: oklch(0.6 0.08 142); /* Softer positive green */
-  --green-negative: oklch(0.4 0.06 142); /* Muted green for negative values */
-  --green-negative-muted: oklch(0.45 0.04 142); /* Less harsh negative green */
-  --green-neutral: oklch(0.55 0.08 142); /* Neutral green */
-  --green-surface: oklch(0.18 0.03 142); /* Dark green surfaces */
-  --green-subtle: oklch(0.22 0.04 142); /* Subtle green accents */
+  /* Financial Highlighting System - Dark Mode */
+  --financial-positive: oklch(
+    0.7 0.1 142
+  ); /* Bright green for positive values */
+  --financial-positive-subtle: oklch(
+    0.2 0.03 142
+  ); /* Subtle dark green background */
+  --financial-negative: oklch(0.6 0.15 15); /* Brighter red for visibility */
+  --financial-negative-subtle: oklch(
+    0.18 0.02 15
+  ); /* Subtle dark red background */
+  --financial-neutral: oklch(0.55 0.05 142); /* Neutral green */
+
+  /* Neutral Surface System - Dark Mode */
+  --surface-primary: oklch(0.16 0.02 142); /* Main card background */
+  --surface-secondary: oklch(0.14 0.015 142); /* Slightly darker for depth */
+  --surface-accent: oklch(0.22 0.025 142); /* Subtle contrast surface */
 }
 
 /* Custom utility classes for numerical values */
@@ -164,45 +183,79 @@
   font-weight: 500;
 }
 
-/* Green monochrome utilities */
+/* Financial highlighting utilities - Green reserved for financial data */
+@utility text-financial-positive {
+  color: var(--financial-positive);
+}
+
+@utility text-financial-positive-subtle {
+  color: var(--financial-positive-subtle);
+}
+
+@utility text-financial-negative {
+  color: var(--financial-negative);
+}
+
+@utility text-financial-negative-subtle {
+  color: var(--financial-negative-subtle);
+}
+
+@utility text-financial-neutral {
+  color: var(--financial-neutral);
+}
+
+@utility bg-financial-positive-subtle {
+  background-color: var(--financial-positive-subtle);
+}
+
+@utility bg-financial-negative-subtle {
+  background-color: var(--financial-negative-subtle);
+}
+
+@utility border-financial-positive {
+  border-color: var(--financial-positive);
+}
+
+@utility border-financial-negative {
+  border-color: var(--financial-negative);
+}
+
+@utility border-financial-neutral {
+  border-color: var(--financial-neutral);
+}
+
+/* Clean surface utilities - Neutral backgrounds */
+@utility bg-surface-primary {
+  background-color: var(--surface-primary);
+}
+
+@utility bg-surface-secondary {
+  background-color: var(--surface-secondary);
+}
+
+@utility bg-surface-accent {
+  background-color: var(--surface-accent);
+}
+
+/* Legacy green utilities - kept for backward compatibility during transition */
 @utility text-positive {
-  color: var(--green-positive);
+  color: var(--financial-positive);
 }
 
 @utility text-positive-muted {
-  color: var(--green-positive-muted);
+  color: var(--financial-positive-subtle);
 }
 
 @utility text-negative {
-  color: var(--green-negative);
+  color: var(--financial-negative);
 }
 
 @utility text-negative-muted {
-  color: var(--green-negative-muted);
+  color: var(--financial-negative-subtle);
 }
 
 @utility text-neutral-green {
-  color: var(--green-neutral);
-}
-
-@utility bg-green-surface {
-  background-color: var(--green-surface);
-}
-
-@utility bg-green-subtle {
-  background-color: var(--green-subtle);
-}
-
-@utility border-positive {
-  border-color: var(--green-positive-muted);
-}
-
-@utility border-negative {
-  border-color: var(--green-negative-muted);
-}
-
-@utility border-neutral-green {
-  border-color: var(--green-neutral);
+  color: var(--financial-neutral);
 }
 
 @layer base {

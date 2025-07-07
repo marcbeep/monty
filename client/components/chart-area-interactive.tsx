@@ -35,7 +35,7 @@ export const description =
 const chartConfig = {
   portfolio: {
     label: "Portfolio Value",
-    color: "hsl(var(--green-positive))",
+    color: "var(--financial-positive)",
   },
 } satisfies ChartConfig;
 
@@ -76,7 +76,7 @@ export function ChartAreaInteractive({
 
   if (isLoading) {
     return (
-      <Card className="@container/card bg-gradient-to-br from-green-surface via-card to-green-subtle shadow-sm border-green-subtle/50">
+      <Card className="@container/card bg-surface-primary shadow-sm">
         <CardHeader>
           <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
             <div className="space-y-1.5">
@@ -98,7 +98,7 @@ export function ChartAreaInteractive({
   }
 
   return (
-    <Card className="@container/card bg-gradient-to-br from-green-surface via-card to-green-subtle shadow-sm border-green-subtle/50">
+    <Card className="@container/card bg-surface-primary shadow-sm">
       <CardHeader>
         <CardTitle className="font-bold">Portfolio Value</CardTitle>
         <CardDescription>
@@ -181,19 +181,19 @@ export function ChartAreaInteractive({
                 <linearGradient id="fillPortfolio" x1="0" y1="0" x2="0" y2="1">
                   <stop
                     offset="5%"
-                    stopColor="var(--green-positive)"
-                    stopOpacity={0.4}
+                    stopColor="var(--financial-positive)"
+                    stopOpacity={0.3}
                   />
                   <stop
                     offset="95%"
-                    stopColor="var(--green-positive)"
-                    stopOpacity={0.1}
+                    stopColor="var(--financial-positive)"
+                    stopOpacity={0.05}
                   />
                 </linearGradient>
               </defs>
               <CartesianGrid
                 vertical={false}
-                stroke="var(--green-subtle)"
+                stroke="var(--border)"
                 strokeOpacity={0.5}
               />
               <XAxis
@@ -202,7 +202,7 @@ export function ChartAreaInteractive({
                 axisLine={false}
                 tickMargin={8}
                 minTickGap={32}
-                tick={{ fill: "var(--green-neutral)", fontSize: 12 }}
+                tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
                 tickFormatter={(value) => {
                   const date = new Date(value);
                   // Format based on timeframe
@@ -259,7 +259,7 @@ export function ChartAreaInteractive({
                 dataKey="portfolio"
                 type="monotone"
                 fill="url(#fillPortfolio)"
-                stroke="var(--green-positive)"
+                stroke="var(--financial-positive)"
                 strokeWidth={2}
                 isAnimationActive={false}
               />

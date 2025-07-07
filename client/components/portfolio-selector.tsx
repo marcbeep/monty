@@ -1,14 +1,15 @@
 "use client";
 
 import * as React from "react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
+  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -21,49 +22,34 @@ import {
   MiniPieChart,
   MiniPieChartLegend,
 } from "@/components/ui/mini-pie-chart";
-import { Plus, TrendingUp, Shield, Zap } from "lucide-react";
+import { AlertTriangle, BarChart3, Shield, Plus } from "lucide-react";
+import { getRiskBadge } from "@/lib/badge-utils";
 import type { Portfolio } from "@/lib/mock-data";
 
-// Helper function to get risk level icon
+interface PortfolioSelectorProps {
+  portfolios: Portfolio[];
+  selectedPortfolioId?: number;
+  onPortfolioChange: (portfolioId: number) => void;
+  onAddPortfolio: () => void;
+  isLoading?: boolean;
+}
+
+// Helper function to get risk badge variant for styling consistency
+const getRiskBadgeVariant = () => "outline" as const;
+
+// Helper function to get appropriate risk icon (kept for backward compatibility)
 const getRiskIcon = (riskLevel: string) => {
   switch (riskLevel.toLowerCase()) {
     case "low":
       return <Shield className="size-3" />;
     case "medium":
-      return <TrendingUp className="size-3" />;
+      return <BarChart3 className="size-3" />;
     case "high":
-      return <Zap className="size-3" />;
+      return <AlertTriangle className="size-3" />;
     default:
-      return <TrendingUp className="size-3" />;
+      return <BarChart3 className="size-3" />;
   }
 };
-
-// Helper function to get uniform risk level badge variant (using outline for consistency)
-const getRiskBadgeVariant = (): "outline" => {
-  return "outline";
-};
-
-// Helper function to get risk level color using green monochrome system
-const getRiskLevelColor = (riskLevel: string): string => {
-  switch (riskLevel.toLowerCase()) {
-    case "low":
-      return "text-positive border-positive";
-    case "medium":
-      return "text-neutral-green border-neutral-green";
-    case "high":
-      return "text-negative border-negative";
-    default:
-      return "text-neutral-green border-neutral-green";
-  }
-};
-
-interface PortfolioSelectorProps {
-  portfolios: Portfolio[];
-  selectedPortfolioId: number;
-  onPortfolioChange: (portfolioId: number) => void;
-  onAddPortfolio?: () => void;
-  isLoading?: boolean;
-}
 
 export function PortfolioSelector({
   portfolios,
@@ -72,28 +58,23 @@ export function PortfolioSelector({
   onAddPortfolio,
   isLoading = false,
 }: PortfolioSelectorProps) {
-  // Get selected portfolio for displaying strategy info
-  const selectedPortfolio = React.useMemo(() => {
-    return portfolios.find((p) => p.id === selectedPortfolioId);
-  }, [portfolios, selectedPortfolioId]);
+  const selectedPortfolio = portfolios.find(
+    (p) => p.id === selectedPortfolioId
+  );
 
   if (isLoading) {
     return (
-      <Card className="@container/card bg-gradient-to-br from-green-surface via-card to-green-subtle shadow-sm border-green-subtle/50">
+      <Card className="@container/card bg-surface-primary shadow-sm">
         <CardHeader>
           <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
             <div className="space-y-1.5">
-              <Skeleton className="h-6 w-48" />
-              <Skeleton className="h-4 w-80" />
-              <div className="flex items-center gap-2 pt-1">
-                <Skeleton className="h-5 w-16" />
-                <Skeleton className="h-8 w-8 rounded-full" />
-                <Skeleton className="h-4 w-32" />
-              </div>
+              <Skeleton className="h-6 w-64" />
+              <Skeleton className="h-4 w-96" />
+              <Skeleton className="h-8 w-48" />
             </div>
-            <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-3">
-              <Skeleton className="h-9 w-full sm:w-48" />
-              <Skeleton className="h-9 w-full sm:w-32" />
+            <div className="flex items-center space-x-2">
+              <Skeleton className="h-9 w-48" />
+              <Skeleton className="h-9 w-32" />
             </div>
           </div>
         </CardHeader>
@@ -102,7 +83,7 @@ export function PortfolioSelector({
   }
 
   return (
-    <Card className="@container/card bg-gradient-to-br from-green-surface via-card to-green-subtle shadow-sm border-green-subtle/50">
+    <Card className="@container/card bg-surface-primary shadow-sm">
       <CardHeader>
         <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
           <div className="space-y-1.5">
@@ -116,15 +97,21 @@ export function PortfolioSelector({
             {selectedPortfolio && (
               <div className="flex flex-col gap-2 pt-1">
                 <div className="flex items-center gap-2">
-                  <Badge
-                    variant={getRiskBadgeVariant()}
-                    className={`flex items-center gap-1 ${getRiskLevelColor(
+                  {(() => {
+                    const riskBadgeConfig = getRiskBadge(
                       selectedPortfolio.riskLevel
-                    )}`}
-                  >
-                    {getRiskIcon(selectedPortfolio.riskLevel)}
-                    {selectedPortfolio.riskLevel} Risk
-                  </Badge>
+                    );
+                    const Icon = riskBadgeConfig.icon;
+                    return (
+                      <Badge
+                        variant={getRiskBadgeVariant()}
+                        className={riskBadgeConfig.className}
+                      >
+                        <Icon className="size-3" />
+                        {selectedPortfolio.riskLevel} Risk
+                      </Badge>
+                    );
+                  })()}
                   <MiniPieChart
                     allocations={selectedPortfolio.strategy}
                     size={24}
@@ -137,13 +124,13 @@ export function PortfolioSelector({
               </div>
             )}
           </div>
-          <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-3">
+          <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-2 sm:space-y-0">
             <Select
-              value={selectedPortfolioId.toString()}
+              value={selectedPortfolioId?.toString()}
               onValueChange={(value) => onPortfolioChange(Number(value))}
             >
-              <SelectTrigger className="w-full sm:w-48" id="portfolio-selector">
-                <SelectValue placeholder="Select portfolio" />
+              <SelectTrigger className="w-full sm:w-[200px]">
+                <SelectValue placeholder="Select Portfolio" />
               </SelectTrigger>
               <SelectContent>
                 {portfolios.map((portfolio) => (
@@ -157,10 +144,9 @@ export function PortfolioSelector({
               </SelectContent>
             </Select>
             <Button
-              variant="outline"
-              size="sm"
               onClick={onAddPortfolio}
-              className="flex items-center gap-2 w-full sm:w-auto"
+              variant="outline"
+              className="w-full sm:w-auto"
             >
               <Plus className="size-4" />
               New Strategy

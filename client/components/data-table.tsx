@@ -27,28 +27,28 @@ import {
 } from "lucide-react";
 import type { Allocation, AssetType } from "@/lib/mock-data";
 
-// Helper function to get the appropriate icon for simplified asset types - now in green monochrome
+// Helper function to get the appropriate icon for simplified asset types
 const getAssetIcon = (type: AssetType) => {
   switch (type) {
     case "Equities":
-      return <Building2 className="size-4 text-positive" />;
+      return <Building2 className="size-4 text-financial-positive" />;
     case "Fixed Income":
-      return <Landmark className="size-4 text-positive-muted" />;
+      return <Landmark className="size-4 text-financial-neutral" />;
     case "Alternatives":
-      return <BarChart3 className="size-4 text-neutral-green" />;
+      return <BarChart3 className="size-4 text-financial-neutral" />;
     case "Cash":
-      return <Banknote className="size-4 text-neutral-green" />;
+      return <Banknote className="size-4 text-financial-neutral" />;
     default:
-      return <Building2 className="size-4 text-neutral-green" />;
+      return <Building2 className="size-4 text-financial-neutral" />;
   }
 };
 
-// Helper function to get return indicator icon - now using green variants
+// Helper function to get return indicator icon with proper financial colors
 const getReturnIndicator = (returnPercent: number) => {
   if (returnPercent > 0) {
-    return <TrendingUp className="size-3 text-positive" />;
+    return <TrendingUp className="size-3 text-financial-positive" />;
   } else if (returnPercent < 0) {
-    return <TrendingDown className="size-3 text-negative" />;
+    return <TrendingDown className="size-3 text-financial-negative" />;
   }
   return null;
 };
@@ -87,16 +87,16 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
 
   if (isLoading) {
     return (
-      <Card className="@container/card bg-gradient-to-br from-green-surface via-card to-green-subtle shadow-sm border-green-subtle/50">
+      <Card className="@container/card bg-surface-primary shadow-sm">
         <CardHeader>
           <Skeleton className="h-6 w-48" />
           <Skeleton className="h-4 w-64" />
         </CardHeader>
         <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-          <div className="overflow-x-auto overflow-y-hidden rounded-lg border border-green-subtle/30">
+          <div className="overflow-x-auto overflow-y-hidden rounded-lg border">
             <div className="min-w-[600px]">
               <Table>
-                <TableHeader className="bg-green-subtle/30 sticky top-0 z-10">
+                <TableHeader className="bg-surface-accent sticky top-0 z-10">
                   <TableRow>
                     <TableHead className="font-semibold">Asset</TableHead>
                     <TableHead className="font-semibold text-center">
@@ -146,7 +146,7 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
   }
 
   return (
-    <Card className="@container/card bg-gradient-to-br from-green-surface via-card to-green-subtle shadow-sm border-green-subtle/50">
+    <Card className="@container/card bg-surface-primary shadow-sm">
       <CardHeader>
         <CardTitle className="font-bold">Portfolio Holdings</CardTitle>
         <CardDescription>
@@ -157,10 +157,10 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        <div className="overflow-x-auto overflow-y-hidden rounded-lg border border-green-subtle/30">
+        <div className="overflow-x-auto overflow-y-hidden rounded-lg border">
           <div className="min-w-[600px]">
             <Table>
-              <TableHeader className="bg-green-subtle/30 sticky top-0 z-10">
+              <TableHeader className="bg-surface-accent sticky top-0 z-10">
                 <TableRow>
                   <TableHead className="font-semibold">Asset</TableHead>
                   <TableHead className="font-semibold text-center">
@@ -184,7 +184,7 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
                     return (
                       <TableRow
                         key={allocation.id}
-                        className="hover:bg-green-subtle/20"
+                        className="hover:bg-surface-accent"
                       >
                         <TableCell>
                           <div className="flex items-center gap-3">
@@ -223,18 +223,18 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
                               <span
                                 className={`font-medium percentage ${
                                   allocation.totalReturnPercent >= 0
-                                    ? "text-positive"
-                                    : "text-negative"
+                                    ? "text-financial-positive"
+                                    : "text-financial-negative"
                                 }`}
                               >
                                 {allocation.totalReturnPercent >= 0 ? "+" : ""}
                                 {allocation.totalReturnPercent.toFixed(1)}%
                               </span>
                               <span
-                                className={`text-xs text-muted-foreground percentage ${
+                                className={`text-xs font-medium percentage ${
                                   contribution >= 0
-                                    ? "text-positive-muted"
-                                    : "text-negative-muted"
+                                    ? "text-financial-positive"
+                                    : "text-financial-negative"
                                 }`}
                               >
                                 {contribution >= 0 ? "+" : ""}
