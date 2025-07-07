@@ -18,6 +18,8 @@ const martianMono = Martian_Mono({
 export const metadata: Metadata = {
   title: "Monty",
   description: "Monty - Your AI-powered dashboard",
+  viewport:
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
   icons: {
     icon: [
       "/favicon.ico",

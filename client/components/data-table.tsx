@@ -93,50 +93,52 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
           <Skeleton className="h-4 w-64" />
         </CardHeader>
         <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-          <div className="overflow-hidden rounded-lg border border-green-subtle/30">
-            <Table>
-              <TableHeader className="bg-green-subtle/30 sticky top-0 z-10">
-                <TableRow>
-                  <TableHead className="font-semibold">Asset</TableHead>
-                  <TableHead className="font-semibold text-center">
-                    Allocation
-                  </TableHead>
-                  <TableHead className="text-right font-semibold">
-                    Current Value
-                  </TableHead>
-                  <TableHead className="text-right font-semibold">
-                    Return
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {[1, 2, 3, 4].map((index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Skeleton className="size-4" />
-                        <div className="flex flex-col">
-                          <Skeleton className="h-4 w-32" />
-                          <Skeleton className="h-3 w-20" />
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Skeleton className="h-4 w-12 mx-auto" />
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Skeleton className="h-4 w-20 ml-auto" />
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Skeleton className="size-3" />
-                        <Skeleton className="h-4 w-16" />
-                      </div>
-                    </TableCell>
+          <div className="overflow-x-auto overflow-y-hidden rounded-lg border border-green-subtle/30">
+            <div className="min-w-[600px]">
+              <Table>
+                <TableHeader className="bg-green-subtle/30 sticky top-0 z-10">
+                  <TableRow>
+                    <TableHead className="font-semibold">Asset</TableHead>
+                    <TableHead className="font-semibold text-center">
+                      Allocation
+                    </TableHead>
+                    <TableHead className="text-right font-semibold">
+                      Current Value
+                    </TableHead>
+                    <TableHead className="text-right font-semibold">
+                      Return
+                    </TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {[1, 2, 3, 4].map((index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Skeleton className="size-4" />
+                          <div className="flex flex-col">
+                            <Skeleton className="h-4 w-32" />
+                            <Skeleton className="h-3 w-20" />
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Skeleton className="h-4 w-12 mx-auto" />
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Skeleton className="h-4 w-20 ml-auto" />
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Skeleton className="size-3" />
+                          <Skeleton className="h-4 w-16" />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -155,103 +157,105 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        <div className="overflow-hidden rounded-lg border border-green-subtle/30">
-          <Table>
-            <TableHeader className="bg-green-subtle/30 sticky top-0 z-10">
-              <TableRow>
-                <TableHead className="font-semibold">Asset</TableHead>
-                <TableHead className="font-semibold text-center">
-                  Allocation
-                </TableHead>
-                <TableHead className="text-right font-semibold">
-                  Current Value
-                </TableHead>
-                <TableHead className="text-right font-semibold">
-                  Return
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sortedAllocations?.length ? (
-                sortedAllocations.map((allocation) => {
-                  const contribution = calculateContribution(
-                    allocation,
-                    totalPortfolioValue
-                  );
-                  return (
-                    <TableRow
-                      key={allocation.id}
-                      className="hover:bg-green-subtle/20"
-                    >
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          {getAssetIcon(allocation.type)}
-                          <div className="flex flex-col">
-                            <span className="font-medium">
-                              {allocation.name}
-                            </span>
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                              <span className="font-mono">
-                                {allocation.symbol}
+        <div className="overflow-x-auto overflow-y-hidden rounded-lg border border-green-subtle/30">
+          <div className="min-w-[600px]">
+            <Table>
+              <TableHeader className="bg-green-subtle/30 sticky top-0 z-10">
+                <TableRow>
+                  <TableHead className="font-semibold">Asset</TableHead>
+                  <TableHead className="font-semibold text-center">
+                    Allocation
+                  </TableHead>
+                  <TableHead className="text-right font-semibold">
+                    Current Value
+                  </TableHead>
+                  <TableHead className="text-right font-semibold">
+                    Return
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sortedAllocations?.length ? (
+                  sortedAllocations.map((allocation) => {
+                    const contribution = calculateContribution(
+                      allocation,
+                      totalPortfolioValue
+                    );
+                    return (
+                      <TableRow
+                        key={allocation.id}
+                        className="hover:bg-green-subtle/20"
+                      >
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            {getAssetIcon(allocation.type)}
+                            <div className="flex flex-col">
+                              <span className="font-medium">
+                                {allocation.name}
                               </span>
-                              <span>•</span>
-                              <span>{allocation.type}</span>
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <span className="font-mono">
+                                  {allocation.symbol}
+                                </span>
+                                <span>•</span>
+                                <span>{allocation.type}</span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <span className="font-medium percentage">
-                          {allocation.allocationPercent}%
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right font-medium">
-                        <span className="currency">
-                          {allocation.currentValue.toLocaleString("en-US", {
-                            style: "currency",
-                            currency: "USD",
-                          })}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          {getReturnIndicator(allocation.totalReturnPercent)}
-                          <div className="flex flex-col items-end">
-                            <span
-                              className={`font-medium percentage ${
-                                allocation.totalReturnPercent >= 0
-                                  ? "text-positive"
-                                  : "text-negative"
-                              }`}
-                            >
-                              {allocation.totalReturnPercent >= 0 ? "+" : ""}
-                              {allocation.totalReturnPercent.toFixed(1)}%
-                            </span>
-                            <span
-                              className={`text-xs text-muted-foreground percentage ${
-                                contribution >= 0
-                                  ? "text-positive-muted"
-                                  : "text-negative-muted"
-                              }`}
-                            >
-                              {contribution >= 0 ? "+" : ""}
-                              {contribution.toFixed(1)}% to portfolio
-                            </span>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <span className="font-medium percentage">
+                            {allocation.allocationPercent}%
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right font-medium">
+                          <span className="currency">
+                            {allocation.currentValue.toLocaleString("en-US", {
+                              style: "currency",
+                              currency: "USD",
+                            })}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            {getReturnIndicator(allocation.totalReturnPercent)}
+                            <div className="flex flex-col items-end">
+                              <span
+                                className={`font-medium percentage ${
+                                  allocation.totalReturnPercent >= 0
+                                    ? "text-positive"
+                                    : "text-negative"
+                                }`}
+                              >
+                                {allocation.totalReturnPercent >= 0 ? "+" : ""}
+                                {allocation.totalReturnPercent.toFixed(1)}%
+                              </span>
+                              <span
+                                className={`text-xs text-muted-foreground percentage ${
+                                  contribution >= 0
+                                    ? "text-positive-muted"
+                                    : "text-negative-muted"
+                                }`}
+                              >
+                                {contribution >= 0 ? "+" : ""}
+                                {contribution.toFixed(1)}% to portfolio
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center">
-                    No holdings in this portfolio.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={4} className="h-24 text-center">
+                      No holdings in this portfolio.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </div>
         {allocations.length > 10 && (
           <div className="mt-4 text-center">

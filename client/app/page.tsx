@@ -5,8 +5,8 @@ import { BarChart3 } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-8">
-      <div className="w-full max-w-2xl text-center space-y-8">
+    <div className="min-h-screen flex items-center justify-center p-4 sm:p-8">
+      <div className="w-full max-w-2xl text-center space-y-6 sm:space-y-8">
         {/* Logo and Brand */}
         <div className="space-y-6">
           <div className="mx-auto w-16 h-16 rounded-xl overflow-hidden bg-primary/10 flex items-center justify-center">
@@ -20,10 +20,10 @@ export default function Home() {
           </div>
 
           <div className="space-y-4">
-            <h1 className="text-5xl font-light text-foreground tracking-tight">
+            <h1 className="text-3xl sm:text-5xl font-light text-foreground tracking-tight">
               Welcome to Monty
             </h1>
-            <p className="text-xl text-muted-foreground max-w-lg mx-auto">
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-lg mx-auto px-4">
               Your AI-powered investment companion. Build, analyze, and optimize
               your portfolio with intelligent insights.
             </p>

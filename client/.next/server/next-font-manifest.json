@@ -16,6 +16,10 @@
       "static/media/2V0PKIcADoYhV6w87xrTKjs4CYElh_VS9YA4TlTnaTq9wXulPFk-s.p.e07528f3.woff2",
       "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.de485432.woff2"
     ],
+    "[project]/app/login/page": [
+      "static/media/2V0PKIcADoYhV6w87xrTKjs4CYElh_VS9YA4TlTnaTq9wXulPFk-s.p.e07528f3.woff2",
+      "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.de485432.woff2"
+    ],
     "[project]/app/page": [
       "static/media/2V0PKIcADoYhV6w87xrTKjs4CYElh_VS9YA4TlTnaTq9wXulPFk-s.p.e07528f3.woff2",
       "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.de485432.woff2"
@@ -28,7 +32,15 @@
       "static/media/2V0PKIcADoYhV6w87xrTKjs4CYElh_VS9YA4TlTnaTq9wXulPFk-s.p.e07528f3.woff2",
       "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.de485432.woff2"
     ],
+    "[project]/app/register/page": [
+      "static/media/2V0PKIcADoYhV6w87xrTKjs4CYElh_VS9YA4TlTnaTq9wXulPFk-s.p.e07528f3.woff2",
+      "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.de485432.woff2"
+    ],
     "[project]/app/scenario-explorer/page": [
+      "static/media/2V0PKIcADoYhV6w87xrTKjs4CYElh_VS9YA4TlTnaTq9wXulPFk-s.p.e07528f3.woff2",
+      "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.de485432.woff2"
+    ],
+    "[project]/app/simulator/page": [
       "static/media/2V0PKIcADoYhV6w87xrTKjs4CYElh_VS9YA4TlTnaTq9wXulPFk-s.p.e07528f3.woff2",
       "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.de485432.woff2"
     ]
