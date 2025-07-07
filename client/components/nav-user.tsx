@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  IconDotsVertical,
-  IconLogout,
-  IconSettings,
-} from "@tabler/icons-react";
+import { IconDotsVertical, IconLogout } from "@tabler/icons-react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 

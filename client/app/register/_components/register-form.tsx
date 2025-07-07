@@ -41,7 +41,7 @@ export function RegisterForm() {
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+  const onSubmit = async () => {
     toast.success("Account created successfully!", {
       description: "Welcome to Monty! Redirecting to dashboard...",
     });

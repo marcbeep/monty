@@ -43,7 +43,7 @@ export default function PortfolioBuilderPage() {
               </CardHeader>
               <CardContent className="space-y-4 text-left">
                 <p className="text-muted-foreground">
-                  We're working hard to bring you an intuitive portfolio
+                  We&apos;re working hard to bring you an intuitive portfolio
                   building experience. This feature will allow you to:
                 </p>
                 <ul className="space-y-2 max-w-md">

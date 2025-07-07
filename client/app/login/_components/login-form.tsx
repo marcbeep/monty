@@ -35,7 +35,7 @@ export function LoginForm() {
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+  const onSubmit = async () => {
     toast.success("Login successful!", {
       description: "Redirecting to dashboard...",
     });
