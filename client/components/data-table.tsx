@@ -66,7 +66,9 @@ const getSecurityIcon = (type: string) => {
 };
 
 // Helper function to get badge variant for security type
-const getSecurityBadgeVariant = (type: string) => {
+const getSecurityBadgeVariant = (
+  type: string
+): "default" | "secondary" | "destructive" | "outline" => {
   switch (type.toLowerCase()) {
     case "stock":
       return "default";
@@ -80,7 +82,7 @@ const getSecurityBadgeVariant = (type: string) => {
 };
 
 // Helper function to get performance indicator
-const getPerformanceIndicator = (percentChange: number) => {
+const getPerformanceIndicator = (percentChange: number): React.ReactNode => {
   if (percentChange > 0) {
     return <TrendingUp className="size-3 text-green-600" />;
   } else if (percentChange < 0) {
@@ -160,7 +162,7 @@ export function DataTable({ data }: { data: Portfolio[] }) {
                     </TableCell>
                     <TableCell>
                       <Badge
-                        variant={getSecurityBadgeVariant(security.type) as any}
+                        variant={getSecurityBadgeVariant(security.type)}
                         className="font-medium"
                       >
                         {security.type}
