@@ -17,6 +17,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  MiniPieChart,
+  MiniPieChartLegend,
+} from "@/components/ui/mini-pie-chart";
 import { Plus, TrendingUp, Shield, Zap } from "lucide-react";
 import type { Portfolio } from "@/lib/mock-data";
 
@@ -34,19 +38,22 @@ const getRiskIcon = (riskLevel: string) => {
   }
 };
 
-// Helper function to get risk level badge variant
-const getRiskBadgeVariant = (
-  riskLevel: string
-): "default" | "secondary" | "destructive" | "outline" => {
+// Helper function to get uniform risk level badge variant (using outline for consistency)
+const getRiskBadgeVariant = (): "outline" => {
+  return "outline";
+};
+
+// Helper function to get risk level color for consistent theming
+const getRiskLevelColor = (riskLevel: string): string => {
   switch (riskLevel.toLowerCase()) {
     case "low":
-      return "secondary";
+      return "text-blue-600 border-blue-200";
     case "medium":
-      return "default";
+      return "text-amber-600 border-amber-200";
     case "high":
-      return "destructive";
+      return "text-red-600 border-red-200";
     default:
-      return "outline";
+      return "text-gray-600 border-gray-200";
   }
 };
 
@@ -80,6 +87,7 @@ export function PortfolioSelector({
               <Skeleton className="h-4 w-80" />
               <div className="flex items-center gap-2 pt-1">
                 <Skeleton className="h-5 w-16" />
+                <Skeleton className="h-8 w-8 rounded-full" />
                 <Skeleton className="h-4 w-32" />
               </div>
             </div>
@@ -106,17 +114,26 @@ export function PortfolioSelector({
               starting amount
             </CardDescription>
             {selectedPortfolio && (
-              <div className="flex items-center gap-2 pt-1">
-                <Badge
-                  variant={getRiskBadgeVariant(selectedPortfolio.riskLevel)}
-                  className="flex items-center gap-1"
-                >
-                  {getRiskIcon(selectedPortfolio.riskLevel)}
-                  {selectedPortfolio.riskLevel} Risk
-                </Badge>
-                <span className="text-sm text-muted-foreground">
-                  {selectedPortfolio.strategy}
-                </span>
+              <div className="flex flex-col gap-2 pt-1">
+                <div className="flex items-center gap-2">
+                  <Badge
+                    variant={getRiskBadgeVariant()}
+                    className={`flex items-center gap-1 ${getRiskLevelColor(
+                      selectedPortfolio.riskLevel
+                    )}`}
+                  >
+                    {getRiskIcon(selectedPortfolio.riskLevel)}
+                    {selectedPortfolio.riskLevel} Risk
+                  </Badge>
+                  <MiniPieChart
+                    allocations={selectedPortfolio.strategy}
+                    size={24}
+                  />
+                </div>
+                <MiniPieChartLegend
+                  allocations={selectedPortfolio.strategy}
+                  className="text-xs"
+                />
               </div>
             )}
           </div>
@@ -126,21 +143,15 @@ export function PortfolioSelector({
               onValueChange={(value) => onPortfolioChange(Number(value))}
             >
               <SelectTrigger className="w-full sm:w-48" id="portfolio-selector">
-                <SelectValue placeholder="Select allocation strategy" />
+                <SelectValue placeholder="Select portfolio" />
               </SelectTrigger>
               <SelectContent>
                 {portfolios.map((portfolio) => (
                   <SelectItem
                     key={portfolio.id}
                     value={portfolio.id.toString()}
-                    className="space-y-1"
                   >
-                    <div className="flex flex-col">
-                      <span className="font-medium">{portfolio.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {portfolio.strategy}
-                      </span>
-                    </div>
+                    {portfolio.name}
                   </SelectItem>
                 ))}
               </SelectContent>

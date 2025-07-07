@@ -29,47 +29,50 @@ import {
   Banknote,
   PieChart,
 } from "lucide-react";
-import type { Allocation } from "@/lib/mock-data";
+import type { Allocation, AssetType } from "@/lib/mock-data";
 
-// Helper function to get the appropriate icon for allocation type
-const getAllocationIcon = (type: string) => {
-  switch (type.toLowerCase()) {
-    case "stock etf":
+// Helper function to get the appropriate icon for standardized allocation types
+const getAllocationIcon = (type: AssetType) => {
+  switch (type) {
+    case "Stocks":
       return <Building2 className="size-4" />;
-    case "growth etf":
+    case "Growth":
       return <TrendingUp className="size-4" />;
-    case "bond etf":
+    case "Bonds":
       return <Landmark className="size-4" />;
-    case "international etf":
+    case "International":
       return <BarChart3 className="size-4" />;
-    case "crypto":
+    case "Crypto":
       return <Bitcoin className="size-4" />;
-    case "cash":
+    case "Cash":
       return <Banknote className="size-4" />;
     default:
       return <PieChart className="size-4" />;
   }
 };
 
-// Helper function to get badge variant for allocation type
-const getAllocationBadgeVariant = (
-  type: string
-): "default" | "secondary" | "destructive" | "outline" => {
-  switch (type.toLowerCase()) {
-    case "stock etf":
-      return "default";
-    case "growth etf":
-      return "default";
-    case "bond etf":
-      return "secondary";
-    case "international etf":
-      return "outline";
-    case "crypto":
-      return "destructive";
-    case "cash":
-      return "outline";
+// Helper function to get uniform badge variant for allocation type (using outline for consistency)
+const getAllocationBadgeVariant = (): "outline" => {
+  return "outline";
+};
+
+// Helper function to get asset type color for consistent theming
+const getAssetTypeColor = (type: AssetType): string => {
+  switch (type) {
+    case "Stocks":
+      return "text-green-600 border-green-200";
+    case "Growth":
+      return "text-purple-600 border-purple-200";
+    case "Bonds":
+      return "text-blue-600 border-blue-200";
+    case "International":
+      return "text-amber-600 border-amber-200";
+    case "Crypto":
+      return "text-red-600 border-red-200";
+    case "Cash":
+      return "text-gray-600 border-gray-200";
     default:
-      return "outline";
+      return "text-gray-600 border-gray-200";
   }
 };
 
@@ -226,8 +229,10 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
                       <TableCell>
                         <div className="flex flex-col items-start">
                           <Badge
-                            variant={getAllocationBadgeVariant(allocation.type)}
-                            className="font-medium mb-1"
+                            variant={getAllocationBadgeVariant()}
+                            className={`font-medium mb-1 ${getAssetTypeColor(
+                              allocation.type
+                            )}`}
                           >
                             {allocation.allocationPercent}%
                           </Badge>
