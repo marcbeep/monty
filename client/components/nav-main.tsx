@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { type Icon } from "@tabler/icons-react";
+import { LucideIcon } from "lucide-react";
 
 import {
   SidebarGroup,
@@ -17,7 +17,7 @@ export function NavMain({
   items: {
     title: string;
     url: string;
-    icon?: Icon;
+    icon?: LucideIcon;
   }[];
 }) {
   const pathname = usePathname();
@@ -39,7 +39,7 @@ export function NavMain({
                   asChild
                 >
                   <a href={item.url}>
-                    {item.icon && <item.icon />}
+                    {item.icon && <item.icon className="size-4" />}
                     <span className="font-medium">{item.title}</span>
                   </a>
                 </SidebarMenuButton>

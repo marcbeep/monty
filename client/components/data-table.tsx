@@ -3,6 +3,14 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -41,79 +49,93 @@ export function DataTable({ data }: { data: Portfolio[] }) {
     data.find((p) => p.id === selectedPortfolioId) || data[0];
 
   return (
-    <div className="w-full flex flex-col gap-6">
-      <div className="flex items-center justify-between px-4 lg:px-6 py-2">
-        <div className="flex items-center gap-2">
-          <Select
-            value={selectedPortfolioId.toString()}
-            onValueChange={(value) => setSelectedPortfolioId(Number(value))}
-          >
-            <SelectTrigger className="w-48" id="portfolio-selector">
-              <SelectValue placeholder="Select a portfolio" />
-            </SelectTrigger>
-            <SelectContent>
-              {data.map((portfolio) => (
-                <SelectItem key={portfolio.id} value={portfolio.id.toString()}>
-                  {portfolio.portfolio}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <Button variant="outline" size="sm">
-          + Add Portfolio
-        </Button>
-      </div>
-      <div className="overflow-hidden rounded-lg border mx-4 lg:mx-6">
-        <Table>
-          <TableHeader className="bg-muted sticky top-0 z-10">
-            <TableRow>
-              <TableHead className="font-semibold">Security Name</TableHead>
-              <TableHead className="font-semibold">Type</TableHead>
-              <TableHead className="text-right font-semibold">
-                Current Value
-              </TableHead>
-              <TableHead className="text-right font-semibold">
-                % Change
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {selectedPortfolio?.securities?.length ? (
-              selectedPortfolio.securities.map((security) => (
-                <TableRow key={security.id}>
-                  <TableCell>{security.name}</TableCell>
-                  <TableCell>{security.type}</TableCell>
-                  <TableCell className="text-right">
-                    {security.currentValue.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                    })}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <span
-                      className={
-                        security.percentChange >= 0
-                          ? "text-green-600"
-                          : "text-red-600"
-                      }
-                    >
-                      {security.percentChange >= 0 ? "+" : ""}
-                      {security.percentChange.toFixed(2)}%
-                    </span>
+    <Card className="@container/card">
+      <CardHeader>
+        <CardTitle className="font-bold">Portfolio Holdings</CardTitle>
+        <CardDescription>
+          <span className="hidden @[540px]/card:block">
+            Securities and their current performance
+          </span>
+          <span className="@[540px]/card:hidden">Holdings overview</span>
+        </CardDescription>
+        <CardAction>
+          <div className="flex items-center gap-2">
+            <Select
+              value={selectedPortfolioId.toString()}
+              onValueChange={(value) => setSelectedPortfolioId(Number(value))}
+            >
+              <SelectTrigger className="w-48" id="portfolio-selector">
+                <SelectValue placeholder="Select a portfolio" />
+              </SelectTrigger>
+              <SelectContent>
+                {data.map((portfolio) => (
+                  <SelectItem
+                    key={portfolio.id}
+                    value={portfolio.id.toString()}
+                  >
+                    {portfolio.portfolio}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button variant="outline" size="sm">
+              + Add Portfolio
+            </Button>
+          </div>
+        </CardAction>
+      </CardHeader>
+      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+        <div className="overflow-hidden rounded-lg border">
+          <Table>
+            <TableHeader className="bg-muted sticky top-0 z-10">
+              <TableRow>
+                <TableHead className="font-semibold">Security Name</TableHead>
+                <TableHead className="font-semibold">Type</TableHead>
+                <TableHead className="text-right font-semibold">
+                  Current Value
+                </TableHead>
+                <TableHead className="text-right font-semibold">
+                  % Change
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {selectedPortfolio?.securities?.length ? (
+                selectedPortfolio.securities.map((security) => (
+                  <TableRow key={security.id}>
+                    <TableCell>{security.name}</TableCell>
+                    <TableCell>{security.type}</TableCell>
+                    <TableCell className="text-right">
+                      {security.currentValue.toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      })}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <span
+                        className={
+                          security.percentChange >= 0
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        {security.percentChange >= 0 ? "+" : ""}
+                        {security.percentChange.toFixed(2)}%
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-24 text-center">
+                    No securities in this portfolio.
                   </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center">
-                  No securities in this portfolio.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-    </div>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
