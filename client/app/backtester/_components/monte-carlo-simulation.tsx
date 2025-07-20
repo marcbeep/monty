@@ -65,21 +65,14 @@ export function MonteCarloSimulation({
       {/* Configuration Card */}
       <Card className="@container/card bg-surface-primary shadow-sm">
         <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-500/10">
-              <BarChart3 className="h-5 w-5 text-purple-600" />
-            </div>
-            <div>
-              <CardTitle>Monte Carlo Simulation</CardTitle>
-              <CardDescription>
-                Generate thousands of possible future outcomes to understand
-                your portfolio&apos;s potential performance
-              </CardDescription>
-            </div>
-          </div>
+          <CardTitle>Monte Carlo Simulation</CardTitle>
+          <CardDescription>
+            Generate thousands of possible future outcomes to understand your
+            portfolio&apos;s potential performance
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 @xl/main:grid-cols-3">
             <div className="space-y-2">
               <Label htmlFor="time-horizon">Time Horizon (Years)</Label>
               <Input
@@ -183,7 +176,7 @@ export function MonteCarloSimulation({
                         Median Outcome
                       </span>
                     </div>
-                    <div className="text-2xl font-bold">
+                    <div className="text-lg font-semibold currency truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
                       {monteCarloResult.outcomes.median.toLocaleString(
                         "en-US",
                         {
@@ -202,7 +195,7 @@ export function MonteCarloSimulation({
                       <TrendingUp className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm font-medium">Best Case</span>
                     </div>
-                    <div className="text-2xl font-bold text-green-600">
+                    <div className="text-lg font-semibold text-green-600 currency truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
                       {monteCarloResult.outcomes.bestCase.toLocaleString(
                         "en-US",
                         {
@@ -223,7 +216,7 @@ export function MonteCarloSimulation({
                         Probability of Profit
                       </span>
                     </div>
-                    <div className="text-2xl font-bold">
+                    <div className="text-lg font-semibold percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
                       {monteCarloResult.outcomes.probabilityOfProfit.toFixed(1)}
                       %
                     </div>
@@ -249,7 +242,7 @@ export function MonteCarloSimulation({
                         Double Investment
                       </span>
                     </div>
-                    <div className="text-2xl font-bold">
+                    <div className="text-lg font-semibold percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
                       {monteCarloResult.outcomes.probabilityOfDoubling.toFixed(
                         1
                       )}

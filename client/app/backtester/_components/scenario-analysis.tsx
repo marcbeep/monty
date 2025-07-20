@@ -73,18 +73,11 @@ export function ScenarioAnalysis({
       {/* Scenarios Selection Card */}
       <Card className="@container/card bg-surface-primary shadow-sm">
         <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/10">
-              <TrendingUp className="h-5 w-5 text-orange-600" />
-            </div>
-            <div>
-              <CardTitle>Scenario Analysis</CardTitle>
-              <CardDescription>
-                Test how your portfolio performs during major market events and
-                crises
-              </CardDescription>
-            </div>
-          </div>
+          <CardTitle>Scenario Analysis</CardTitle>
+          <CardDescription>
+            Test how your portfolio performs during major market events and
+            crises
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {!portfolioId ? (
@@ -92,7 +85,7 @@ export function ScenarioAnalysis({
               Please select a portfolio above to run scenario analysis.
             </p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 @xl/main:grid-cols-2">
               {scenarios.map((scenario) => (
                 <div
                   key={scenario.id}

@@ -160,15 +160,31 @@ export default function BacktesterPage() {
               onValueChange={(value) => setActiveTab(value as typeof activeTab)}
               className="w-full"
             >
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="historical" className="text-sm">
-                  Historical Backtesting
+              <TabsList className="grid w-full grid-cols-3 h-auto">
+                <TabsTrigger
+                  value="historical"
+                  className="text-xs sm:text-sm px-2 py-2 sm:px-3"
+                >
+                  <span className="hidden sm:inline">
+                    Historical Backtesting
+                  </span>
+                  <span className="sm:hidden">Historical</span>
                 </TabsTrigger>
-                <TabsTrigger value="scenarios" className="text-sm">
-                  Scenario Analysis
+                <TabsTrigger
+                  value="scenarios"
+                  className="text-xs sm:text-sm px-2 py-2 sm:px-3"
+                >
+                  <span className="hidden sm:inline">Scenario Analysis</span>
+                  <span className="sm:hidden">Scenarios</span>
                 </TabsTrigger>
-                <TabsTrigger value="montecarlo" className="text-sm">
-                  Monte Carlo Simulation
+                <TabsTrigger
+                  value="montecarlo"
+                  className="text-xs sm:text-sm px-2 py-2 sm:px-3"
+                >
+                  <span className="hidden sm:inline">
+                    Monte Carlo Simulation
+                  </span>
+                  <span className="sm:hidden">Monte Carlo</span>
                 </TabsTrigger>
               </TabsList>
 

@@ -14,7 +14,6 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Calendar,
   Play,
   TrendingUp,
   TrendingDown,
@@ -61,18 +60,11 @@ export function HistoricalBacktest({
       {/* Configuration Card */}
       <Card className="@container/card bg-surface-primary shadow-sm">
         <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500/10">
-              <Calendar className="h-5 w-5 text-blue-600" />
-            </div>
-            <div>
-              <CardTitle>Historical Backtesting</CardTitle>
-              <CardDescription>
-                Test your portfolio against historical market data with custom
-                date ranges
-              </CardDescription>
-            </div>
-          </div>
+          <CardTitle>Historical Backtesting</CardTitle>
+          <CardDescription>
+            Test your portfolio against historical market data with custom date
+            ranges
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -150,7 +142,7 @@ export function HistoricalBacktest({
                       <DollarSign className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm font-medium">Final Value</span>
                     </div>
-                    <div className="text-2xl font-bold">
+                    <div className="text-lg font-semibold currency truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
                       {backtestData.metrics.currentValue.toLocaleString(
                         "en-US",
                         {
@@ -184,7 +176,7 @@ export function HistoricalBacktest({
                       <TrendingUp className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm font-medium">Total Return</span>
                     </div>
-                    <div className="text-2xl font-bold">
+                    <div className="text-lg font-semibold percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
                       {backtestData.metrics.totalReturnPercent >= 0 ? "+" : ""}
                       {backtestData.metrics.totalReturnPercent.toFixed(1)}%
                     </div>
@@ -204,7 +196,7 @@ export function HistoricalBacktest({
                       <BarChart3 className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm font-medium">Volatility</span>
                     </div>
-                    <div className="text-2xl font-bold">
+                    <div className="text-lg font-semibold percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
                       {backtestData.metrics.volatility.toFixed(1)}%
                     </div>
                     <div className="flex items-center gap-2">
@@ -232,7 +224,7 @@ export function HistoricalBacktest({
                       <TrendingDown className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm font-medium">Max Drawdown</span>
                     </div>
-                    <div className="text-2xl font-bold">
+                    <div className="text-lg font-semibold text-red-600 percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
                       -{backtestData.metrics.maxDrawdown.toFixed(1)}%
                     </div>
                     <div className="text-sm text-muted-foreground">

@@ -20,7 +20,6 @@ import {
   MiniPieChart,
   MiniPieChartLegend,
 } from "@/components/ui/mini-pie-chart";
-import { Target, TrendingUp } from "lucide-react";
 import { getRiskBadge } from "@/lib/badge-utils";
 import type { Portfolio } from "@/types";
 
@@ -45,13 +44,14 @@ export function BacktesterPortfolioSelector({
     return (
       <Card className="@container/card bg-surface-primary shadow-sm">
         <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-              <Target className="h-5 w-5 text-primary" />
+          <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
+            <div className="space-y-1.5">
+              <Skeleton className="h-6 w-64" />
+              <Skeleton className="h-4 w-96" />
+              <Skeleton className="h-8 w-48" />
             </div>
-            <div className="flex-1">
-              <Skeleton className="h-6 w-48" />
-              <Skeleton className="h-4 w-64 mt-1" />
+            <div className="flex items-center space-x-2">
+              <Skeleton className="h-9 w-48" />
             </div>
           </div>
         </CardHeader>
@@ -62,30 +62,51 @@ export function BacktesterPortfolioSelector({
   return (
     <Card className="@container/card bg-surface-primary shadow-sm">
       <CardHeader>
-        <div className="flex flex-col gap-4 md:flex-row md:items-center">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-              <Target className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                Select Portfolio for Backtesting
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              </CardTitle>
-              <CardDescription>
-                Choose a portfolio to analyze with historical backtesting,
-                scenario analysis, and Monte Carlo simulation
-              </CardDescription>
-            </div>
+        <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
+          <div className="space-y-1.5">
+            <CardTitle className="font-bold">
+              Portfolio Backtesting & Analysis
+            </CardTitle>
+            <CardDescription>
+              Test your portfolio with historical data, scenario analysis, and Monte Carlo simulation
+            </CardDescription>
+            {selectedPortfolio && (
+              <div className="flex flex-col gap-2 pt-1">
+                <div className="flex items-center gap-2">
+                  {(() => {
+                    const riskBadgeConfig = getRiskBadge(
+                      selectedPortfolio.riskLevel
+                    );
+                    const Icon = riskBadgeConfig.icon;
+                    return (
+                      <Badge
+                        variant="outline"
+                        className={riskBadgeConfig.className}
+                      >
+                        <Icon className="size-3" />
+                        {selectedPortfolio.riskLevel} Risk
+                      </Badge>
+                    );
+                  })()}
+                  <MiniPieChart
+                    allocations={selectedPortfolio.strategy}
+                    size={24}
+                  />
+                </div>
+                <MiniPieChartLegend
+                  allocations={selectedPortfolio.strategy}
+                  className="text-xs"
+                />
+              </div>
+            )}
           </div>
-
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:ml-auto">
+          <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-2 sm:space-y-0">
             <Select
               value={selectedPortfolioId?.toString() || ""}
               onValueChange={(value) => onPortfolioChange(Number(value))}
             >
-              <SelectTrigger className="w-full md:w-[250px]">
-                <SelectValue placeholder="Select a portfolio..." />
+              <SelectTrigger className="w-full sm:w-[250px]">
+                <SelectValue placeholder="Select Portfolio" />
               </SelectTrigger>
               <SelectContent>
                 {portfolios.map((portfolio) => (
@@ -105,46 +126,6 @@ export function BacktesterPortfolioSelector({
             </Select>
           </div>
         </div>
-
-        {selectedPortfolio && (
-          <div className="mt-4 pt-4 border-t border-border/50">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <h4 className="font-semibold">{selectedPortfolio.name}</h4>
-                  {(() => {
-                    const badgeConfig = getRiskBadge(
-                      selectedPortfolio.riskLevel
-                    );
-                    const Icon = badgeConfig.icon;
-                    return (
-                      <Badge className={badgeConfig.className}>
-                        <Icon className="h-3 w-3" />
-                        {badgeConfig.label}
-                      </Badge>
-                    );
-                  })()}
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {selectedPortfolio.description}
-                </p>
-              </div>
-
-              <div className="flex justify-center md:justify-end">
-                <div className="text-center">
-                  <MiniPieChart
-                    allocations={selectedPortfolio.strategy}
-                    size={80}
-                  />
-                  <MiniPieChartLegend
-                    allocations={selectedPortfolio.strategy}
-                    className="text-xs mt-2 max-w-[200px]"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </CardHeader>
     </Card>
   );
