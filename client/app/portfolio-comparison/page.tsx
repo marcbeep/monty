@@ -17,7 +17,7 @@ export default function PortfolioComparisonPage() {
     React.useState<number>(1);
   const [selectedPortfolio2Id, setSelectedPortfolio2Id] =
     React.useState<number>(2);
-  const [timeframe, setTimeframe] = React.useState<string>("YTD");
+  const timeframe = "YTD"; // Hardcoded since it's not currently changeable
   const [portfolio1Data, setPortfolio1Data] =
     React.useState<DashboardData | null>(null);
   const [portfolio2Data, setPortfolio2Data] =
