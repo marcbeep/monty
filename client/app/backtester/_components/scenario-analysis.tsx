@@ -28,6 +28,7 @@ interface ScenarioAnalysisProps {
   scenarios: ScenarioEvent[];
   scenarioResults: ScenarioResult[];
   isLoading: boolean;
+  runningScenarioId: string | null;
   onRunScenario: (scenarioId: string) => void;
 }
 
@@ -36,6 +37,7 @@ export function ScenarioAnalysis({
   scenarios,
   scenarioResults,
   isLoading,
+  runningScenarioId,
   onRunScenario,
 }: ScenarioAnalysisProps) {
   const getSeverityIcon = (severity: string) => {
@@ -123,7 +125,9 @@ export function ScenarioAnalysis({
                     className="w-full"
                   >
                     <Play className="h-4 w-4 mr-2" />
-                    {isLoading ? "Running..." : "Run Scenario"}
+                    {runningScenarioId === scenario.id
+                      ? "Running..."
+                      : "Run Scenario"}
                   </Button>
                 </div>
               ))}
@@ -167,7 +171,7 @@ export function ScenarioAnalysis({
               <CardContent>
                 <div className="space-y-6">
                   {/* Performance Overview */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 gap-4 @xl/main:grid-cols-3">
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <TrendingDown className="h-4 w-4 text-muted-foreground" />
@@ -175,7 +179,7 @@ export function ScenarioAnalysis({
                           Crisis Impact
                         </span>
                       </div>
-                      <div className="text-xl font-bold text-red-600">
+                      <div className="text-lg font-semibold text-red-600 percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
                         -{result.recovery.maxDrawdown.toFixed(1)}%
                       </div>
                       <div className="text-sm text-muted-foreground">
@@ -190,7 +194,7 @@ export function ScenarioAnalysis({
                           Recovery Time
                         </span>
                       </div>
-                      <div className="text-xl font-bold">
+                      <div className="text-lg font-semibold metric truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
                         {result.recovery.timeToRecover} days
                       </div>
                       <div className="text-sm text-muted-foreground">
@@ -205,7 +209,7 @@ export function ScenarioAnalysis({
                           Final Performance
                         </span>
                       </div>
-                      <div className="text-xl font-bold">
+                      <div className="text-lg font-semibold percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
                         {result.afterMetrics.totalReturnPercent >= 0 ? "+" : ""}
                         {result.afterMetrics.totalReturnPercent.toFixed(1)}%
                       </div>

@@ -51,6 +51,9 @@ export default function BacktesterPage() {
     ScenarioResult[]
   >([]);
   const [isScenarioLoading, setIsScenarioLoading] = React.useState(false);
+  const [runningScenarioId, setRunningScenarioId] = React.useState<
+    string | null
+  >(null);
 
   // Monte Carlo simulation state
   const [monteCarloResult, setMonteCarloResult] =
@@ -81,6 +84,7 @@ export default function BacktesterPage() {
     setBacktestData(null);
     setScenarioResults([]);
     setMonteCarloResult(null);
+    setRunningScenarioId(null);
   };
 
   // Handle historical backtest
@@ -98,24 +102,26 @@ export default function BacktesterPage() {
 
   // Handle scenario analysis
   const handleRunScenario = async (scenarioId: string) => {
-    if (!selectedPortfolioId) return;
+    if (!selectedPortfolioId || isScenarioLoading) return;
 
     setIsScenarioLoading(true);
+    setRunningScenarioId(scenarioId);
+    // Clear previous results when starting a new scenario
+    setScenarioResults([]);
+
     try {
       const result = await mockApiCall(
         getMockScenarioResult(selectedPortfolioId, scenarioId),
         1000
       );
 
-      // Add to results, replacing existing result for same scenario
-      setScenarioResults((prev) => {
-        const filtered = prev.filter((r) => r.scenario.id !== scenarioId);
-        return [...filtered, result];
-      });
+      // Replace all results with the new single result
+      setScenarioResults([result]);
     } catch (error) {
       console.error("Failed to run scenario:", error);
     } finally {
       setIsScenarioLoading(false);
+      setRunningScenarioId(null);
     }
   };
 
@@ -203,6 +209,7 @@ export default function BacktesterPage() {
                   scenarios={scenarios}
                   scenarioResults={scenarioResults}
                   isLoading={isScenarioLoading}
+                  runningScenarioId={runningScenarioId}
                   onRunScenario={handleRunScenario}
                 />
               </TabsContent>
