@@ -4,13 +4,10 @@ import * as React from "react";
 import {
   BarChart3,
   Building,
-  TrendingUp,
   Search,
   Scale,
   Users,
-  FileText,
-  LogIn,
-  UserPlus,
+  Target,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -20,9 +17,6 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -47,41 +41,14 @@ const data = {
       icon: Building,
     },
     {
-      title: "Analytics",
-      url: "/analytics",
-      icon: TrendingUp,
-    },
-    {
-      title: "Scenario Explorer",
-      url: "/scenario-explorer",
-      icon: Search,
-    },
-    {
-      title: "Simulator",
-      url: "/simulator",
-      icon: Scale,
+      title: "Backtester",
+      url: "/backtester",
+      icon: Target,
     },
     {
       title: "Portfolio Comparison",
       url: "/portfolio-comparison",
       icon: Users,
-    },
-    {
-      title: "Docs",
-      url: "/docs",
-      icon: FileText,
-    },
-  ],
-  navAuth: [
-    {
-      title: "Login",
-      url: "/login",
-      icon: LogIn,
-    },
-    {
-      title: "Register",
-      url: "/register",
-      icon: UserPlus,
     },
   ],
 };
@@ -114,23 +81,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <SidebarGroup>
-          <SidebarGroupLabel>Authentication</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {data.navAuth.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon className="size-4" />
-                      <span className="font-medium">{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

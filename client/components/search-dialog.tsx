@@ -3,15 +3,11 @@ import * as React from "react";
 import {
   Search,
   BarChart3,
-  TrendingUp,
   Users,
   Settings,
   HelpCircle,
-  LogIn,
-  UserPlus,
   Building,
-  Scale,
-  FileText,
+  Target,
 } from "lucide-react";
 
 import {
@@ -39,21 +35,9 @@ const searchItems = [
   },
   {
     group: "Features",
-    icon: TrendingUp,
-    label: "Analytics",
-    url: "/analytics",
-  },
-  {
-    group: "Features",
-    icon: Search,
-    label: "Scenario Explorer",
-    url: "/scenario-explorer",
-  },
-  {
-    group: "Features",
-    icon: Scale,
-    label: "Simulator",
-    url: "/simulator",
+    icon: Target,
+    label: "Backtester",
+    url: "/backtester",
   },
   {
     group: "Features",
@@ -62,15 +46,7 @@ const searchItems = [
     url: "/portfolio-comparison",
   },
   { group: "Settings", icon: Settings, label: "Settings", url: "/settings" },
-  { group: "Help", icon: FileText, label: "Documentation", url: "/docs" },
   { group: "Help", icon: HelpCircle, label: "Get Help", url: "/help" },
-  { group: "Authentication", icon: LogIn, label: "Login", url: "/login" },
-  {
-    group: "Authentication",
-    icon: UserPlus,
-    label: "Register",
-    url: "/register",
-  },
 ];
 
 export function SearchDialog() {
