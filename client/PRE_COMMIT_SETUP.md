@@ -1,6 +1,6 @@
-# Pre-commit and Pre-push Hooks Setup
+# Pre-commit Hook Setup
 
-This project uses [Husky](https://typicode.github.io/husky/) to run Git hooks that ensure code quality and prevent broken builds from being committed or pushed.
+This project uses [Husky](https://typicode.github.io/husky/) to run a pre-commit hook that ensures code quality and prevents broken builds from being committed.
 
 ## What's Configured
 
@@ -8,14 +8,8 @@ This project uses [Husky](https://typicode.github.io/husky/) to run Git hooks th
 
 Runs before each commit and will **block the commit** if any checks fail:
 
-1. **ESLint**: Runs `eslint --fix` on staged TypeScript/JavaScript files
+1. **ESLint**: Runs `eslint --fix` on staged TypeScript/JavaScript files to auto-fix common issues
 2. **Build Check**: Runs `npm run build` to ensure no compilation errors
-
-### Pre-push Hook (`client/.husky/pre-push`)
-
-Runs before pushing to remote and will **block the push** if build fails:
-
-1. **Final Build Check**: Runs `npm run build` one more time before pushing
 
 ## How It Works
 
@@ -32,15 +26,7 @@ npm run build
 # 4. If any fail, commit is blocked
 ```
 
-When you run `git push`:
-
-```bash
-# 1. Run final build check
-npm run build
-
-# 2. If build succeeds, push proceeds
-# 3. If build fails, push is blocked
-```
+**That's it!** Simple and effective. No delays when pushing to remote.
 
 ## Setup Requirements
 
@@ -48,8 +34,7 @@ npm run build
 
 - ✅ Husky installed and configured
 - ✅ lint-staged installed and configured
-- ✅ Pre-commit and pre-push hooks created
-- ✅ Hooks are executable
+- ✅ Pre-commit hook created and executable
 
 ### Manual Setup (if needed)
 
@@ -59,19 +44,14 @@ If hooks aren't working, run:
 cd client
 npm run prepare  # Installs husky hooks
 chmod +x .husky/pre-commit
-chmod +x .husky/pre-push
 ```
 
-## Bypassing Hooks (Emergency Only)
+## Bypassing Hook (Emergency Only)
 
-If you need to bypass hooks in an emergency:
+If you need to bypass the hook in an emergency:
 
 ```bash
-# Skip pre-commit hook
 git commit --no-verify -m "emergency fix"
-
-# Skip pre-push hook
-git push --no-verify
 ```
 
 **⚠️ Use sparingly!** Bypassing hooks can introduce broken code to the repository.
@@ -81,8 +61,8 @@ git push --no-verify
 ### Hook not running
 
 ```bash
-# Make sure hooks are executable
-chmod +x .husky/pre-commit .husky/pre-push
+# Make sure hook is executable
+chmod +x .husky/pre-commit
 
 # Ensure husky is properly installed
 npm run prepare
@@ -110,16 +90,25 @@ npx tsc --noEmit
 
 ## Benefits
 
-1. **Prevents broken builds** from being committed or pushed
+1. **Prevents broken builds** from being committed
 2. **Automatic code formatting** via ESLint --fix
 3. **Consistent code quality** across all team members
-4. **Catches issues early** before they reach CI/CD or other developers
-5. **Saves time** by preventing failed builds in CI/CD pipelines
+4. **Catches issues early** when they're easy to fix
+5. **Simple workflow** - one checkpoint, no delays
+
+## Why Not Pre-push?
+
+We intentionally keep it simple with **pre-commit only**:
+
+- ✅ Catches issues early when you can easily fix them
+- ✅ No delays when pushing (faster workflow)
+- ✅ Simpler mental model - one quality gate
+- ✅ Industry standard approach
+- ✅ If pre-commit passes, push should work fine
 
 ## Customization
 
-To modify what runs in hooks, edit:
+To modify what runs in the hook, edit:
 
 - `client/.husky/pre-commit` - Commands that run before commit
-- `client/.husky/pre-push` - Commands that run before push
 - `client/package.json` - lint-staged configuration
