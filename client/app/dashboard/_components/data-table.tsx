@@ -18,7 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Building2, Landmark, Banknote, BarChart3 } from "lucide-react";
-import type { Allocation, AssetType } from "@/lib/mock-data";
+import type { Allocation, AssetType } from "@/types";
 
 // Helper function to get the appropriate icon for simplified asset types
 const getAssetIcon = (type: AssetType) => {

@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/mini-pie-chart";
 import { Plus } from "lucide-react";
 import { getRiskBadge } from "@/lib/badge-utils";
-import type { Portfolio } from "@/lib/mock-data";
+import type { Portfolio } from "@/types";
 
 interface PortfolioSelectorProps {
   portfolios: Portfolio[];

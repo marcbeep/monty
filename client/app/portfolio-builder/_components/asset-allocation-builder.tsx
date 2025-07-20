@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Minus, Search } from "lucide-react";
 import { AssetSearchDialog } from "./asset-search-dialog";
-import type { Asset, PortfolioAsset } from "./types";
+import type { Asset, PortfolioAsset } from "@/types";
 
 interface AssetAllocationBuilderProps {
   assets: PortfolioAsset[];

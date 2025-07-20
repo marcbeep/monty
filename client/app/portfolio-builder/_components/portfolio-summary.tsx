@@ -21,8 +21,7 @@ import {
   MiniPieChart,
   MiniPieChartLegend,
 } from "@/components/ui/mini-pie-chart";
-import type { AssetType, AssetAllocation } from "@/lib/mock-data";
-import type { PortfolioAsset } from "./types";
+import type { AssetType, AssetAllocation, PortfolioAsset } from "@/types";
 
 interface PortfolioSummaryProps {
   assets: PortfolioAsset[];

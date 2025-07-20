@@ -10,15 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getPerformanceBadge } from "@/lib/badge-utils";
-
-interface Metrics {
-  currentValue: number;
-  totalReturn: number;
-  totalReturnPercent: number;
-  annualizedReturnPercent: number;
-  volatility: number;
-  sortinoRatio: number;
-}
+import type { Metrics } from "@/types";
 
 interface SectionCardsProps {
   metrics?: Metrics;

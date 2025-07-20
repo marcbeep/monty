@@ -1,69 +1,15 @@
 // Mock data for Monty dashboard - Portfolio Allocation Simulator
 // Simulates portfolio performance from $10K base amount starting YTD
 
-// Simplified security types for clean categorization
-export type AssetType = "Cash" | "Equities" | "Fixed Income" | "Alternatives";
-
-export interface Allocation {
-  id: number;
-  symbol: string;
-  name: string;
-  type: AssetType;
-  allocationPercent: number; // e.g., 60 for 60%
-  baseAmount: number; // Dollar amount allocated from $10K base
-  currentValue: number; // Current dollar value of this allocation
-  totalReturn: number; // Total return in dollars since start
-  totalReturnPercent: number; // Total return percentage since start
-  dayChange: number; // Change in dollars today
-  dayChangePercent: number; // Change percentage today
-}
-
-export interface PortfolioMetrics {
-  baseAmount: number; // Always $10,000
-  currentValue: number; // Current total portfolio value
-  totalReturn: number; // Total gain/loss in dollars
-  totalReturnPercent: number; // Total return percentage
-  annualizedReturn: number; // Annualized return in dollars
-  annualizedReturnPercent: number; // Annualized return percentage - better for backtesting
-  volatility: number; // Portfolio volatility (annualized standard deviation %)
-  sortinoRatio: number; // Downside risk-adjusted return ratio - better than Sharpe
-  maxDrawdown: number; // Maximum peak-to-trough decline percentage
-  dayChange: number; // Today's change in dollars
-  dayChangePercent: number; // Today's change percentage
-  startDate: string; // Portfolio simulation start date
-  lastUpdated: string;
-}
-
-export interface ChartDataPoint {
-  date: string;
-  value: number; // Portfolio value on this date
-  timestamp: number;
-}
-
-export interface Portfolio {
-  id: number;
-  name: string;
-  type: "Conservative" | "Moderate" | "Aggressive";
-  description: string;
-  strategy: AssetAllocation[]; // Changed to structured allocation array
-  riskLevel: "Low" | "Medium" | "High";
-  lastUpdated: string;
-}
-
-// Structured asset allocation for visual representation
-export interface AssetAllocation {
-  type: AssetType;
-  percentage: number;
-  color: string; // Hex color for consistent theming
-}
-
-export interface DashboardData {
-  portfolio: Portfolio;
-  metrics: PortfolioMetrics;
-  chartData: ChartDataPoint[];
-  allocations: Allocation[]; // Changed from holdings to allocations
-  timeframe: string;
-}
+// Import types from centralized location
+import type {
+  AssetType,
+  Allocation,
+  Portfolio,
+  PortfolioMetrics,
+  ChartDataPoint,
+  DashboardData,
+} from "@/types";
 
 // Portfolio strategy configurations with simplified allocations - Green monochrome palette
 const portfolios: Portfolio[] = [
@@ -113,7 +59,7 @@ const BASE_AMOUNT = 10000; // $10,000 starting amount
 const YTD_START_DATE = "2024-01-01"; // Year-to-date start
 
 // Mock allocation strategies for each portfolio type (updated with simplified types)
-const mockAllocations = {
+const mockAllocations: Record<number, Allocation[]> = {
   1: [
     // Conservative Portfolio - 70% Fixed Income, 25% Equities, 5% Cash
     {

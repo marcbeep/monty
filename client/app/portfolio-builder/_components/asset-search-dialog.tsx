@@ -20,7 +20,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Plus } from "lucide-react";
-import type { Asset, PortfolioAsset } from "./types";
+import type { Asset, PortfolioAsset } from "@/types";
 
 interface AssetSearchDialogProps {
   availableAssets: Asset[];

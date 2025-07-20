@@ -13,9 +13,8 @@ import {
   getMockDashboardData,
   getMockPortfolios,
   mockApiCall,
-  type DashboardData,
-  type Portfolio,
 } from "@/lib/mock-data";
+import type { DashboardData, Portfolio } from "@/types";
 
 export default function Page() {
   const [selectedPortfolioId, setSelectedPortfolioId] =

@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Building, Plus } from "lucide-react";
-import type { ExistingPortfolio } from "./types";
+import type { ExistingPortfolio } from "@/types";
 
 interface PortfolioSelectorProps {
   existingPortfolios: ExistingPortfolio[];

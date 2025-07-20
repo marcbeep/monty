@@ -7,25 +7,15 @@ import {
   AlertTriangle,
   CheckCircle,
   MinusCircle,
-  LucideIcon,
 } from "lucide-react";
 
-// Centralized badge configuration
-export interface BadgeConfig {
-  label: string;
-  variant: "outline";
-  className: string;
-  icon: LucideIcon;
-}
-
-// Performance badge types
-export type PerformanceBadgeType = "excellent" | "good" | "fair" | "poor";
-
-// Risk badge types
-export type RiskBadgeType = "low-risk" | "medium-risk" | "high-risk";
-
-// Generic status badge types
-export type StatusBadgeType = "positive" | "negative" | "neutral";
+// Import badge types from centralized location
+import type {
+  BadgeConfig,
+  PerformanceBadgeType,
+  RiskBadgeType,
+  StatusBadgeType,
+} from "@/types";
 
 // Centralized badge configurations
 const PERFORMANCE_BADGES: Record<PerformanceBadgeType, BadgeConfig> = {

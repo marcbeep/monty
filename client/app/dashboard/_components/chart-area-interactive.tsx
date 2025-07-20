@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import type { ChartDataPoint } from "@/lib/mock-data";
+import type { ChartDataPoint } from "@/types";
 
 export const description =
   "Portfolio value evolution from $10K starting amount";
