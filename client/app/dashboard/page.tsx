@@ -2,10 +2,10 @@
 
 import * as React from "react";
 import { AppSidebar } from "@/components/shared/app-sidebar";
-import { ChartAreaInteractive } from "@/components/dashboard/chart-area-interactive";
-import { DataTable } from "@/components/dashboard/data-table";
-import { PortfolioSelector } from "@/components/dashboard/portfolio-selector";
-import { SectionCards } from "@/components/dashboard/section-cards";
+import { ChartAreaInteractive } from "./_components/chart-area-interactive";
+import { DataTable } from "./_components/data-table";
+import { PortfolioSelector } from "./_components/portfolio-selector";
+import { SectionCards } from "./_components/section-cards";
 import { SiteHeader } from "@/components/shared/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 

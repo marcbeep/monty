@@ -13,7 +13,7 @@ import {
   type Asset,
   type PortfolioAsset,
   type ExistingPortfolio,
-} from "@/components/portfolio-builder";
+} from "./_components";
 
 // Mock assets for selection
 const availableAssets: Asset[] = [
