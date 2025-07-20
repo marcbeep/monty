@@ -1,16 +1,137 @@
+"use client";
+
+import * as React from "react";
 import { AppSidebar } from "@/components/shared/app-sidebar";
 import { SiteHeader } from "@/components/shared/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Target } from "lucide-react";
+  BacktesterPortfolioSelector,
+  HistoricalBacktest,
+  ScenarioAnalysis,
+  MonteCarloSimulation,
+} from "./_components";
+import {
+  getMockPortfolios,
+  getMockBacktestData,
+  getMockScenarios,
+  getMockScenarioResult,
+  getMockMonteCarloResult,
+  mockApiCall,
+} from "@/lib/mock-data";
+import type {
+  Portfolio,
+  BacktestData,
+  BacktestParams,
+  ScenarioEvent,
+  ScenarioResult,
+  MonteCarloParams,
+  MonteCarloResult,
+} from "@/types";
 
 export default function BacktesterPage() {
+  // State management
+  const [selectedPortfolioId, setSelectedPortfolioId] = React.useState<
+    number | null
+  >(null);
+  const [portfolios, setPortfolios] = React.useState<Portfolio[]>([]);
+  const [scenarios, setScenarios] = React.useState<ScenarioEvent[]>([]);
+  const [activeTab, setActiveTab] = React.useState<
+    "historical" | "scenarios" | "montecarlo"
+  >("historical");
+
+  // Historical backtesting state
+  const [backtestData, setBacktestData] = React.useState<BacktestData | null>(
+    null
+  );
+  const [isBacktestLoading, setIsBacktestLoading] = React.useState(false);
+
+  // Scenario analysis state
+  const [scenarioResults, setScenarioResults] = React.useState<
+    ScenarioResult[]
+  >([]);
+  const [isScenarioLoading, setIsScenarioLoading] = React.useState(false);
+
+  // Monte Carlo simulation state
+  const [monteCarloResult, setMonteCarloResult] =
+    React.useState<MonteCarloResult | null>(null);
+  const [isMonteCarloLoading, setIsMonteCarloLoading] = React.useState(false);
+
+  // Load initial data
+  React.useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        const [portfolioList, scenarioList] = await Promise.all([
+          mockApiCall(getMockPortfolios(), 300),
+          mockApiCall(getMockScenarios(), 200),
+        ]);
+        setPortfolios(portfolioList);
+        setScenarios(scenarioList);
+      } catch (error) {
+        console.error("Failed to load initial data:", error);
+      }
+    };
+    loadInitialData();
+  }, []);
+
+  // Handle portfolio selection
+  const handlePortfolioChange = (portfolioId: number) => {
+    setSelectedPortfolioId(portfolioId);
+    // Clear previous results when portfolio changes
+    setBacktestData(null);
+    setScenarioResults([]);
+    setMonteCarloResult(null);
+  };
+
+  // Handle historical backtest
+  const handleRunBacktest = async (params: BacktestParams) => {
+    setIsBacktestLoading(true);
+    try {
+      const data = await mockApiCall(getMockBacktestData(params), 1200);
+      setBacktestData(data);
+    } catch (error) {
+      console.error("Failed to run backtest:", error);
+    } finally {
+      setIsBacktestLoading(false);
+    }
+  };
+
+  // Handle scenario analysis
+  const handleRunScenario = async (scenarioId: string) => {
+    if (!selectedPortfolioId) return;
+
+    setIsScenarioLoading(true);
+    try {
+      const result = await mockApiCall(
+        getMockScenarioResult(selectedPortfolioId, scenarioId),
+        1000
+      );
+
+      // Add to results, replacing existing result for same scenario
+      setScenarioResults((prev) => {
+        const filtered = prev.filter((r) => r.scenario.id !== scenarioId);
+        return [...filtered, result];
+      });
+    } catch (error) {
+      console.error("Failed to run scenario:", error);
+    } finally {
+      setIsScenarioLoading(false);
+    }
+  };
+
+  // Handle Monte Carlo simulation
+  const handleRunMonteCarloSimulation = async (params: MonteCarloParams) => {
+    setIsMonteCarloLoading(true);
+    try {
+      const result = await mockApiCall(getMockMonteCarloResult(params), 1500);
+      setMonteCarloResult(result);
+    } catch (error) {
+      console.error("Failed to run Monte Carlo simulation:", error);
+    } finally {
+      setIsMonteCarloLoading(false);
+    }
+  };
+
   return (
     <SidebarProvider
       style={
@@ -25,115 +146,60 @@ export default function BacktesterPage() {
         <SiteHeader />
         <div className="p-4 md:p-6">
           <div className="@container/main flex flex-col gap-4 md:gap-6">
-            <Card className="mx-auto max-w-2xl">
-              <CardHeader className="flex flex-col gap-2 items-start">
-                <div className="flex items-center gap-4 mb-2">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                    <Target className="h-7 w-7 text-primary" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-2xl text-left">
-                      Portfolio Backtester
-                    </CardTitle>
-                    <CardDescription className="text-lg text-left">
-                      Coming Soon
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6 text-left">
-                <p className="text-muted-foreground">
-                  The ultimate platform for testing and analyzing your
-                  investment strategies. This comprehensive backtesting suite
-                  combines advanced simulation capabilities with powerful
-                  scenario analysis tools.
-                </p>
+            {/* Portfolio Selector */}
+            <BacktesterPortfolioSelector
+              portfolios={portfolios}
+              selectedPortfolioId={selectedPortfolioId}
+              onPortfolioChange={handlePortfolioChange}
+              isLoading={portfolios.length === 0}
+            />
 
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-semibold mb-2 text-primary">
-                      Strategy Backtesting & Simulation
-                    </h4>
-                    <ul className="space-y-2">
-                      <li className="flex items-center gap-2">
-                        <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                        Real-time portfolio simulation
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                        Historical backtesting with custom date ranges
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                        Risk-adjusted performance metrics
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                        Paper trading simulation environment
-                      </li>
-                    </ul>
-                  </div>
+            {/* Main Backtesting Interface */}
+            <Tabs
+              value={activeTab}
+              onValueChange={(value) => setActiveTab(value as typeof activeTab)}
+              className="w-full"
+            >
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="historical" className="text-sm">
+                  Historical Backtesting
+                </TabsTrigger>
+                <TabsTrigger value="scenarios" className="text-sm">
+                  Scenario Analysis
+                </TabsTrigger>
+                <TabsTrigger value="montecarlo" className="text-sm">
+                  Monte Carlo Simulation
+                </TabsTrigger>
+              </TabsList>
 
-                  <div>
-                    <h4 className="font-semibold mb-2 text-primary">
-                      Scenario Analysis & Stress Testing
-                    </h4>
-                    <ul className="space-y-2">
-                      <li className="flex items-center gap-2">
-                        <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                        Historical scenario analysis (market crashes,
-                        recessions)
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                        What-if scenario modeling
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                        Monte Carlo simulations
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                        Custom scenario creation and testing
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                        Stress testing under extreme market conditions
-                      </li>
-                    </ul>
-                  </div>
+              <TabsContent value="historical" className="mt-6">
+                <HistoricalBacktest
+                  portfolioId={selectedPortfolioId}
+                  backtestData={backtestData}
+                  isLoading={isBacktestLoading}
+                  onRunBacktest={handleRunBacktest}
+                />
+              </TabsContent>
 
-                  <div>
-                    <h4 className="font-semibold mb-2 text-primary">
-                      Advanced Analytics & Insights
-                    </h4>
-                    <ul className="space-y-2">
-                      <li className="flex items-center gap-2">
-                        <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                        Market condition modeling and analysis
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                        Correlation and attribution analysis
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                        Interactive visualizations and reports
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                        Export results and custom reporting
-                      </li>
-                    </ul>
-                  </div>
-                </div>
+              <TabsContent value="scenarios" className="mt-6">
+                <ScenarioAnalysis
+                  portfolioId={selectedPortfolioId}
+                  scenarios={scenarios}
+                  scenarioResults={scenarioResults}
+                  isLoading={isScenarioLoading}
+                  onRunScenario={handleRunScenario}
+                />
+              </TabsContent>
 
-                <p className="text-sm text-muted-foreground mt-6">
-                  Complete backtesting and scenario analysis platform in
-                  development!
-                </p>
-              </CardContent>
-            </Card>
+              <TabsContent value="montecarlo" className="mt-6">
+                <MonteCarloSimulation
+                  portfolioId={selectedPortfolioId}
+                  monteCarloResult={monteCarloResult}
+                  isLoading={isMonteCarloLoading}
+                  onRunSimulation={handleRunMonteCarloSimulation}
+                />
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       </SidebarInset>

@@ -1,12 +1,11 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-echo "🔨 Running pre-commit build check..."
+# Run linting on staged files
+npx lint-staged
+
+# Run build to ensure no build errors
+echo "Running build check..."
 npm run build
 
-if [ $? -ne 0 ]; then
-  echo "❌ Build failed! Please fix the build errors before committing."
-  exit 1
-fi
-
-echo "✅ Build successful! Proceeding with commit..."
+echo "Pre-commit checks passed! ✅"

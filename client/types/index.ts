@@ -23,3 +23,15 @@ export type {
 
 // API types
 export type { ChartDataPoint, DashboardData } from "./api";
+
+// Backtester types
+export type {
+  BacktestData,
+  DrawdownDataPoint,
+  BacktestParams,
+  ScenarioEvent,
+  ScenarioResult,
+  MonteCarloParams,
+  MonteCarloResult,
+  BacktesterState,
+} from "./backtester";

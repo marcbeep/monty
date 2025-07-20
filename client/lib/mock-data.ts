@@ -9,6 +9,13 @@ import type {
   PortfolioMetrics,
   ChartDataPoint,
   DashboardData,
+  BacktestData,
+  BacktestParams,
+  ScenarioEvent,
+  ScenarioResult,
+  MonteCarloParams,
+  MonteCarloResult,
+  DrawdownDataPoint,
 } from "@/types";
 
 // Portfolio strategy configurations with simplified allocations - Green monochrome palette
@@ -345,4 +352,350 @@ export function mockApiCall<T>(data: T, delay: number = 800): Promise<T> {
   return new Promise((resolve) => {
     setTimeout(() => resolve(data), delay);
   });
+}
+
+// ==================== BACKTESTER MOCK DATA ====================
+
+// Mock scenario events for scenario analysis
+const mockScenarioEvents: ScenarioEvent[] = [
+  {
+    id: "financial-crisis-2008",
+    name: "2008 Financial Crisis",
+    description:
+      "Global financial crisis triggered by subprime mortgage collapse",
+    startDate: "2007-10-01",
+    endDate: "2009-03-31",
+    marketConditions: "Severe recession, bank failures",
+    severity: "Extreme",
+  },
+  {
+    id: "covid-19-crash",
+    name: "COVID-19 Market Crash",
+    description: "Pandemic-induced market crash and rapid recovery",
+    startDate: "2020-02-01",
+    endDate: "2020-11-30",
+    marketConditions: "Pandemic lockdowns, volatility",
+    severity: "High",
+  },
+  {
+    id: "dotcom-bubble",
+    name: "Dot-Com Bubble Burst",
+    description: "Technology stock bubble burst in early 2000s",
+    startDate: "2000-03-01",
+    endDate: "2002-10-31",
+    marketConditions: "Tech stock collapse",
+    severity: "High",
+  },
+  {
+    id: "brexit-vote",
+    name: "Brexit Vote Uncertainty",
+    description: "UK Brexit referendum and aftermath volatility",
+    startDate: "2016-06-01",
+    endDate: "2016-12-31",
+    marketConditions: "Political uncertainty",
+    severity: "Medium",
+  },
+];
+
+// Generate mock backtest data
+export function getMockBacktestData(params: BacktestParams): BacktestData {
+  const portfolio =
+    portfolios.find((p) => p.id === params.portfolioId) || portfolios[0];
+
+  // Calculate days between dates
+  const startDate = new Date(params.startDate);
+  const endDate = new Date(params.endDate);
+  const daysDiff = Math.floor(
+    (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  // Generate mock performance based on portfolio risk level
+  const baseReturn =
+    portfolio.riskLevel === "Low"
+      ? 0.06
+      : portfolio.riskLevel === "Medium"
+      ? 0.08
+      : 0.12;
+  const volatility =
+    portfolio.riskLevel === "Low"
+      ? 8
+      : portfolio.riskLevel === "Medium"
+      ? 12
+      : 18;
+
+  const annualizedReturn = baseReturn * (daysDiff / 365);
+  const totalReturn = BASE_AMOUNT * annualizedReturn;
+  const currentValue = BASE_AMOUNT + totalReturn;
+  const totalReturnPercent = (totalReturn / BASE_AMOUNT) * 100;
+  const annualizedReturnPercent = (annualizedReturn / (daysDiff / 365)) * 100;
+
+  // Generate chart data points
+  const chartData: ChartDataPoint[] = [];
+  const drawdownData: DrawdownDataPoint[] = [];
+  let peak = BASE_AMOUNT;
+
+  for (let i = 0; i <= daysDiff; i += 7) {
+    // Weekly data points
+    const date = new Date(startDate.getTime() + i * 24 * 60 * 60 * 1000);
+    const progress = i / daysDiff;
+
+    // Add some realistic volatility
+    const randomFactor = 1 + (Math.random() - 0.5) * 0.1;
+    const value = BASE_AMOUNT + totalReturn * progress * randomFactor;
+
+    chartData.push({
+      date: date.toISOString().split("T")[0],
+      value: Math.round(value * 100) / 100,
+      timestamp: date.getTime(),
+    });
+
+    // Track drawdowns
+    if (value > peak) peak = value;
+    const drawdown = ((peak - value) / peak) * 100;
+
+    drawdownData.push({
+      date: date.toISOString().split("T")[0],
+      drawdown: Math.round(drawdown * 100) / 100,
+      peak: Math.round(peak * 100) / 100,
+      value: Math.round(value * 100) / 100,
+    });
+  }
+
+  const maxDrawdown = Math.max(...drawdownData.map((d) => d.drawdown));
+
+  const metrics: PortfolioMetrics = {
+    baseAmount: BASE_AMOUNT,
+    currentValue,
+    totalReturn,
+    totalReturnPercent,
+    annualizedReturn: totalReturn / (daysDiff / 365),
+    annualizedReturnPercent,
+    volatility,
+    sortinoRatio: annualizedReturnPercent / (volatility * 0.7), // Simplified Sortino
+    maxDrawdown,
+    dayChange: currentValue * 0.001, // Mock day change
+    dayChangePercent: 0.1,
+    startDate: params.startDate,
+    lastUpdated: new Date().toISOString(),
+  };
+
+  return {
+    portfolio,
+    startDate: params.startDate,
+    endDate: params.endDate,
+    metrics,
+    chartData,
+    drawdownData,
+  };
+}
+
+// Generate mock scenario result
+export function getMockScenarioResult(
+  portfolioId: number,
+  scenarioId: string
+): ScenarioResult {
+  const portfolio =
+    portfolios.find((p) => p.id === portfolioId) || portfolios[0];
+  const scenario =
+    mockScenarioEvents.find((s) => s.id === scenarioId) ||
+    mockScenarioEvents[0];
+
+  // Create before, during, and after metrics based on scenario severity
+  const severityImpact = {
+    Low: { maxDrawdown: 8, recoveryDays: 90 },
+    Medium: { maxDrawdown: 15, recoveryDays: 180 },
+    High: { maxDrawdown: 25, recoveryDays: 365 },
+    Extreme: { maxDrawdown: 40, recoveryDays: 730 },
+  };
+
+  const impact = severityImpact[scenario.severity];
+  const riskMultiplier =
+    portfolio.riskLevel === "Low"
+      ? 0.7
+      : portfolio.riskLevel === "Medium"
+      ? 1.0
+      : 1.3;
+  const adjustedDrawdown = impact.maxDrawdown * riskMultiplier;
+
+  // Before crisis metrics (positive performance)
+  const beforeMetrics: PortfolioMetrics = {
+    baseAmount: BASE_AMOUNT,
+    currentValue: BASE_AMOUNT * 1.05,
+    totalReturn: BASE_AMOUNT * 0.05,
+    totalReturnPercent: 5,
+    annualizedReturn: BASE_AMOUNT * 0.08,
+    annualizedReturnPercent: 8,
+    volatility: portfolio.riskLevel === "Low" ? 8 : 12,
+    sortinoRatio: 1.2,
+    maxDrawdown: 2,
+    dayChange: 50,
+    dayChangePercent: 0.5,
+    startDate: scenario.startDate,
+    lastUpdated: new Date().toISOString(),
+  };
+
+  // During crisis metrics (negative impact)
+  const duringValue = BASE_AMOUNT * (1 - adjustedDrawdown / 100);
+  const duringMetrics: PortfolioMetrics = {
+    ...beforeMetrics,
+    currentValue: duringValue,
+    totalReturn: duringValue - BASE_AMOUNT,
+    totalReturnPercent: -adjustedDrawdown,
+    maxDrawdown: adjustedDrawdown,
+  };
+
+  // After recovery metrics (recovery + growth)
+  const finalValue = BASE_AMOUNT * 1.15; // Assumes recovery + growth
+  const afterMetrics: PortfolioMetrics = {
+    ...beforeMetrics,
+    currentValue: finalValue,
+    totalReturn: finalValue - BASE_AMOUNT,
+    totalReturnPercent: 15,
+    annualizedReturnPercent: 12,
+    maxDrawdown: adjustedDrawdown,
+  };
+
+  // Generate mock chart data
+  const chartData: ChartDataPoint[] = [
+    {
+      date: scenario.startDate,
+      value: beforeMetrics.currentValue,
+      timestamp: new Date(scenario.startDate).getTime(),
+    },
+    {
+      date: scenario.endDate,
+      value: duringMetrics.currentValue,
+      timestamp: new Date(scenario.endDate).getTime(),
+    },
+  ];
+
+  return {
+    scenario,
+    portfolio,
+    beforeMetrics,
+    duringMetrics,
+    afterMetrics,
+    chartData,
+    recovery: {
+      timeToRecover: impact.recoveryDays,
+      maxDrawdown: adjustedDrawdown,
+      recoveryDate: new Date(
+        Date.now() + impact.recoveryDays * 24 * 60 * 60 * 1000
+      )
+        .toISOString()
+        .split("T")[0],
+    },
+  };
+}
+
+// Generate mock Monte Carlo result
+export function getMockMonteCarloResult(
+  params: MonteCarloParams
+): MonteCarloResult {
+  const portfolio =
+    portfolios.find((p) => p.id === params.portfolioId) || portfolios[0];
+
+  // Base expected return based on portfolio risk level
+  const expectedReturn =
+    portfolio.riskLevel === "Low"
+      ? 0.06
+      : portfolio.riskLevel === "Medium"
+      ? 0.08
+      : 0.12;
+  const volatility =
+    portfolio.riskLevel === "Low"
+      ? 0.08
+      : portfolio.riskLevel === "Medium"
+      ? 0.12
+      : 0.18;
+
+  // Calculate outcomes based on time horizon
+  const compoundGrowth = Math.pow(1 + expectedReturn, params.timeHorizon);
+  const median = BASE_AMOUNT * compoundGrowth;
+
+  // Generate percentile outcomes with realistic variance
+  const outcomes = {
+    bestCase: median * 1.8, // 95th percentile
+    worstCase: median * 0.4, // 5th percentile
+    median,
+    probabilityOfProfit:
+      75 +
+      (portfolio.riskLevel === "Low"
+        ? 10
+        : portfolio.riskLevel === "Medium"
+        ? 0
+        : -10),
+    probabilityOfDoubling:
+      portfolio.riskLevel === "Low"
+        ? 35
+        : portfolio.riskLevel === "Medium"
+        ? 55
+        : 70,
+  };
+
+  // Generate projection data points
+  const generateProjection = (multiplier: number): ChartDataPoint[] => {
+    const data: ChartDataPoint[] = [];
+    for (let year = 0; year <= params.timeHorizon; year++) {
+      const date = new Date();
+      date.setFullYear(date.getFullYear() + year);
+      const yearlyGrowth = Math.pow(1 + expectedReturn * multiplier, year);
+      data.push({
+        date: date.toISOString().split("T")[0],
+        value: BASE_AMOUNT * yearlyGrowth,
+        timestamp: date.getTime(),
+      });
+    }
+    return data;
+  };
+
+  const projections = {
+    percentile5: generateProjection(0.4),
+    percentile25: generateProjection(0.7),
+    percentile50: generateProjection(1.0),
+    percentile75: generateProjection(1.3),
+    percentile95: generateProjection(1.8),
+  };
+
+  // Generate distribution data
+  const finalValues: number[] = [];
+  const returnDistribution: { return: number; probability: number }[] = [];
+
+  // Simulate some final values for histogram
+  for (let i = 0; i < 1000; i++) {
+    const randomReturn =
+      expectedReturn + (Math.random() - 0.5) * volatility * 2;
+    const finalValue =
+      BASE_AMOUNT * Math.pow(1 + randomReturn, params.timeHorizon);
+    finalValues.push(finalValue);
+  }
+
+  // Create return distribution buckets
+  for (let returnRate = -0.5; returnRate <= 2.0; returnRate += 0.1) {
+    const count = finalValues.filter((v) => {
+      const actualReturn = (v / BASE_AMOUNT - 1) / params.timeHorizon;
+      return actualReturn >= returnRate && actualReturn < returnRate + 0.1;
+    }).length;
+
+    returnDistribution.push({
+      return: returnRate,
+      probability: (count / finalValues.length) * 100,
+    });
+  }
+
+  return {
+    portfolio,
+    params,
+    projections,
+    outcomes,
+    distributionData: {
+      finalValues,
+      returnDistribution,
+    },
+  };
+}
+
+// Get available scenarios
+export function getMockScenarios(): ScenarioEvent[] {
+  return mockScenarioEvents;
 }
