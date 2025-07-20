@@ -1,18 +1,11 @@
 "use client";
 
 import * as React from "react";
-import {
-  BarChart3,
-  Building,
-  Search,
-  Scale,
-  Users,
-  Target,
-} from "lucide-react";
+import { BarChart3, Building, Users, Target } from "lucide-react";
 import Image from "next/image";
 
-import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
+import { NavMain } from "@/components/shared/nav-main";
+import { NavUser } from "@/components/shared/nav-user";
 import {
   Sidebar,
   SidebarContent,

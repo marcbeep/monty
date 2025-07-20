@@ -2,7 +2,7 @@
 
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { SearchDialog } from "@/components/search-dialog";
+import { SearchDialog } from "@/components/shared/search-dialog";
 
 export function SiteHeader() {
   return (
