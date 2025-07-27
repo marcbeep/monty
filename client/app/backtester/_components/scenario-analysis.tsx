@@ -21,7 +21,7 @@ import {
   Clock,
 } from "lucide-react";
 import { getPerformanceBadge } from "@/lib/badge-utils";
-import type { ScenarioEvent, ScenarioResult } from "@/types";
+import type { ScenarioEvent, ScenarioResult } from "@/types/backtester";
 
 interface ScenarioAnalysisProps {
   portfolioId: number | null;

@@ -21,7 +21,7 @@ import {
   DollarSign,
 } from "lucide-react";
 import { getPerformanceBadge } from "@/lib/badge-utils";
-import type { BacktestData, BacktestParams } from "@/types";
+import type { BacktestData, BacktestParams } from "@/types/backtester";
 
 interface HistoricalBacktestProps {
   portfolioId: number | null;

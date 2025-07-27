@@ -28,7 +28,7 @@ import {
   Percent,
   Zap,
 } from "lucide-react";
-import type { MonteCarloParams, MonteCarloResult } from "@/types";
+import type { MonteCarloParams, MonteCarloResult } from "@/types/backtester";
 
 interface MonteCarloSimulationProps {
   portfolioId: number | null;

@@ -10,10 +10,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getPerformanceBadge } from "@/lib/badge-utils";
-import type { Metrics } from "@/types";
+import type { PortfolioMetrics } from "@/types/portfolio";
 
 interface SectionCardsProps {
-  metrics?: Metrics;
+  metrics?: PortfolioMetrics;
   isLoading?: boolean;
 }
 

@@ -10,13 +10,14 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowUpIcon, ArrowDownIcon, MinusIcon } from "lucide-react";
-import type { Portfolio, Metrics } from "@/types";
+import type { Portfolio } from "@/types";
+import type { PortfolioMetrics } from "@/types/portfolio";
 
 interface ComparisonTableProps {
   portfolio1?: Portfolio;
   portfolio2?: Portfolio;
-  metrics1?: Metrics;
-  metrics2?: Metrics;
+  metrics1?: PortfolioMetrics;
+  metrics2?: PortfolioMetrics;
   isLoading?: boolean;
 }
 

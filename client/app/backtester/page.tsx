@@ -19,15 +19,15 @@ import {
   getMockMonteCarloResult,
   mockApiCall,
 } from "@/lib/mock-data";
+import type { Portfolio } from "@/types";
 import type {
-  Portfolio,
   BacktestData,
   BacktestParams,
   ScenarioEvent,
   ScenarioResult,
   MonteCarloParams,
   MonteCarloResult,
-} from "@/types";
+} from "@/types/backtester";
 
 export default function BacktesterPage() {
   // State management

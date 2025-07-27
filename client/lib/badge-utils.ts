@@ -15,7 +15,7 @@ import type {
   PerformanceBadgeType,
   RiskBadgeType,
   StatusBadgeType,
-} from "@/types";
+} from "@/types/ui";
 
 // Centralized badge configurations
 const PERFORMANCE_BADGES: Record<PerformanceBadgeType, BadgeConfig> = {

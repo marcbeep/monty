@@ -9,20 +9,26 @@ import type {
   ChartDataPoint,
   PortfolioMetrics,
   DashboardData,
-  AssetAllocation,
-  Allocation,
 } from "@/types";
+
+import type {
+  BacktestData,
+  BacktestParams,
+  ScenarioEvent,
+  ScenarioResult,
+  MonteCarloParams,
+  MonteCarloResult,
+  DrawdownDataPoint,
+} from "@/types/backtester";
 
 // Re-export for backward compatibility
 export type { AssetType } from "@/types";
 
 // Re-export types for backward compatibility
 export type {
-  Allocation,
   PortfolioMetrics,
   ChartDataPoint,
   Portfolio,
-  AssetAllocation,
   DashboardData,
 } from "@/types";
 
@@ -411,4 +417,233 @@ export function mockApiCall<T>(data: T, delay: number = 800): Promise<T> {
   return new Promise((resolve) => {
     setTimeout(() => resolve(data), delay);
   });
+}
+
+// Backtester mock functions
+export function getMockScenarios(): ScenarioEvent[] {
+  return [
+    {
+      id: "covid-19",
+      name: "COVID-19 Market Crash",
+      description:
+        "Simulate portfolio performance during the 2020 COVID-19 market crash",
+      startDate: "2020-02-19",
+      endDate: "2020-03-23",
+      marketConditions:
+        "Global pandemic causing market panic and economic shutdown",
+      severity: "Extreme",
+    },
+    {
+      id: "financial-crisis",
+      name: "2008 Financial Crisis",
+      description:
+        "Simulate portfolio performance during the 2008 financial crisis",
+      startDate: "2008-09-01",
+      endDate: "2009-03-09",
+      marketConditions: "Banking system collapse and housing market crash",
+      severity: "Extreme",
+    },
+    {
+      id: "dot-com-bubble",
+      name: "Dot-com Bubble Burst",
+      description:
+        "Simulate portfolio performance during the 2000-2002 tech bubble burst",
+      startDate: "2000-03-10",
+      endDate: "2002-10-09",
+      marketConditions: "Technology stock bubble burst and economic recession",
+      severity: "High",
+    },
+    {
+      id: "inflation-shock",
+      name: "Inflation Shock (2022)",
+      description:
+        "Simulate portfolio performance during the 2022 inflation surge",
+      startDate: "2022-01-01",
+      endDate: "2022-12-31",
+      marketConditions: "Rapid inflation and aggressive Fed rate hikes",
+      severity: "Medium",
+    },
+    {
+      id: "energy-crisis",
+      name: "Energy Crisis",
+      description:
+        "Simulate portfolio performance during an energy supply crisis",
+      startDate: "2023-01-01",
+      endDate: "2023-06-30",
+      marketConditions: "Energy supply disruptions and price volatility",
+      severity: "Medium",
+    },
+  ];
+}
+
+export function getMockBacktestData(params: BacktestParams): BacktestData {
+  const portfolio =
+    portfolios.find((p) => p.id === params.portfolioId) || portfolios[0];
+  const metrics = generateMetrics(params.portfolioId);
+  const chartData = generateChartData(params.portfolioId, "1Y");
+
+  // Generate drawdown data
+  const drawdownData: DrawdownDataPoint[] = chartData.map((point, index) => {
+    const peak = Math.max(...chartData.slice(0, index + 1).map((p) => p.value));
+    const drawdown = ((point.value - peak) / peak) * 100;
+    return {
+      date: point.date,
+      drawdown,
+      peak,
+      value: point.value,
+    };
+  });
+
+  return {
+    portfolio,
+    startDate: params.startDate,
+    endDate: params.endDate,
+    metrics,
+    chartData,
+    drawdownData,
+  };
+}
+
+export function getMockScenarioResult(
+  portfolioId: number,
+  scenarioId: string
+): ScenarioResult {
+  const portfolio =
+    portfolios.find((p) => p.id === portfolioId) || portfolios[0];
+  const scenario = getMockScenarios().find((s) => s.id === scenarioId);
+
+  if (!scenario) {
+    throw new Error(`Scenario ${scenarioId} not found`);
+  }
+
+  // Generate before, during, and after metrics
+  const beforeMetrics = generateMetrics(portfolioId);
+  const duringMetrics = {
+    ...beforeMetrics,
+    currentValue: beforeMetrics.currentValue * 0.85, // 15% decline during crisis
+    totalReturn: beforeMetrics.totalReturn * 0.85,
+    totalReturnPercent: beforeMetrics.totalReturnPercent * 0.85,
+    maxDrawdown: -15,
+  };
+  const afterMetrics = {
+    ...beforeMetrics,
+    currentValue: beforeMetrics.currentValue * 1.05, // 5% recovery
+    totalReturn: beforeMetrics.totalReturn * 1.05,
+    totalReturnPercent: beforeMetrics.totalReturnPercent * 1.05,
+  };
+
+  // Generate crisis chart data
+  const crisisChartData: ChartDataPoint[] = [];
+  const startDate = new Date(scenario.startDate);
+  const endDate = new Date(scenario.endDate);
+  const days = Math.ceil(
+    (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  let currentValue = beforeMetrics.currentValue;
+  for (let i = 0; i <= days; i++) {
+    const date = new Date(startDate);
+    date.setDate(date.getDate() + i);
+
+    if (i > 0) {
+      // Simulate crisis decline
+      const declineRate = -0.15 / days; // Gradual 15% decline over crisis period
+      currentValue *= 1 + declineRate;
+    }
+
+    crisisChartData.push({
+      date: date.toISOString().split("T")[0],
+      value: Math.round(currentValue * 100) / 100,
+      timestamp: date.getTime(),
+    });
+  }
+
+  return {
+    scenario,
+    portfolio,
+    beforeMetrics,
+    duringMetrics,
+    afterMetrics,
+    chartData: crisisChartData,
+    recovery: {
+      timeToRecover: 180, // 6 months to recover
+      maxDrawdown: -15,
+      recoveryDate: new Date(endDate.getTime() + 180 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
+    },
+  };
+}
+
+export function getMockMonteCarloResult(
+  params: MonteCarloParams
+): MonteCarloResult {
+  const portfolio =
+    portfolios.find((p) => p.id === params.portfolioId) || portfolios[0];
+  const baseValue = 10000;
+
+  // Generate projection data for different percentiles
+  const generateProjection = (percentile: number): ChartDataPoint[] => {
+    const data: ChartDataPoint[] = [];
+    const startDate = new Date();
+
+    for (let year = 0; year <= params.timeHorizon; year++) {
+      const date = new Date(startDate);
+      date.setFullYear(date.getFullYear() + year);
+
+      // Simulate growth based on percentile
+      const growthRate = 0.08 + (percentile - 50) * 0.002; // 8% base + percentile adjustment
+      const value = baseValue * Math.pow(1 + growthRate, year);
+
+      data.push({
+        date: date.toISOString().split("T")[0],
+        value: Math.round(value * 100) / 100,
+        timestamp: date.getTime(),
+      });
+    }
+
+    return data;
+  };
+
+  const projections = {
+    percentile5: generateProjection(5),
+    percentile25: generateProjection(25),
+    percentile50: generateProjection(50),
+    percentile75: generateProjection(75),
+    percentile95: generateProjection(95),
+  };
+
+  // Generate final values for distribution
+  const finalValues: number[] = [];
+  for (let i = 0; i < params.simulations; i++) {
+    const growthRate = 0.08 + (Math.random() - 0.5) * 0.2; // 8% ± 10%
+    const finalValue = baseValue * Math.pow(1 + growthRate, params.timeHorizon);
+    finalValues.push(Math.round(finalValue * 100) / 100);
+  }
+
+  finalValues.sort((a, b) => a - b);
+
+  return {
+    portfolio,
+    params,
+    projections,
+    outcomes: {
+      bestCase: finalValues[Math.floor(params.simulations * 0.95)],
+      worstCase: finalValues[Math.floor(params.simulations * 0.05)],
+      median: finalValues[Math.floor(params.simulations * 0.5)],
+      probabilityOfProfit: 75, // 75% chance of positive returns
+      probabilityOfDoubling: 35, // 35% chance of doubling investment
+    },
+    distributionData: {
+      finalValues,
+      returnDistribution: [
+        { return: -20, probability: 5 },
+        { return: -10, probability: 15 },
+        { return: 0, probability: 25 },
+        { return: 10, probability: 30 },
+        { return: 20, probability: 20 },
+        { return: 30, probability: 5 },
+      ],
+    },
+  };
 }
