@@ -3,7 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,46 +16,84 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-
-const FormSchema = z
-  .object({
-    email: z.string().email({ message: "Please enter a valid email address." }),
-    password: z
-      .string()
-      .min(6, { message: "Password must be at least 6 characters." }),
-    confirmPassword: z
-      .string()
-      .min(6, { message: "Confirm Password must be at least 6 characters." }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match.",
-    path: ["confirmPassword"],
-  });
+import { RegisterFormSchema, RegisterFormData } from "@/types/auth";
+import { useAuth } from "@/contexts/auth-context";
 
 export function RegisterForm() {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const { signup } = useAuth();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const form = useForm<RegisterFormData>({
+    resolver: zodResolver(RegisterFormSchema),
     defaultValues: {
+      firstName: "",
+      lastName: "",
       email: "",
       password: "",
       confirmPassword: "",
     },
   });
 
-  const onSubmit = async () => {
-    toast.success("Account created successfully!", {
-      description: "Welcome to Monty! Redirecting to dashboard...",
-    });
-    // In a real app, you would handle user registration here
-    // and redirect to the dashboard on success
-    setTimeout(() => {
-      window.location.href = "/dashboard";
-    }, 1000);
+  const onSubmit = async (data: RegisterFormData) => {
+    setIsLoading(true);
+    try {
+      await signup(data.firstName, data.lastName, data.email, data.password);
+      router.push("/dashboard");
+    } catch {
+      // Error handled by auth context
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium">
+                  First Name
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    id="firstName"
+                    type="text"
+                    placeholder="John"
+                    autoComplete="given-name"
+                    className="h-11"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium">Last Name</FormLabel>
+                <FormControl>
+                  <Input
+                    id="lastName"
+                    type="text"
+                    placeholder="Doe"
+                    autoComplete="family-name"
+                    className="h-11"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         <FormField
           control={form.control}
           name="email"
@@ -119,8 +158,8 @@ export function RegisterForm() {
             </FormItem>
           )}
         />
-        <Button className="w-full h-11" type="submit">
-          Create Account
+        <Button className="w-full h-11" type="submit" disabled={isLoading}>
+          {isLoading ? "Creating Account..." : "Create Account"}
         </Button>
       </form>
     </Form>

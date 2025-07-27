@@ -15,38 +15,46 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/contexts/auth-context";
 
-const data = {
-  user: {
-    name: "Monty User",
-    email: "user@monty.com",
-    avatar: "/avatars/user.jpg",
+const navMainData = [
+  {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: BarChart3,
   },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: BarChart3,
-    },
-    {
-      title: "Portfolio Builder",
-      url: "/portfolio-builder",
-      icon: Building,
-    },
-    {
-      title: "Backtester",
-      url: "/backtester",
-      icon: Target,
-    },
-    {
-      title: "Portfolio Comparison",
-      url: "/portfolio-comparison",
-      icon: Users,
-    },
-  ],
-};
+  {
+    title: "Portfolio Builder",
+    url: "/portfolio-builder",
+    icon: Building,
+  },
+  {
+    title: "Backtester",
+    url: "/backtester",
+    icon: Target,
+  },
+  {
+    title: "Portfolio Comparison",
+    url: "/portfolio-comparison",
+    icon: Users,
+  },
+];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user, isAuthenticated } = useAuth();
+
+  const userData = user
+    ? {
+        name: user.fullName,
+        email: user.email,
+        avatar: "/avatars/user.jpg",
+      }
+    : {
+        name: "Guest User",
+        email: "",
+        avatar: "/avatars/user.jpg",
+      };
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -73,10 +81,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navMainData} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {isAuthenticated && <NavUser user={userData} />}
       </SidebarFooter>
     </Sidebar>
   );

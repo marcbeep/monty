@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Outfit, Martian_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { AuthProvider } from "@/contexts/auth-context";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -61,7 +63,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <AuthProvider>
+            {children}
+            <Toaster />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

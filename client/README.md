@@ -1,17 +1,22 @@
 # Monty Client
 
-## Getting Started
+## Environment Configuration
 
-First, run the development server:
+Auto-detects environment and connects to appropriate server:
+
+- Local: `localhost:3000` → `localhost:3001`
+- Remote: `monty.marc.tt` → `montyapi.marc.tt`
+
+Override with `.env.local`:
+
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:3001
+```
+
+## Getting Started
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)

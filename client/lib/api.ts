@@ -1,5 +1,3 @@
-// API utilities - consistent with server response format
-
 import { toast } from "sonner";
 import {
   AppError,
@@ -11,21 +9,38 @@ import {
   getErrorSeverity,
 } from "./errors";
 
-// Response format matching server standards
 export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
 }
 
-// API configuration
+const getApiBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+
+  if (typeof window !== "undefined") {
+    const hostname = window.location.hostname;
+
+    if (hostname === "localhost" || hostname === "127.0.0.1") {
+      return "http://localhost:3001";
+    }
+
+    if (hostname === "monty.marc.tt" || hostname.includes("marc.tt")) {
+      return "https://montyapi.marc.tt";
+    }
+  }
+
+  return "https://montyapi.marc.tt";
+};
+
 export const API_CONFIG = {
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001",
+  baseURL: getApiBaseUrl(),
   timeout: 10000,
   retries: 3,
 } as const;
 
-// Enhanced fetch wrapper with error handling
 export async function apiCall<T>(
   endpoint: string,
   options: RequestInit = {}
@@ -52,9 +67,17 @@ export async function apiCall<T>(
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const errorMessage =
-        errorData.error || `HTTP ${response.status}: ${response.statusText}`;
+      let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+
+      try {
+        const errorData = await response.json();
+        if (errorData?.error) {
+          errorMessage = errorData.error;
+        }
+      } catch {
+        // Use default error message
+      }
+
       throw new AppError(errorMessage, response.status);
     }
 
@@ -82,7 +105,6 @@ export async function apiCall<T>(
   }
 }
 
-// Convenience methods
 export const api = {
   get: <T>(endpoint: string, options?: RequestInit) =>
     apiCall<T>(endpoint, { ...options, method: "GET" }),
@@ -105,7 +127,6 @@ export const api = {
     apiCall<T>(endpoint, { ...options, method: "DELETE" }),
 };
 
-// Error handling for UI components
 export function handleApiError(
   error: unknown,
   showToast: boolean = true
@@ -128,64 +149,5 @@ export function handleApiError(
     }
   }
 
-  // Log for debugging
-  console.error("API Error:", {
-    message,
-    severity,
-    error: isAppError(error)
-      ? {
-          code: error.code,
-          statusCode: error.statusCode,
-        }
-      : error,
-  });
-}
-
-// Mock API call wrapper that follows the same pattern as real API calls
-export async function mockApiCall<T>(
-  data: T,
-  delay: number = 1000,
-  shouldFail: boolean = false,
-  errorMessage?: string
-): Promise<T> {
-  await new Promise((resolve) => setTimeout(resolve, delay));
-
-  if (shouldFail) {
-    throw new AppError(errorMessage || "Mock API call failed", 400);
-  }
-
-  return data;
-}
-
-// Retry wrapper for failed requests
-export async function withRetry<T>(
-  operation: () => Promise<T>,
-  maxRetries: number = API_CONFIG.retries,
-  backoff: number = 1000
-): Promise<T> {
-  let lastError: unknown;
-
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      return await operation();
-    } catch (error) {
-      lastError = error;
-
-      if (attempt === maxRetries) break;
-      if (
-        isAppError(error) &&
-        error.statusCode >= 400 &&
-        error.statusCode < 500
-      ) {
-        // Don't retry client errors
-        break;
-      }
-
-      await new Promise((resolve) =>
-        setTimeout(resolve, backoff * Math.pow(2, attempt))
-      );
-    }
-  }
-
-  throw lastError;
+  console.error("API Error:", error);
 }

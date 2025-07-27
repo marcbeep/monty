@@ -2,8 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,32 +15,32 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-
-const FormSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters." }),
-});
+import { LoginFormSchema, LoginFormData } from "@/types/auth";
+import { useAuth } from "@/contexts/auth-context";
 
 export function LoginForm() {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const { login } = useAuth();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(LoginFormSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = async () => {
-    toast.success("Login successful!", {
-      description: "Redirecting to dashboard...",
-    });
-    // In a real app, you would handle authentication here
-    // and redirect to the dashboard on success
-    setTimeout(() => {
-      window.location.href = "/dashboard";
-    }, 1000);
+  const onSubmit = async (data: LoginFormData) => {
+    setIsLoading(true);
+    try {
+      await login(data.email, data.password);
+      router.push("/dashboard");
+    } catch {
+      // Error handled by auth context
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -51,7 +51,9 @@ export function LoginForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium">Email Address</FormLabel>
+              <FormLabel className="text-sm font-medium">
+                Email Address
+              </FormLabel>
               <FormControl>
                 <Input
                   id="email"
@@ -86,8 +88,8 @@ export function LoginForm() {
             </FormItem>
           )}
         />
-        <Button className="w-full h-11" type="submit">
-          Sign In
+        <Button className="w-full h-11" type="submit" disabled={isLoading}>
+          {isLoading ? "Signing In..." : "Sign In"}
         </Button>
       </form>
     </Form>
