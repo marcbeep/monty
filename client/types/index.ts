@@ -1,37 +1,13 @@
-// Main types export file
-// This file centralizes all type exports for easy importing
+// Main types export file - centralized type definitions for the application
 
-// Asset types
-export type { AssetType, Asset, Allocation, AssetAllocation } from "./asset";
+// Common types
+export * from "./common";
 
-// Portfolio types
-export type {
-  Portfolio,
-  ExistingPortfolio,
-  PortfolioAsset,
-  PortfolioMetrics,
-} from "./portfolio";
+// Portfolio related types
+export * from "./portfolio";
 
-// UI types
-export type {
-  BadgeConfig,
-  PerformanceBadgeType,
-  RiskBadgeType,
-  StatusBadgeType,
-  Metrics,
-} from "./ui";
+// Dashboard related types
+export * from "./dashboard";
 
-// API types
-export type { ChartDataPoint, DashboardData } from "./api";
-
-// Backtester types
-export type {
-  BacktestData,
-  DrawdownDataPoint,
-  BacktestParams,
-  ScenarioEvent,
-  ScenarioResult,
-  MonteCarloParams,
-  MonteCarloResult,
-  BacktesterState,
-} from "./backtester";
+// Authentication related types
+export * from "./auth";

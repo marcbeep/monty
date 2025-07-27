@@ -1,14 +1,14 @@
-// Portfolio-related types
-import type { AssetType, AssetAllocation } from "./asset";
+import { AssetType, RiskLevel, PortfolioType, AssetAllocation } from "./common";
 
-export interface Portfolio {
-  id: number;
+// Portfolio Builder Types
+export interface Asset {
+  symbol: string;
   name: string;
-  type: "Conservative" | "Moderate" | "Aggressive";
-  description: string;
-  strategy: AssetAllocation[];
-  riskLevel: "Low" | "Medium" | "High";
-  lastUpdated: string;
+  type: AssetType;
+}
+
+export interface PortfolioAsset extends Asset {
+  allocation: number;
 }
 
 export interface ExistingPortfolio {
@@ -16,11 +16,29 @@ export interface ExistingPortfolio {
   name: string;
 }
 
-export interface PortfolioAsset {
+// Portfolio Data Types
+export interface Portfolio {
+  id: number;
+  name: string;
+  type: PortfolioType;
+  description: string;
+  strategy: AssetAllocation[];
+  riskLevel: RiskLevel;
+  lastUpdated: string;
+}
+
+export interface Allocation {
+  id: number;
   symbol: string;
   name: string;
   type: AssetType;
-  allocation: number;
+  allocationPercent: number; // e.g., 60 for 60%
+  baseAmount: number; // Dollar amount allocated from $10K base
+  currentValue: number; // Current dollar value of this allocation
+  totalReturn: number; // Total return in dollars since start
+  totalReturnPercent: number; // Total return percentage since start
+  dayChange: number; // Change in dollars today
+  dayChangePercent: number; // Change percentage today
 }
 
 export interface PortfolioMetrics {
