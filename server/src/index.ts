@@ -1,19 +1,19 @@
-import express, { Request, Response, NextFunction } from "express";
+import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
+import { env } from "./config/env";
+import routes from "./routes";
+import { errorHandler } from "./middleware/error.middleware";
 
 const app = express();
-const PORT: number = parseInt(process.env["PORT"] || "3001", 10);
 
-// Middleware
-app.use(helmet()); // Security headers
-app.use(cors()); // Enable CORS
-app.use(morgan("combined")); // Logging
-app.use(express.json()); // Parse JSON bodies
+app.use(helmet());
+app.use(cors());
+app.use(morgan(env.NODE_ENV === "development" ? "dev" : "combined"));
+app.use(express.json());
 
-// Routes
-app.get("/", (_req: Request, res: Response) => {
+app.get("/", (_req, res) => {
   res.json({
     success: true,
     message: "Monty API is running successfully!",
@@ -22,39 +22,23 @@ app.get("/", (_req: Request, res: Response) => {
   });
 });
 
-// Health check endpoint
-app.get("/health", (_req: Request, res: Response) => {
-  res.json({
-    status: "healthy",
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString(),
-  });
-});
+app.use("/api/v1", routes);
 
-// 404 handler
-app.use("*", (req: Request, res: Response) => {
+app.use("*", (_req, res) => {
   res.status(404).json({
     success: false,
     message: "Endpoint not found",
-    path: req.originalUrl,
   });
 });
 
-// Error handler
-app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({
-    success: false,
-    message: "Internal server error",
-    error:
-      process.env["NODE_ENV"] === "development"
-        ? err.message
-        : "Something went wrong",
-  });
-});
+app.use(errorHandler);
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Monty API server running on port ${PORT}`);
-  console.log(`📡 Health check available at http://localhost:${PORT}/health`);
-});
+if (env.NODE_ENV !== "test") {
+  app.listen(env.PORT, () => {
+    console.log(`🚀 Server running on port ${env.PORT}`);
+    console.log(`📡 Health: http://localhost:${env.PORT}/api/v1/health`);
+    console.log(`🔐 Auth: http://localhost:${env.PORT}/api/v1/auth`);
+  });
+}
+
+export default app;
