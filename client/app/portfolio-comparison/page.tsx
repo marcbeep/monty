@@ -5,11 +5,8 @@ import { AppSidebar } from "@/components/shared/app-sidebar";
 import { SiteHeader } from "@/components/shared/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { PortfolioDualSelector, ComparisonTable } from "./_components";
-import {
-  getMockDashboardData,
-  getMockPortfolios,
-  mockApiCall,
-} from "@/lib/mock-data";
+import { getMockDashboardData, getMockPortfolios } from "@/lib/mock-data";
+import { mockApiCall, handleApiError } from "@/lib/api";
 import type { DashboardData, Portfolio } from "@/types";
 
 export default function PortfolioComparisonPage() {
@@ -47,7 +44,7 @@ export default function PortfolioComparisonPage() {
         setPortfolio1Data(data1);
         setPortfolio2Data(data2);
       } catch (error) {
-        console.error("Failed to fetch comparison data:", error);
+        handleApiError(error);
       } finally {
         setIsLoading(false);
       }
@@ -58,8 +55,12 @@ export default function PortfolioComparisonPage() {
   // Load portfolios on mount
   React.useEffect(() => {
     const loadPortfolios = async () => {
-      const portfolioList = await mockApiCall(getMockPortfolios(), 300);
-      setPortfolios(portfolioList);
+      try {
+        const portfolioList = await mockApiCall(getMockPortfolios(), 300);
+        setPortfolios(portfolioList);
+      } catch (error) {
+        handleApiError(error);
+      }
     };
     loadPortfolios();
   }, []);

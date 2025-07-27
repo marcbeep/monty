@@ -11,3 +11,6 @@ export * from "./dashboard";
 
 // Authentication related types
 export * from "./auth";
+
+// Error types and utilities
+export type { ErrorSeverity } from "../lib/errors";

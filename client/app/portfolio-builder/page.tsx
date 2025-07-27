@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { toast } from "sonner";
 import { AppSidebar } from "@/components/shared/app-sidebar";
 import { SiteHeader } from "@/components/shared/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -139,8 +140,10 @@ export default function PortfolioBuilderPage() {
       assets,
     });
 
-    // Reset form or show success message
-    alert("Portfolio saved successfully!");
+    // Show success message
+    toast.success("Portfolio saved successfully!", {
+      description: "Your portfolio has been created and saved.",
+    });
   };
 
   const handleReset = () => {

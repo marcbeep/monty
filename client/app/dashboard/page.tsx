@@ -9,11 +9,8 @@ import { SectionCards } from "./_components/section-cards";
 import { SiteHeader } from "@/components/shared/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-import {
-  getMockDashboardData,
-  getMockPortfolios,
-  mockApiCall,
-} from "@/lib/mock-data";
+import { getMockDashboardData, getMockPortfolios } from "@/lib/mock-data";
+import { mockApiCall, handleApiError } from "@/lib/api";
 import type { DashboardData, Portfolio } from "@/types";
 
 export default function Page() {
@@ -37,7 +34,7 @@ export default function Page() {
         );
         setDashboardData(data);
       } catch (error) {
-        console.error("Failed to fetch dashboard data:", error);
+        handleApiError(error);
       } finally {
         setIsLoading(false);
       }
@@ -48,8 +45,12 @@ export default function Page() {
   // Load portfolios on mount
   React.useEffect(() => {
     const loadPortfolios = async () => {
-      const portfolioList = await mockApiCall(getMockPortfolios(), 300);
-      setPortfolios(portfolioList);
+      try {
+        const portfolioList = await mockApiCall(getMockPortfolios(), 300);
+        setPortfolios(portfolioList);
+      } catch (error) {
+        handleApiError(error);
+      }
     };
     loadPortfolios();
   }, []);

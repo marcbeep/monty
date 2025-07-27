@@ -17,8 +17,9 @@ import {
   getMockScenarios,
   getMockScenarioResult,
   getMockMonteCarloResult,
-  mockApiCall,
 } from "@/lib/mock-data";
+import { mockApiCall } from "@/lib/api";
+import { useErrorHandler } from "@/hooks/use-error-handler";
 import type { Portfolio } from "@/types";
 import type {
   BacktestData,
@@ -30,6 +31,8 @@ import type {
 } from "@/types/backtester";
 
 export default function BacktesterPage() {
+  const { handleError } = useErrorHandler();
+
   // State management
   const [selectedPortfolioId, setSelectedPortfolioId] = React.useState<
     number | null
@@ -71,11 +74,11 @@ export default function BacktesterPage() {
         setPortfolios(portfolioList);
         setScenarios(scenarioList);
       } catch (error) {
-        console.error("Failed to load initial data:", error);
+        handleError(error);
       }
     };
     loadInitialData();
-  }, []);
+  }, [handleError]);
 
   // Handle portfolio selection
   const handlePortfolioChange = (portfolioId: number) => {
@@ -94,7 +97,7 @@ export default function BacktesterPage() {
       const data = await mockApiCall(getMockBacktestData(params), 1200);
       setBacktestData(data);
     } catch (error) {
-      console.error("Failed to run backtest:", error);
+      handleError(error);
     } finally {
       setIsBacktestLoading(false);
     }
@@ -118,7 +121,7 @@ export default function BacktesterPage() {
       // Replace all results with the new single result
       setScenarioResults([result]);
     } catch (error) {
-      console.error("Failed to run scenario:", error);
+      handleError(error);
     } finally {
       setIsScenarioLoading(false);
       setRunningScenarioId(null);
@@ -132,7 +135,7 @@ export default function BacktesterPage() {
       const result = await mockApiCall(getMockMonteCarloResult(params), 1500);
       setMonteCarloResult(result);
     } catch (error) {
-      console.error("Failed to run Monte Carlo simulation:", error);
+      handleError(error);
     } finally {
       setIsMonteCarloLoading(false);
     }
