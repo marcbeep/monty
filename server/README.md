@@ -1,15 +1,6 @@
-# Stock Price API Server
+# Monty Server
 
-A FastAPI server that provides stock price data for the past 30 days using Yahoo Finance data.
-
-## Features
-
-- Dynamic stock symbol endpoints (e.g., `/AAPL`, `/GOOGL`, `/TSLA`)
-- Returns 30 days of historical stock data
-- Includes price statistics and company information
-- CORS enabled for frontend integration
-- Error handling for invalid symbols
-- Health check endpoint
+This server is written in FastAPI and provides a modular API structure for the Monty portfolio backtester.
 
 ## Setup
 
@@ -20,7 +11,16 @@ A FastAPI server that provides stock price data for the past 30 days using Yahoo
    pip install -r requirements.txt
    ```
 
-2. **Run the Server**
+2. **Environment Configuration**
+
+   Create a `.env` file based on `.env.example`:
+
+   ```bash
+   cp .env.example .env
+   # Edit .env with your actual values
+   ```
+
+3. **Run the Server**
 
    ```bash
    python main.py
@@ -34,73 +34,10 @@ A FastAPI server that provides stock price data for the past 30 days using Yahoo
 
 The server will start on `http://localhost:8000`
 
-## API Endpoints
+## API Documentation
 
-### GET /
-
-Returns API information and usage instructions.
-
-### GET /{symbol}
-
-Get stock price data for the specified symbol.
-
-**Parameters:**
-
-- `symbol` (path parameter): Stock symbol (e.g., AAPL, GOOGL, TSLA)
-
-**Example Request:**
-
-```bash
-curl http://localhost:8000/AAPL
-```
-
-**Example Response:**
-
-```json
-{
-  "symbol": "AAPL",
-  "company_name": "Apple Inc.",
-  "currency": "USD",
-  "period": "30 days",
-  "data_points": 22,
-  "current_price": 150.25,
-  "start_price": 145.3,
-  "price_change": 4.95,
-  "price_change_percent": 3.41,
-  "highest_price": 152.8,
-  "lowest_price": 143.2,
-  "price_data": [
-    {
-      "date": "2024-01-01",
-      "open": 145.3,
-      "high": 147.2,
-      "low": 144.8,
-      "close": 146.5,
-      "volume": 25000000
-    }
-    // ... more daily data
-  ]
-}
-```
-
-### GET /health
-
-Health check endpoint.
-
-## Data Source
-
-This API uses the `yfinance` library to fetch data from Yahoo Finance. The data includes:
-
-- Daily open, high, low, close prices
-- Trading volume
-- Company information
-- Price statistics for the 30-day period
-
-## Error Handling
-
-- **400 Bad Request**: Invalid stock symbol format
-- **404 Not Found**: No data found for the symbol
-- **500 Internal Server Error**: API or server errors
+- **Swagger UI**: `http://localhost:8000/docs`
+- **ReDoc**: `http://localhost:8000/redoc`
 
 ## CORS Configuration
 
@@ -109,30 +46,106 @@ The server is configured to allow requests from:
 - `http://localhost:3000`
 - `http://127.0.0.1:3000`
 
-Modify the `allow_origins` in `main.py` to add your frontend URL.
+Modify the `allowed_origins` in `app/core/config.py` to add your frontend URL.
 
-## Usage with Frontend
+## Directory Structure
 
-You can easily integrate this with your Next.js frontend by making fetch requests:
-
-```javascript
-const fetchStockData = async (symbol) => {
-  try {
-    const response = await fetch(`http://localhost:8000/${symbol}`);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching stock data:", error);
-  }
-};
+```
+server/
+├── main.py                 # FastAPI app entry point
+├── requirements.txt        # Dependencies
+├── .env                    # Environment variables
+├── .env.example           # Environment template
+├── README.md              # Project documentation
+│
+├── app/
+│   ├── __init__.py
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── config.py      # Settings & environment
+│   │   └── database.py    # Supabase connection
+│   │
+│   ├── api/
+│   │   ├── __init__.py
+│   │   ├── dashboard.py   # Dashboard endpoints
+│   │   ├── portfolios.py  # Portfolio CRUD endpoints
+│   │   ├── assets.py      # Asset endpoints
+│   │   ├── backtester.py  # Backtesting endpoints
+│   │   ├── comparison.py  # Portfolio comparison endpoints
+│   │   ├── settings.py    # User settings endpoints
+│   │   └── auth.py        # Authentication endpoints
+│   │
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── portfolio.py   # Portfolio model
+│   │   ├── backtest.py    # Backtest results model
+│   │   ├── scenario.py    # Scenario analysis model
+│   │   ├── monte_carlo.py # Monte Carlo results model
+│   │   ├── user.py        # User model
+│   │   └── settings.py    # User settings model
+│   │
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   ├── portfolio.py   # Portfolio schemas
+│   │   ├── dashboard.py   # Dashboard schemas
+│   │   ├── backtester.py  # Backtesting schemas
+│   │   ├── comparison.py  # Comparison schemas
+│   │   ├── settings.py    # Settings schemas
+│   │   ├── auth.py        # Auth schemas
+│   │   └── common.py      # Common schemas
+│   │
+│   └── services/
+│       ├── __init__.py
+│       ├── portfolio_service.py    # Portfolio calculations
+│       ├── backtest_service.py     # Historical backtesting
+│       ├── scenario_service.py     # Scenario analysis
+│       ├── monte_carlo_service.py  # Monte Carlo simulation
+│       ├── comparison_service.py   # Portfolio comparison
+│       ├── market_data.py          # Market data (yfinance)
+│       └── settings_service.py     # User settings
+│
+└── tests/
+    ├── __init__.py
+    ├── test_api.py        # API tests
+    └── test_services.py   # Service tests
 ```
 
-## Popular Stock Symbols
+## API Endpoints
 
-- **AAPL** - Apple Inc.
-- **GOOGL** - Alphabet Inc.
-- **MSFT** - Microsoft Corporation
-- **TSLA** - Tesla Inc.
-- **AMZN** - Amazon.com Inc.
-- **META** - Meta Platforms Inc.
-- **NVDA** - NVIDIA Corporation
+### Authentication
+
+- `POST /api/auth/login` - User login
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/logout` - User logout
+
+### Dashboard
+
+- `GET /api/dashboard/{portfolio_id}?timeframe=YTD` - Get dashboard data
+
+### Portfolios
+
+- `GET /api/portfolios` - List all portfolios
+- `POST /api/portfolios` - Create a new portfolio
+- `PUT /api/portfolios/{id}` - Update a portfolio
+- `DELETE /api/portfolios/{id}` - Delete a portfolio
+
+### Assets
+
+- `GET /api/assets` - List available assets
+- `GET /api/assets/search?q={query}` - Search assets
+
+### Backtesting
+
+- `GET /api/backtester/historical/{portfolio_id}` - Historical backtest
+- `POST /api/backtester/scenarios/{portfolio_id}` - Run scenario analysis
+- `POST /api/backtester/monte-carlo/{portfolio_id}` - Monte Carlo simulation
+- `GET /api/backtester/scenarios` - List available scenarios
+
+### Comparison
+
+- `GET /api/comparison/{portfolio1_id}/{portfolio2_id}?timeframe=YTD` - Compare portfolios
+
+### Settings
+
+- `GET /api/settings` - Get user settings
+- `PUT /api/settings` - Update user settings
