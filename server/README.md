@@ -1,99 +1,93 @@
-# Monty Portfolio Backtester API
+# Monty API Server
 
-A Node.js TypeScript backend for portfolio backtesting and analysis.
+A Node.js/Express.js API server for the Monty application.
 
-## Tech Stack
+## Features
 
-- **Node.js** with **TypeScript** for type safety
-- **Express.js** for the web framework
-- **Supabase** for database and authentication
-- **Zod** for schema validation
+- Express.js REST API
+- CORS enabled for cross-origin requests
+- Security headers with Helmet
+- Request logging with Morgan
+- Health check endpoint
+- Error handling middleware
 
-## Getting Started
+## Installation
 
-### Prerequisites
+1. Navigate to the server directory:
 
-- Node.js 18+
-- npm or yarn
+   ```bash
+   cd server
+   ```
 
-### Installation
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-1. Install dependencies:
+## Running the Server
 
-```bash
-npm install
-```
-
-2. Set up environment variables:
-
-```bash
-# Copy and update with your values
-SUPABASE_URL=your_supabase_project_url
-SUPABASE_KEY=your_supabase_anon_key
-PORT=8000
-```
-
-### Development
-
-Start the development server:
+### Development Mode
 
 ```bash
 npm run dev
 ```
 
-The API will be available at `http://localhost:8000`
+This will start the server with nodemon for automatic restarts on file changes.
 
-### Production
-
-Build and start:
+### Production Mode
 
 ```bash
-npm run build
 npm start
 ```
 
 ## API Endpoints
 
-### Health Checks
+### GET /
 
-- `GET /health` - Main health check
-- `GET /healthz` - Kubernetes-style health check
-- `GET /ping` - Simple ping/pong
+Returns a success message indicating the API is running.
 
-### Authentication
+**Response:**
 
-- `POST /api/auth/login` - User login
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/logout` - User logout
-
-### Core Features
-
-- `GET /api/dashboard` - Dashboard data
-- `GET /api/portfolios` - Portfolio management
-- `GET /api/assets` - Asset data
-- `GET /api/backtester` - Backtesting functionality
-- `GET /api/comparison` - Portfolio comparison
-- `GET /api/settings` - User settings
-
-## Project Structure
-
+```json
+{
+  "success": true,
+  "message": "Monty API is running successfully!",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "version": "1.0.0"
+}
 ```
-src/
-├── api/           # API route handlers
-├── core/          # Core configuration and database
-├── types/         # TypeScript type definitions
-└── utils/         # Utility functions
+
+### GET /health
+
+Health check endpoint for monitoring.
+
+**Response:**
+
+```json
+{
+  "status": "healthy",
+  "uptime": 123.456,
+  "timestamp": "2024-01-01T00:00:00.000Z"
+}
 ```
 
 ## Configuration
 
-The server uses environment variables for configuration. All settings are validated at startup using Zod schemas.
+The server runs on port 3001 by default. You can change this by setting the `PORT` environment variable:
 
-Required environment variables:
+```bash
+PORT=8080 npm start
+```
 
-- `SUPABASE_URL` - Your Supabase project URL
-- `SUPABASE_KEY` - Your Supabase anon/public key
+## Environment Variables
 
-Optional:
+- `PORT`: Server port (default: 3001)
+- `NODE_ENV`: Environment mode (development/production)
 
-- `PORT` - Server port (default: 8000)
+## Dependencies
+
+- **express**: Web framework
+- **cors**: Cross-origin resource sharing
+- **helmet**: Security headers
+- **morgan**: HTTP request logger
+- **nodemon**: Development server with auto-restart (dev dependency)
