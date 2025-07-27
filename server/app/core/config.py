@@ -1,6 +1,7 @@
 import os
 from typing import Optional
 from pydantic_settings import BaseSettings
+from pydantic import field_validator
 
 
 class Settings(BaseSettings):
@@ -16,6 +17,20 @@ class Settings(BaseSettings):
 
     # CORS Configuration (allow all for simplicity)
     allowed_origins: list[str] = ["*"]
+
+    @field_validator("supabase_url")
+    @classmethod
+    def validate_supabase_url(cls, v):
+        if not v:
+            raise ValueError("SUPABASE_URL environment variable is required")
+        return v
+
+    @field_validator("supabase_key")
+    @classmethod
+    def validate_supabase_key(cls, v):
+        if not v:
+            raise ValueError("SUPABASE_KEY environment variable is required")
+        return v
 
     class Config:
         env_file = ".env"
