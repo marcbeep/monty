@@ -4,6 +4,8 @@ import { AppError } from "../utils/errors";
 
 export class PortfolioService {
   async createStarterPortfolios(userId: string): Promise<void> {
+    console.log(`Creating starter portfolios for user: ${userId}`);
+
     const portfolios = [
       {
         name: "Conservative Portfolio",
@@ -40,6 +42,8 @@ export class PortfolioService {
     ];
 
     for (const portfolio of portfolios) {
+      console.log(`Creating portfolio: ${portfolio.name}`);
+
       const { data: portfolioData, error: portfolioError } = await supabase
         .from("portfolios")
         .insert({
@@ -50,7 +54,15 @@ export class PortfolioService {
         .select()
         .single();
 
-      if (portfolioError) throw new AppError(portfolioError.message, 500);
+      if (portfolioError) {
+        console.error(
+          `Portfolio creation failed for ${portfolio.name}:`,
+          portfolioError
+        );
+        throw new AppError(portfolioError.message, 500);
+      }
+
+      console.log(`Portfolio created with ID: ${portfolioData.id}`);
 
       const holdings = portfolio.holdings.map((h) => ({
         portfolio_id: portfolioData.id,
@@ -62,8 +74,22 @@ export class PortfolioService {
         .from("portfolio_holdings")
         .insert(holdings);
 
-      if (holdingsError) throw new AppError(holdingsError.message, 500);
+      if (holdingsError) {
+        console.error(
+          `Holdings creation failed for ${portfolio.name}:`,
+          holdingsError
+        );
+        throw new AppError(holdingsError.message, 500);
+      }
+
+      console.log(
+        `Holdings created for ${portfolio.name}: ${holdings.length} assets`
+      );
     }
+
+    console.log(
+      `Successfully created all starter portfolios for user: ${userId}`
+    );
   }
 
   async getUserPortfolios(userId: string): Promise<PortfolioResponse[]> {

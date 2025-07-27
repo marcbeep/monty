@@ -1,7 +1,7 @@
 import { supabase } from "../config/supabase";
 import { AuthResponse, UserResponse } from "../dto/auth.dto";
 import { LoginInput, SignupInput } from "../utils/validation";
-import { Unauthorized } from "../utils/errors";
+import { Unauthorized, AppError } from "../utils/errors";
 import { portfolioService } from "./portfolio.service";
 
 export class AuthService {
@@ -31,7 +31,28 @@ export class AuthService {
     if (error || !data.user || !data.session)
       throw Unauthorized(error?.message);
 
-    await portfolioService.createStarterPortfolios(data.user.id);
+    try {
+      // Create profile entry
+      const { error: profileError } = await supabase.from("profiles").insert({
+        id: data.user.id,
+        email: data.user.email,
+        first_name: credentials.firstName,
+        last_name: credentials.lastName,
+      });
+
+      if (profileError)
+        throw new AppError(
+          `Profile creation failed: ${profileError.message}`,
+          500
+        );
+
+      // Create starter portfolios
+      await portfolioService.createStarterPortfolios(data.user.id);
+    } catch (setupError) {
+      // If profile/portfolio creation fails, we should still allow login but log the error
+      console.error("User setup failed:", setupError);
+      // Don't throw - user can still use the app, just without portfolios initially
+    }
 
     return {
       user: this.mapUser(data.user),
