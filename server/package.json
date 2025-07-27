@@ -4,7 +4,7 @@
   "description": "Monty Portfolio Backtester API - Node.js TypeScript Backend",
   "main": "dist/index.js",
   "scripts": {
-    "build": "echo 'Build step disabled for Vercel deployment'",
+    "build": "tsc",
     "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts",
     "clean": "rm -rf dist"
