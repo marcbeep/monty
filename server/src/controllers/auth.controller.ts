@@ -5,7 +5,11 @@ import { LoginInput, SignupInput } from "../utils/validation";
 import { Unauthorized } from "../utils/errors";
 
 export class AuthController {
-  async login(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async login(
+    req: Request<{}, {}, LoginInput>,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const result = await authService.login(req.body);
       res.json({ success: true, data: result });
@@ -14,7 +18,11 @@ export class AuthController {
     }
   }
 
-  async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async signup(
+    req: Request<{}, {}, SignupInput>,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const result = await authService.signup(req.body);
       res.status(201).json({ success: true, data: result });
@@ -24,7 +32,7 @@ export class AuthController {
   }
 
   async logout(
-    req: AuthenticatedRequest,
+    _req: AuthenticatedRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
