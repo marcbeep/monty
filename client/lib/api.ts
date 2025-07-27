@@ -151,3 +151,11 @@ export function handleApiError(
 
   console.error("API Error:", error);
 }
+
+export async function mockApiCall<T>(
+  data: T,
+  delay: number = 1000
+): Promise<T> {
+  await new Promise((resolve) => setTimeout(resolve, delay));
+  return data;
+}
