@@ -7,24 +7,6 @@ CREATE TABLE public.profiles (
   updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
-ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "own_profile" ON public.profiles USING (auth.uid() = id);
-
-CREATE OR REPLACE FUNCTION handle_new_user() RETURNS TRIGGER AS $$
-BEGIN
-  INSERT INTO public.profiles (id, email, first_name, last_name)
-  VALUES (NEW.id, NEW.email, 
-    COALESCE(NEW.raw_user_meta_data->>'first_name', ''),
-    COALESCE(NEW.raw_user_meta_data->>'last_name', ''));
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION handle_new_user();
-
 CREATE OR REPLACE FUNCTION handle_updated_at() RETURNS TRIGGER AS $$
 BEGIN
   NEW.updated_at = NOW();
