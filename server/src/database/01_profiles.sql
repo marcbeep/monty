@@ -1,3 +1,6 @@
+-- Disable any existing triggers
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+
 CREATE TABLE public.profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,

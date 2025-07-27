@@ -2,6 +2,7 @@ import { supabase } from "../config/supabase";
 import { AuthResponse, UserResponse } from "../dto/auth.dto";
 import { LoginInput, SignupInput } from "../utils/validation";
 import { Unauthorized } from "../utils/errors";
+import { portfolioService } from "./portfolio.service";
 
 export class AuthService {
   async login(credentials: LoginInput): Promise<AuthResponse> {
@@ -29,6 +30,8 @@ export class AuthService {
     });
     if (error || !data.user || !data.session)
       throw Unauthorized(error?.message);
+
+    await portfolioService.createStarterPortfolios(data.user.id);
 
     return {
       user: this.mapUser(data.user),
