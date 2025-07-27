@@ -3,9 +3,7 @@ from app.schemas.common import SuccessResponse, ErrorResponse
 from app.schemas.auth import LoginRequest, RegisterRequest, AuthResponse, LogoutResponse
 from app.core.database import get_supabase
 from supabase import Client
-import logging
 
-logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -24,9 +22,6 @@ async def login(request: LoginRequest):
         session = auth_response.session
 
         if not user or not session:
-            logger.warning(
-                f"Login failed for email: {request.email} - No user or session"
-            )
             raise HTTPException(status_code=401, detail="Invalid credentials")
 
         # Get user profile from profiles table
@@ -40,12 +35,7 @@ async def login(request: LoginRequest):
             )
             profile = profile_response.data if profile_response.data else {}
         except Exception as profile_error:
-            logger.warning(
-                f"Could not fetch profile for user {user.id}: {profile_error}"
-            )
             profile = {}
-
-        logger.info(f"User {user.email} logged in successfully")
 
         return SuccessResponse(
             data=AuthResponse(
@@ -62,7 +52,6 @@ async def login(request: LoginRequest):
         # Re-raise HTTP exceptions without modification
         raise
     except Exception as e:
-        logger.error(f"Login failed for email {request.email}: {e}")
         if (
             "Invalid login credentials" in str(e)
             or "invalid credentials" in str(e).lower()
@@ -95,9 +84,6 @@ async def register(request: RegisterRequest):
         session = auth_response.session
 
         if not user:
-            logger.error(
-                f"Registration failed for email {request.email} - No user created"
-            )
             raise HTTPException(
                 status_code=400, detail="Registration failed - no user created"
             )
@@ -118,14 +104,8 @@ async def register(request: RegisterRequest):
                 .execute()
             )
             profile = profile_response.data if profile_response.data else {}
-            logger.info(f"Profile automatically created for user {user.email}")
         except Exception as profile_error:
-            logger.warning(
-                f"Could not fetch auto-created profile for user {user.id}: {profile_error}"
-            )
             profile = {}
-
-        logger.info(f"User {user.email} registered successfully")
 
         return SuccessResponse(
             data=AuthResponse(
@@ -142,7 +122,6 @@ async def register(request: RegisterRequest):
         # Re-raise HTTP exceptions without modification
         raise
     except Exception as e:
-        logger.error(f"Registration failed for email {request.email}: {e}")
         if (
             "User already registered" in str(e)
             or "already registered" in str(e).lower()
@@ -159,10 +138,8 @@ async def logout():
 
         # Sign out user
         supabase.auth.sign_out()
-        logger.info("User logged out successfully")
 
         return SuccessResponse(data=LogoutResponse(message="Successfully logged out"))
 
     except Exception as e:
-        logger.error(f"Logout failed: {e}")
         raise HTTPException(status_code=500, detail="Logout failed")

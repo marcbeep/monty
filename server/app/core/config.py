@@ -1,18 +1,17 @@
 import os
 from pydantic_settings import BaseSettings
-from pydantic import Field
 
 
 class Settings(BaseSettings):
-    supabase_url: str = Field(..., env="SUPABASE_URL")
-    supabase_key: str = Field(..., env="SUPABASE_KEY")
-    supabase_service_key: str = Field("", env="SUPABASE_SERVICE_KEY")
-    api_host: str = Field("0.0.0.0", env="API_HOST")
-    api_port: int = Field(8000, env="API_PORT")
-    debug: bool = Field(False, env="DEBUG")
-    allowed_origins: list[str] = Field(["*"], env="ALLOWED_ORIGINS")
+    # Only the environment variables the user actually has
+    supabase_url: str
+    supabase_key: str
+
+    class Config:
+        env_file = ".env"
 
 
+# Simple singleton pattern - no complex proxy
 _settings = None
 
 
@@ -23,10 +22,5 @@ def get_settings() -> Settings:
     return _settings
 
 
-# For backwards compatibility - but this will lazy load
-class SettingsProxy:
-    def __getattr__(self, name):
-        return getattr(get_settings(), name)
-
-
-settings = SettingsProxy()
+# Direct access for backwards compatibility
+settings = get_settings()
