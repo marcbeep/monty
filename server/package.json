@@ -2,10 +2,13 @@
   "name": "monty-server",
   "version": "1.0.0",
   "description": "Monty API Server",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "dev:watch": "nodemon --exec ts-node src/index.ts",
+    "clean": "rm -rf dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -16,12 +19,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2",
     "cors": "^2.8.5",
+    "express": "^4.18.2",
     "helmet": "^7.1.0",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^24.1.0",
+    "nodemon": "^3.0.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }

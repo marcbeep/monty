@@ -1,10 +1,10 @@
-const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
-const morgan = require("morgan");
+import express, { Request, Response, NextFunction } from "express";
+import cors from "cors";
+import helmet from "helmet";
+import morgan from "morgan";
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT: number = parseInt(process.env["PORT"] || "3001", 10);
 
 // Middleware
 app.use(helmet()); // Security headers
@@ -13,7 +13,7 @@ app.use(morgan("combined")); // Logging
 app.use(express.json()); // Parse JSON bodies
 
 // Routes
-app.get("/", (req, res) => {
+app.get("/", (_req: Request, res: Response) => {
   res.json({
     success: true,
     message: "Monty API is running successfully!",
@@ -23,7 +23,7 @@ app.get("/", (req, res) => {
 });
 
 // Health check endpoint
-app.get("/health", (req, res) => {
+app.get("/health", (_req: Request, res: Response) => {
   res.json({
     status: "healthy",
     uptime: process.uptime(),
@@ -32,7 +32,7 @@ app.get("/health", (req, res) => {
 });
 
 // 404 handler
-app.use("*", (req, res) => {
+app.use("*", (req: Request, res: Response) => {
   res.status(404).json({
     success: false,
     message: "Endpoint not found",
@@ -41,13 +41,13 @@ app.use("*", (req, res) => {
 });
 
 // Error handler
-app.use((err, req, res, next) => {
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   console.error(err.stack);
   res.status(500).json({
     success: false,
     message: "Internal server error",
     error:
-      process.env.NODE_ENV === "development"
+      process.env["NODE_ENV"] === "development"
         ? err.message
         : "Something went wrong",
   });
