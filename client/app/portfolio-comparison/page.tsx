@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { ProtectedRoute } from "@/components/shared/protected-route";
 import { AppSidebar } from "@/components/shared/app-sidebar";
 import { SiteHeader } from "@/components/shared/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -85,40 +86,42 @@ export default function PortfolioComparisonPage() {
   const portfolio2 = portfolios.find((p) => p.id === selectedPortfolio2Id);
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader />
-        <div className="p-4 md:p-6">
-          <div className="@container/main flex flex-col gap-4 md:gap-6">
-            {/* Portfolio Selection */}
-            <PortfolioDualSelector
-              portfolios={portfolios}
-              selectedPortfolio1Id={selectedPortfolio1Id}
-              selectedPortfolio2Id={selectedPortfolio2Id}
-              onPortfolio1Change={setSelectedPortfolio1Id}
-              onPortfolio2Change={setSelectedPortfolio2Id}
-              isLoading={portfolios.length === 0}
-            />
+    <ProtectedRoute>
+      <SidebarProvider
+        style={
+          {
+            "--sidebar-width": "calc(var(--spacing) * 72)",
+            "--header-height": "calc(var(--spacing) * 12)",
+          } as React.CSSProperties
+        }
+      >
+        <AppSidebar variant="inset" />
+        <SidebarInset>
+          <SiteHeader />
+          <div className="p-4 md:p-6">
+            <div className="@container/main flex flex-col gap-4 md:gap-6">
+              {/* Portfolio Selection */}
+              <PortfolioDualSelector
+                portfolios={portfolios}
+                selectedPortfolio1Id={selectedPortfolio1Id}
+                selectedPortfolio2Id={selectedPortfolio2Id}
+                onPortfolio1Change={setSelectedPortfolio1Id}
+                onPortfolio2Change={setSelectedPortfolio2Id}
+                isLoading={portfolios.length === 0}
+              />
 
-            {/* Comparison Results */}
-            <ComparisonTable
-              portfolio1={portfolio1}
-              portfolio2={portfolio2}
-              metrics1={portfolio1Data?.metrics}
-              metrics2={portfolio2Data?.metrics}
-              isLoading={isLoading}
-            />
+              {/* Comparison Results */}
+              <ComparisonTable
+                portfolio1={portfolio1}
+                portfolio2={portfolio2}
+                metrics1={portfolio1Data?.metrics}
+                metrics2={portfolio2Data?.metrics}
+                isLoading={isLoading}
+              />
+            </div>
           </div>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+        </SidebarInset>
+      </SidebarProvider>
+    </ProtectedRoute>
   );
 }

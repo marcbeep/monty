@@ -40,6 +40,15 @@ const navMainData = [
   },
 ];
 
+// Function to extract initials from a full name
+function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase())
+    .join("")
+    .slice(0, 2); // Limit to 2 characters
+}
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user, isAuthenticated } = useAuth();
 
@@ -47,12 +56,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     ? {
         name: user.fullName,
         email: user.email,
-        avatar: "/avatars/user.jpg",
+        initials: getInitials(user.fullName),
       }
     : {
         name: "Guest User",
         email: "",
-        avatar: "/avatars/user.jpg",
+        initials: "GU",
       };
 
   return (

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { ProtectedRoute } from "@/components/shared/protected-route";
 import { AppSidebar } from "@/components/shared/app-sidebar";
 import { SiteHeader } from "@/components/shared/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -142,93 +143,97 @@ export default function BacktesterPage() {
   };
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader />
-        <div className="p-4 md:p-6">
-          <div className="@container/main flex flex-col gap-4 md:gap-6">
-            {/* Portfolio Selector */}
-            <BacktesterPortfolioSelector
-              portfolios={portfolios}
-              selectedPortfolioId={selectedPortfolioId}
-              onPortfolioChange={handlePortfolioChange}
-              isLoading={portfolios.length === 0}
-            />
+    <ProtectedRoute>
+      <SidebarProvider
+        style={
+          {
+            "--sidebar-width": "calc(var(--spacing) * 72)",
+            "--header-height": "calc(var(--spacing) * 12)",
+          } as React.CSSProperties
+        }
+      >
+        <AppSidebar variant="inset" />
+        <SidebarInset>
+          <SiteHeader />
+          <div className="p-4 md:p-6">
+            <div className="@container/main flex flex-col gap-4 md:gap-6">
+              {/* Portfolio Selector */}
+              <BacktesterPortfolioSelector
+                portfolios={portfolios}
+                selectedPortfolioId={selectedPortfolioId}
+                onPortfolioChange={handlePortfolioChange}
+                isLoading={portfolios.length === 0}
+              />
 
-            {/* Main Backtesting Interface */}
-            <Tabs
-              value={activeTab}
-              onValueChange={(value) => setActiveTab(value as typeof activeTab)}
-              className="w-full"
-            >
-              <TabsList className="grid w-full grid-cols-3 h-auto">
-                <TabsTrigger
-                  value="historical"
-                  className="text-xs sm:text-sm px-2 py-2 sm:px-3"
-                >
-                  <span className="hidden sm:inline">
-                    Historical Backtesting
-                  </span>
-                  <span className="sm:hidden">Historical</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="scenarios"
-                  className="text-xs sm:text-sm px-2 py-2 sm:px-3"
-                >
-                  <span className="hidden sm:inline">Scenario Analysis</span>
-                  <span className="sm:hidden">Scenarios</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="montecarlo"
-                  className="text-xs sm:text-sm px-2 py-2 sm:px-3"
-                >
-                  <span className="hidden sm:inline">
-                    Monte Carlo Simulation
-                  </span>
-                  <span className="sm:hidden">Monte Carlo</span>
-                </TabsTrigger>
-              </TabsList>
+              {/* Main Backtesting Interface */}
+              <Tabs
+                value={activeTab}
+                onValueChange={(value) =>
+                  setActiveTab(value as typeof activeTab)
+                }
+                className="w-full"
+              >
+                <TabsList className="grid w-full grid-cols-3 h-auto">
+                  <TabsTrigger
+                    value="historical"
+                    className="text-xs sm:text-sm px-2 py-2 sm:px-3"
+                  >
+                    <span className="hidden sm:inline">
+                      Historical Backtesting
+                    </span>
+                    <span className="sm:hidden">Historical</span>
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="scenarios"
+                    className="text-xs sm:text-sm px-2 py-2 sm:px-3"
+                  >
+                    <span className="hidden sm:inline">Scenario Analysis</span>
+                    <span className="sm:hidden">Scenarios</span>
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="montecarlo"
+                    className="text-xs sm:text-sm px-2 py-2 sm:px-3"
+                  >
+                    <span className="hidden sm:inline">
+                      Monte Carlo Simulation
+                    </span>
+                    <span className="sm:hidden">Monte Carlo</span>
+                  </TabsTrigger>
+                </TabsList>
 
-              <TabsContent value="historical" className="mt-6">
-                <HistoricalBacktest
-                  portfolioId={selectedPortfolioId}
-                  backtestData={backtestData}
-                  isLoading={isBacktestLoading}
-                  onRunBacktest={handleRunBacktest}
-                />
-              </TabsContent>
+                <TabsContent value="historical" className="mt-6">
+                  <HistoricalBacktest
+                    portfolioId={selectedPortfolioId}
+                    backtestData={backtestData}
+                    isLoading={isBacktestLoading}
+                    onRunBacktest={handleRunBacktest}
+                  />
+                </TabsContent>
 
-              <TabsContent value="scenarios" className="mt-6">
-                <ScenarioAnalysis
-                  portfolioId={selectedPortfolioId}
-                  scenarios={scenarios}
-                  scenarioResults={scenarioResults}
-                  isLoading={isScenarioLoading}
-                  runningScenarioId={runningScenarioId}
-                  onRunScenario={handleRunScenario}
-                />
-              </TabsContent>
+                <TabsContent value="scenarios" className="mt-6">
+                  <ScenarioAnalysis
+                    portfolioId={selectedPortfolioId}
+                    scenarios={scenarios}
+                    scenarioResults={scenarioResults}
+                    isLoading={isScenarioLoading}
+                    runningScenarioId={runningScenarioId}
+                    onRunScenario={handleRunScenario}
+                  />
+                </TabsContent>
 
-              <TabsContent value="montecarlo" className="mt-6">
-                <MonteCarloSimulation
-                  portfolioId={selectedPortfolioId}
-                  monteCarloResult={monteCarloResult}
-                  isLoading={isMonteCarloLoading}
-                  onRunSimulation={handleRunMonteCarloSimulation}
-                />
-              </TabsContent>
-            </Tabs>
+                <TabsContent value="montecarlo" className="mt-6">
+                  <MonteCarloSimulation
+                    portfolioId={selectedPortfolioId}
+                    monteCarloResult={monteCarloResult}
+                    isLoading={isMonteCarloLoading}
+                    onRunSimulation={handleRunMonteCarloSimulation}
+                  />
+                </TabsContent>
+              </Tabs>
+            </div>
           </div>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+        </SidebarInset>
+      </SidebarProvider>
+    </ProtectedRoute>
   );
 }

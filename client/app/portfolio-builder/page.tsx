@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { toast } from "sonner";
+import { ProtectedRoute } from "@/components/shared/protected-route";
 import { AppSidebar } from "@/components/shared/app-sidebar";
 import { SiteHeader } from "@/components/shared/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -154,68 +155,70 @@ export default function PortfolioBuilderPage() {
   };
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader />
-        <div className="p-4 md:p-6">
-          <div className="@container/main flex flex-col gap-4 md:gap-6">
-            {/* Portfolio Selector */}
-            <PortfolioSelector
-              existingPortfolios={existingPortfolios}
-              selectedPortfolioId={selectedPortfolioId}
-              onPortfolioSelect={handlePortfolioSelect}
-              onNewPortfolio={handleNewPortfolio}
-            />
+    <ProtectedRoute>
+      <SidebarProvider
+        style={
+          {
+            "--sidebar-width": "calc(var(--spacing) * 72)",
+            "--header-height": "calc(var(--spacing) * 12)",
+          } as React.CSSProperties
+        }
+      >
+        <AppSidebar variant="inset" />
+        <SidebarInset>
+          <SiteHeader />
+          <div className="p-4 md:p-6">
+            <div className="@container/main flex flex-col gap-4 md:gap-6">
+              {/* Portfolio Selector */}
+              <PortfolioSelector
+                existingPortfolios={existingPortfolios}
+                selectedPortfolioId={selectedPortfolioId}
+                onPortfolioSelect={handlePortfolioSelect}
+                onNewPortfolio={handleNewPortfolio}
+              />
 
-            {(isCreatingNew || selectedPortfolioId) && (
-              <>
-                {/* Portfolio Details */}
-                <PortfolioDetailsForm
-                  portfolioName={portfolioName}
-                  portfolioDescription={portfolioDescription}
-                  riskLevel={riskLevel}
-                  onPortfolioNameChange={setPortfolioName}
-                  onPortfolioDescriptionChange={setPortfolioDescription}
-                  onRiskLevelChange={setRiskLevel}
-                />
+              {(isCreatingNew || selectedPortfolioId) && (
+                <>
+                  {/* Portfolio Details */}
+                  <PortfolioDetailsForm
+                    portfolioName={portfolioName}
+                    portfolioDescription={portfolioDescription}
+                    riskLevel={riskLevel}
+                    onPortfolioNameChange={setPortfolioName}
+                    onPortfolioDescriptionChange={setPortfolioDescription}
+                    onRiskLevelChange={setRiskLevel}
+                  />
 
-                {/* Asset Allocation Builder */}
-                <AssetAllocationBuilder
-                  assets={assets}
-                  availableAssets={availableAssets}
-                  onAddAsset={handleAddAsset}
-                  onRemoveAsset={handleRemoveAsset}
-                  onAllocationChange={handleAllocationChange}
-                />
+                  {/* Asset Allocation Builder */}
+                  <AssetAllocationBuilder
+                    assets={assets}
+                    availableAssets={availableAssets}
+                    onAddAsset={handleAddAsset}
+                    onRemoveAsset={handleRemoveAsset}
+                    onAllocationChange={handleAllocationChange}
+                  />
 
-                {/* Portfolio Summary */}
-                <PortfolioSummary
-                  assets={assets}
-                  riskLevel={riskLevel}
-                  totalAllocation={totalAllocation}
-                  isValidAllocation={isValidAllocation}
-                />
+                  {/* Portfolio Summary */}
+                  <PortfolioSummary
+                    assets={assets}
+                    riskLevel={riskLevel}
+                    totalAllocation={totalAllocation}
+                    isValidAllocation={isValidAllocation}
+                  />
 
-                {/* Actions */}
-                <PortfolioActions
-                  isValidAllocation={isValidAllocation}
-                  portfolioName={portfolioName}
-                  onSave={handleSave}
-                  onReset={handleReset}
-                />
-              </>
-            )}
+                  {/* Actions */}
+                  <PortfolioActions
+                    isValidAllocation={isValidAllocation}
+                    portfolioName={portfolioName}
+                    onSave={handleSave}
+                    onReset={handleReset}
+                  />
+                </>
+              )}
+            </div>
           </div>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+        </SidebarInset>
+      </SidebarProvider>
+    </ProtectedRoute>
   );
 }

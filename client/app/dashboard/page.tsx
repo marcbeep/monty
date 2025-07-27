@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { ProtectedRoute } from "@/components/shared/protected-route";
 import { AppSidebar } from "@/components/shared/app-sidebar";
 import { ChartAreaInteractive } from "./_components/chart-area-interactive";
 import { DataTable } from "./_components/data-table";
@@ -76,43 +77,45 @@ export default function Page() {
   };
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader />
-        <div className="p-4 md:p-6">
-          <div className="@container/main flex flex-col gap-4 md:gap-6">
-            <PortfolioSelector
-              portfolios={portfolios}
-              selectedPortfolioId={selectedPortfolioId}
-              onPortfolioChange={handlePortfolioChange}
-              onAddPortfolio={handleAddPortfolio}
-              isLoading={isLoading}
-            />
-            <SectionCards
-              metrics={dashboardData?.metrics}
-              isLoading={isLoading}
-            />
-            <ChartAreaInteractive
-              chartData={dashboardData?.chartData || []}
-              timeframe={timeframe}
-              onTimeframeChange={handleTimeframeChange}
-              isLoading={isLoading}
-            />
-            <DataTable
-              allocations={dashboardData?.allocations || []}
-              isLoading={isLoading}
-            />
+    <ProtectedRoute>
+      <SidebarProvider
+        style={
+          {
+            "--sidebar-width": "calc(var(--spacing) * 72)",
+            "--header-height": "calc(var(--spacing) * 12)",
+          } as React.CSSProperties
+        }
+      >
+        <AppSidebar variant="inset" />
+        <SidebarInset>
+          <SiteHeader />
+          <div className="p-4 md:p-6">
+            <div className="@container/main flex flex-col gap-4 md:gap-6">
+              <PortfolioSelector
+                portfolios={portfolios}
+                selectedPortfolioId={selectedPortfolioId}
+                onPortfolioChange={handlePortfolioChange}
+                onAddPortfolio={handleAddPortfolio}
+                isLoading={isLoading}
+              />
+              <SectionCards
+                metrics={dashboardData?.metrics}
+                isLoading={isLoading}
+              />
+              <ChartAreaInteractive
+                chartData={dashboardData?.chartData || []}
+                timeframe={timeframe}
+                onTimeframeChange={handleTimeframeChange}
+                isLoading={isLoading}
+              />
+              <DataTable
+                allocations={dashboardData?.allocations || []}
+                isLoading={isLoading}
+              />
+            </div>
           </div>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+        </SidebarInset>
+      </SidebarProvider>
+    </ProtectedRoute>
   );
 }
