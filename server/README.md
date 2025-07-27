@@ -1,116 +1,64 @@
-# Monty Server
+# Monty Portfolio Backtester API
 
-This server is written in FastAPI and provides a modular API structure for the Monty portfolio backtester.
+A Node.js TypeScript backend for portfolio backtesting and analysis.
 
-## Setup
+## Tech Stack
 
-1. **Install Dependencies**
+- **Node.js** with **TypeScript** for type safety
+- **Express.js** for the web framework
+- **Supabase** for database and authentication
+- **Zod** for schema validation
 
-   ```bash
-   cd server
-   pip install -r requirements.txt
-   ```
+## Getting Started
 
-2. **Environment Configuration**
+### Prerequisites
 
-   Create a `.env` file based on `.env.example`:
+- Node.js 18+
+- npm or yarn
 
-   ```bash
-   cp .env.example .env
-   # Edit .env with your actual values
-   ```
+### Installation
 
-3. **Run the Server**
+1. Install dependencies:
 
-   ```bash
-   python main.py
-   ```
-
-   Or using uvicorn directly:
-
-   ```bash
-   uvicorn main:app --reload --host 0.0.0.0 --port 8000
-   ```
-
-The server will start on `http://localhost:8000`
-
-## API Documentation
-
-- **Swagger UI**: `http://localhost:8000/docs`
-- **ReDoc**: `http://localhost:8000/redoc`
-
-## CORS Configuration
-
-The server is configured to allow requests from:
-
-- `http://localhost:3000`
-- `http://127.0.0.1:3000`
-
-Modify the `allowed_origins` in `app/core/config.py` to add your frontend URL.
-
-## Directory Structure
-
+```bash
+npm install
 ```
-server/
-├── main.py                 # FastAPI app entry point
-├── requirements.txt        # Dependencies
-├── .env                    # Environment variables
-├── .env.example           # Environment template
-├── README.md              # Project documentation
-│
-├── app/
-│   ├── __init__.py
-│   ├── core/
-│   │   ├── __init__.py
-│   │   ├── config.py      # Settings & environment
-│   │   └── database.py    # Supabase connection
-│   │
-│   ├── api/
-│   │   ├── __init__.py
-│   │   ├── dashboard.py   # Dashboard endpoints
-│   │   ├── portfolios.py  # Portfolio CRUD endpoints
-│   │   ├── assets.py      # Asset endpoints
-│   │   ├── backtester.py  # Backtesting endpoints
-│   │   ├── comparison.py  # Portfolio comparison endpoints
-│   │   ├── settings.py    # User settings endpoints
-│   │   └── auth.py        # Authentication endpoints
-│   │
-│   ├── models/
-│   │   ├── __init__.py
-│   │   ├── portfolio.py   # Portfolio model
-│   │   ├── backtest.py    # Backtest results model
-│   │   ├── scenario.py    # Scenario analysis model
-│   │   ├── monte_carlo.py # Monte Carlo results model
-│   │   ├── user.py        # User model
-│   │   └── settings.py    # User settings model
-│   │
-│   ├── schemas/
-│   │   ├── __init__.py
-│   │   ├── portfolio.py   # Portfolio schemas
-│   │   ├── dashboard.py   # Dashboard schemas
-│   │   ├── backtester.py  # Backtesting schemas
-│   │   ├── comparison.py  # Comparison schemas
-│   │   ├── settings.py    # Settings schemas
-│   │   ├── auth.py        # Auth schemas
-│   │   └── common.py      # Common schemas
-│   │
-│   └── services/
-│       ├── __init__.py
-│       ├── portfolio_service.py    # Portfolio calculations
-│       ├── backtest_service.py     # Historical backtesting
-│       ├── scenario_service.py     # Scenario analysis
-│       ├── monte_carlo_service.py  # Monte Carlo simulation
-│       ├── comparison_service.py   # Portfolio comparison
-│       ├── market_data.py          # Market data (yfinance)
-│       └── settings_service.py     # User settings
-│
-└── tests/
-    ├── __init__.py
-    ├── test_api.py        # API tests
-    └── test_services.py   # Service tests
+
+2. Set up environment variables:
+
+```bash
+# Copy and update with your values
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_KEY=your_supabase_anon_key
+PORT=8000
+```
+
+### Development
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+The API will be available at `http://localhost:8000`
+
+### Production
+
+Build and start:
+
+```bash
+npm run build
+npm start
 ```
 
 ## API Endpoints
+
+### Health Checks
+
+- `GET /health` - Main health check
+- `GET /healthz` - Kubernetes-style health check
+- `GET /ping` - Simple ping/pong
 
 ### Authentication
 
@@ -118,34 +66,34 @@ server/
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/logout` - User logout
 
-### Dashboard
+### Core Features
 
-- `GET /api/dashboard/{portfolio_id}?timeframe=YTD` - Get dashboard data
+- `GET /api/dashboard` - Dashboard data
+- `GET /api/portfolios` - Portfolio management
+- `GET /api/assets` - Asset data
+- `GET /api/backtester` - Backtesting functionality
+- `GET /api/comparison` - Portfolio comparison
+- `GET /api/settings` - User settings
 
-### Portfolios
+## Project Structure
 
-- `GET /api/portfolios` - List all portfolios
-- `POST /api/portfolios` - Create a new portfolio
-- `PUT /api/portfolios/{id}` - Update a portfolio
-- `DELETE /api/portfolios/{id}` - Delete a portfolio
+```
+src/
+├── api/           # API route handlers
+├── core/          # Core configuration and database
+├── types/         # TypeScript type definitions
+└── utils/         # Utility functions
+```
 
-### Assets
+## Configuration
 
-- `GET /api/assets` - List available assets
-- `GET /api/assets/search?q={query}` - Search assets
+The server uses environment variables for configuration. All settings are validated at startup using Zod schemas.
 
-### Backtesting
+Required environment variables:
 
-- `GET /api/backtester/historical/{portfolio_id}` - Historical backtest
-- `POST /api/backtester/scenarios/{portfolio_id}` - Run scenario analysis
-- `POST /api/backtester/monte-carlo/{portfolio_id}` - Monte Carlo simulation
-- `GET /api/backtester/scenarios` - List available scenarios
+- `SUPABASE_URL` - Your Supabase project URL
+- `SUPABASE_KEY` - Your Supabase anon/public key
 
-### Comparison
+Optional:
 
-- `GET /api/comparison/{portfolio1_id}/{portfolio2_id}?timeframe=YTD` - Compare portfolios
-
-### Settings
-
-- `GET /api/settings` - Get user settings
-- `PUT /api/settings` - Update user settings
+- `PORT` - Server port (default: 8000)
