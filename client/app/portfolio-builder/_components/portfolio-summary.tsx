@@ -36,12 +36,12 @@ export function PortfolioSummary({
       typeMap.set(asset.type, current + asset.allocation);
     });
 
-    // Use chart colors from the centralized theme
+    // Use centralized asset allocation colors (matching dashboard)
     const colors = {
-      Equities: "hsl(var(--chart-1))",
-      "Fixed Income": "hsl(var(--chart-2))",
-      Alternatives: "hsl(var(--chart-3))",
-      Cash: "hsl(var(--chart-4))",
+      Equities: "var(--asset-equities)",
+      "Fixed Income": "var(--asset-fixed-income)",
+      Alternatives: "var(--asset-alternatives)",
+      Cash: "var(--asset-cash)",
     };
 
     return Array.from(typeMap.entries())
@@ -49,7 +49,7 @@ export function PortfolioSummary({
       .map(([type, percentage]) => ({
         type,
         percentage,
-        color: colors[type] || "hsl(var(--chart-5))",
+        color: colors[type] || "var(--asset-equities)",
       }));
   }, [assets]);
 
@@ -92,38 +92,6 @@ export function PortfolioSummary({
                 )}
               </div>
             </div>
-
-            <Separator />
-
-            {/* Asset Class Distribution */}
-            {assetAllocation.length > 0 && (
-              <div className="space-y-3">
-                <span className="text-sm font-medium">
-                  Asset Class Distribution
-                </span>
-                <div className="space-y-2">
-                  {assetAllocation.map((allocation) => (
-                    <div
-                      key={allocation.type}
-                      className="flex justify-between items-center text-sm"
-                    >
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: allocation.color }}
-                        />
-                        <span className="text-muted-foreground">
-                          {allocation.type}
-                        </span>
-                      </div>
-                      <span className="font-numerical font-medium">
-                        {allocation.percentage.toFixed(1)}%
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* Individual Asset Allocations */}
             {individualAssets.length > 0 && (

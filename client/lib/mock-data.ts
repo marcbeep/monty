@@ -31,7 +31,7 @@ export type {
   DashboardData,
 } from "@/types";
 
-// Portfolio strategy configurations with simplified allocations - Green monochrome palette
+// Portfolio strategy configurations using centralized asset allocation colors
 const portfolios: Portfolio[] = [
   {
     id: 1,
@@ -39,9 +39,13 @@ const portfolios: Portfolio[] = [
     type: "Conservative",
     description: "Capital preservation with steady income generation",
     strategy: [
-      { type: "Fixed Income", percentage: 70, color: "#22c55e" }, // green-500
-      { type: "Equities", percentage: 25, color: "#15803d" }, // green-700
-      { type: "Cash", percentage: 5, color: "#84cc16" }, // lime-500
+      {
+        type: "Fixed Income",
+        percentage: 70,
+        color: "var(--asset-fixed-income)",
+      },
+      { type: "Equities", percentage: 25, color: "var(--asset-equities)" },
+      { type: "Cash", percentage: 5, color: "var(--asset-cash)" },
     ],
     riskLevel: "Low",
     lastUpdated: "2024-01-15T16:00:00Z",
@@ -52,9 +56,13 @@ const portfolios: Portfolio[] = [
     type: "Moderate",
     description: "Balanced growth with moderate risk tolerance",
     strategy: [
-      { type: "Equities", percentage: 60, color: "#16a34a" }, // green-600
-      { type: "Fixed Income", percentage: 35, color: "#22c55e" }, // green-500
-      { type: "Cash", percentage: 5, color: "#84cc16" }, // lime-500
+      { type: "Equities", percentage: 60, color: "var(--asset-equities)" },
+      {
+        type: "Fixed Income",
+        percentage: 35,
+        color: "var(--asset-fixed-income)",
+      },
+      { type: "Cash", percentage: 5, color: "var(--asset-cash)" },
     ],
     riskLevel: "Medium",
     lastUpdated: "2024-01-15T16:00:00Z",
@@ -65,9 +73,13 @@ const portfolios: Portfolio[] = [
     type: "Aggressive",
     description: "Maximum growth potential with higher volatility",
     strategy: [
-      { type: "Equities", percentage: 80, color: "#15803d" }, // green-700
-      { type: "Alternatives", percentage: 15, color: "#166534" }, // green-800
-      { type: "Cash", percentage: 5, color: "#84cc16" }, // lime-500
+      { type: "Equities", percentage: 80, color: "var(--asset-equities)" },
+      {
+        type: "Alternatives",
+        percentage: 15,
+        color: "var(--asset-alternatives)",
+      },
+      { type: "Cash", percentage: 5, color: "var(--asset-cash)" },
     ],
     riskLevel: "High",
     lastUpdated: "2024-01-15T16:00:00Z",

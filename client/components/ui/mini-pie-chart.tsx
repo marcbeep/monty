@@ -16,7 +16,7 @@ export function MiniPieChart({
   className,
 }: MiniPieChartProps) {
   const radius = size / 2;
-  const strokeWidth = 2;
+  const strokeWidth = 4; // Increased from 2 to make chart thicker
   const normalizedRadius = radius - strokeWidth * 2;
   const circumference = normalizedRadius * 2 * Math.PI;
 
