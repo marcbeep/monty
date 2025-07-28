@@ -135,7 +135,10 @@ export function AssetAllocationBuilder({
                     variant="outline"
                     size="icon"
                     onClick={() =>
-                      handleAllocationChange(asset.symbol, asset.allocation - 5)
+                      handleAllocationChange(
+                        asset.symbol,
+                        Math.max(0, asset.allocation - 1)
+                      )
                     }
                     disabled={asset.allocation <= 0}
                     className="h-9 w-9 shrink-0"
@@ -143,20 +146,24 @@ export function AssetAllocationBuilder({
                     <Minus className="h-4 w-4" />
                   </Button>
 
-                  <div className="flex items-center justify-center min-w-[80px]">
+                  <div className="flex items-center justify-center min-w-[100px]">
                     <div className="relative">
                       <Input
                         type="number"
                         min="0"
                         max="100"
+                        step="1"
                         value={asset.allocation}
-                        onChange={(e) =>
-                          handleAllocationChange(
-                            asset.symbol,
-                            parseFloat(e.target.value) || 0
-                          )
-                        }
-                        className="w-20 text-center pr-6 font-numerical"
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          const intValue = parseInt(value) || 0;
+                          const clampedValue = Math.max(
+                            0,
+                            Math.min(100, intValue)
+                          );
+                          handleAllocationChange(asset.symbol, clampedValue);
+                        }}
+                        className="w-24 text-center pr-6 font-numerical"
                       />
                       <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
                         %
@@ -168,7 +175,10 @@ export function AssetAllocationBuilder({
                     variant="outline"
                     size="icon"
                     onClick={() =>
-                      handleAllocationChange(asset.symbol, asset.allocation + 5)
+                      handleAllocationChange(
+                        asset.symbol,
+                        Math.min(100, asset.allocation + 1)
+                      )
                     }
                     disabled={asset.allocation >= 100}
                     className="h-9 w-9 shrink-0"
