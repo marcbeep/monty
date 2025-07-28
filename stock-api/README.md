@@ -1,23 +1,36 @@
 # Stock API
 
-FastAPI service for stock search and quotes using yfinance.
+Clean, structured FastAPI service for stock market data.
 
-## Setup
+## Structure
 
-```bash
-pip install -r requirements.txt
-python main.py
+```
+src/
+├── config/         # Settings and configuration
+├── controllers/    # API route handlers
+├── dto/           # Request/Response models
+├── middleware/    # Error handling middleware
+├── services/      # Business logic
+└── utils/         # Shared utilities
 ```
 
-## Endpoints
+## Standards
 
-- `GET /search?q=apple&limit=10` - Search stocks
-- `GET /quote/AAPL` - Get stock quote
+- **Responses**: `{success: true, data: result}` or `{success: false, error: "message"}`
+- **Errors**: Factory functions (`BadRequest()`, `NotFound()`, etc.)
+- **Validation**: Pydantic models
+- **No**: Verbose comments, duplicate types, repository patterns
+
+## API Endpoints
+
 - `GET /` - Health check
+- `GET /api/search?q={query}&limit={limit}` - Search stocks
+- `GET /api/quote/{symbol}` - Get stock quote
+- `POST /api/quotes` - Batch quotes
 
 ## Usage
 
 ```bash
-curl "http://localhost:8001/search?q=apple"
-curl "http://localhost:8001/quote/AAPL"
+python main.py
+# API runs on http://localhost:8001
 ```

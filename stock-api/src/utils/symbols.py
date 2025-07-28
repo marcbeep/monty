@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 POPULAR_STOCKS = [
     ("AAPL", "Apple Inc.", "Equities"),
     ("MSFT", "Microsoft Corporation", "Equities"),
@@ -27,7 +29,7 @@ POPULAR_STOCKS = [
 ]
 
 
-def search_symbols(query: str, limit: int = 10):
+def search_symbols(query: str, limit: int = 10) -> List[Tuple[str, str, str]]:
     query_lower = query.lower()
     results = []
 
