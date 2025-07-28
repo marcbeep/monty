@@ -120,7 +120,9 @@ export function AssetSearchDialog({
             )}
 
             {showNoResults && (
-              <CommandEmpty>No assets found for "{query}"</CommandEmpty>
+              <CommandEmpty>
+                No assets found for &quot;{query}&quot;
+              </CommandEmpty>
             )}
 
             {!isLoading && availableAssets.length > 0 && (
