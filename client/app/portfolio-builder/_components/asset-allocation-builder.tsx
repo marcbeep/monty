@@ -24,7 +24,6 @@ import type { Asset, PortfolioAsset, AssetType } from "@/types";
 
 interface AssetAllocationBuilderProps {
   assets: PortfolioAsset[];
-  availableAssets: Asset[];
   onAddAsset: (asset: Asset) => void;
   onRemoveAsset: (symbol: string) => void;
   onAllocationChange: (symbol: string, allocation: number) => void;
@@ -40,7 +39,6 @@ const ASSET_CLASSES: AssetType[] = [
 
 export function AssetAllocationBuilder({
   assets,
-  availableAssets,
   onAddAsset,
   onRemoveAsset,
   onAllocationChange,
@@ -71,7 +69,6 @@ export function AssetAllocationBuilder({
             </CardDescription>
           </div>
           <AssetSearchDialog
-            availableAssets={availableAssets}
             existingAssets={assets}
             onAddAsset={handleAddAsset}
           />

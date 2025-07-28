@@ -19,37 +19,7 @@ import type { AssetType, PortfolioResponse } from "@/types";
 import { portfolioApi } from "@/lib/portfolio-api";
 import { handleApiError } from "@/lib/api";
 
-// Available assets for selection (hardcoded until stock-api integration)
-const availableAssets: Asset[] = [
-  { symbol: "VTI", name: "Vanguard Total Stock Market ETF", type: "Equities" },
-  {
-    symbol: "VXUS",
-    name: "Vanguard Total International Stock ETF",
-    type: "Equities",
-  },
-  {
-    symbol: "BND",
-    name: "Vanguard Total Bond Market ETF",
-    type: "Fixed Income",
-  },
-  {
-    symbol: "BNDX",
-    name: "Vanguard Total International Bond ETF",
-    type: "Fixed Income",
-  },
-  {
-    symbol: "VNQ",
-    name: "Vanguard Real Estate Index Fund ETF",
-    type: "Alternatives",
-  },
-  { symbol: "IAU", name: "iShares Gold Trust", type: "Alternatives" },
-  {
-    symbol: "VMOT",
-    name: "Vanguard Short-Term Inflation-Protected Securities ETF",
-    type: "Fixed Income",
-  },
-  { symbol: "CASH", name: "Cash Reserves", type: "Cash" },
-];
+// Assets are now loaded dynamically via real-time search
 
 export default function PortfolioBuilderPage() {
   const [portfolios, setPortfolios] = React.useState<PortfolioResponse[]>([]);
@@ -261,7 +231,6 @@ export default function PortfolioBuilderPage() {
                   {/* Asset Allocation Builder */}
                   <AssetAllocationBuilder
                     assets={assets}
-                    availableAssets={availableAssets}
                     onAddAsset={handleAddAsset}
                     onRemoveAsset={handleRemoveAsset}
                     onAllocationChange={handleAllocationChange}

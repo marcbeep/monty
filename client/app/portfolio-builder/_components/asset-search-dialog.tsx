@@ -19,22 +19,30 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
+import { useDebouncedSearch } from "@/hooks/use-debounced-search";
+import { stockApi, transformToAsset } from "@/lib/stock-api";
 import type { Asset, PortfolioAsset } from "@/types";
 
 interface AssetSearchDialogProps {
-  availableAssets: Asset[];
   existingAssets: PortfolioAsset[];
   onAddAsset: (asset: Asset) => void;
 }
 
 export function AssetSearchDialog({
-  availableAssets,
   existingAssets,
   onAddAsset,
 }: AssetSearchDialogProps) {
   const [open, setOpen] = React.useState(false);
   const [selectedAsset, setSelectedAsset] = React.useState<Asset | null>(null);
+
+  const { query, setQuery, results, isLoading, error } = useDebouncedSearch(
+    React.useCallback(
+      (searchQuery: string) => stockApi.searchStocks(searchQuery, 20),
+      []
+    ),
+    300
+  );
 
   const handleAddAsset = () => {
     if (
@@ -44,15 +52,34 @@ export function AssetSearchDialog({
       onAddAsset(selectedAsset);
       setOpen(false);
       setSelectedAsset(null);
+      setQuery("");
     }
   };
 
-  const filteredAssets = availableAssets.filter(
-    (asset) => !existingAssets.find((a) => a.symbol === asset.symbol)
-  );
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    if (!newOpen) {
+      setSelectedAsset(null);
+      setQuery("");
+    }
+  };
+
+  const handleSearch = (value: string) => {
+    setQuery(value);
+    setSelectedAsset(null);
+  };
+
+  // Filter out assets that are already in the portfolio
+  const availableAssets = results
+    .map(transformToAsset)
+    .filter((asset) => !existingAssets.find((a) => a.symbol === asset.symbol));
+
+  const showNoResults =
+    query.length >= 2 && !isLoading && availableAssets.length === 0 && !error;
+  const showMinLength = query.length > 0 && query.length < 2;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="outline">
           <Plus className="size-4" />
@@ -63,38 +90,66 @@ export function AssetSearchDialog({
         <DialogHeader>
           <DialogTitle>Add Asset</DialogTitle>
           <DialogDescription>
-            Search and select an asset to add to your portfolio
+            Search for stocks, ETFs, or other assets to add to your portfolio
           </DialogDescription>
         </DialogHeader>
-        <Command>
-          <CommandInput placeholder="Search assets..." />
+        <Command shouldFilter={false}>
+          <CommandInput
+            placeholder="Search for stocks (e.g., AAPL, Tesla, VTI)..."
+            value={query}
+            onValueChange={handleSearch}
+          />
           <CommandList>
-            <CommandEmpty>No assets found.</CommandEmpty>
-            <CommandGroup>
-              {filteredAssets.map((asset) => (
-                <CommandItem
-                  key={asset.symbol}
-                  onSelect={() => setSelectedAsset(asset)}
-                  className={
-                    selectedAsset?.symbol === asset.symbol ? "bg-accent" : ""
-                  }
-                >
-                  <div className="flex items-center justify-between w-full">
-                    <div>
-                      <div className="font-medium">{asset.symbol}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {asset.name}
+            {isLoading && (
+              <div className="flex items-center justify-center p-4">
+                <Loader2 className="size-4 animate-spin mr-2" />
+                <span className="text-sm text-muted-foreground">
+                  Searching...
+                </span>
+              </div>
+            )}
+
+            {error && (
+              <div className="flex items-center justify-center p-4">
+                <span className="text-sm text-destructive">Error: {error}</span>
+              </div>
+            )}
+
+            {showMinLength && (
+              <CommandEmpty>Type at least 2 characters to search</CommandEmpty>
+            )}
+
+            {showNoResults && (
+              <CommandEmpty>No assets found for "{query}"</CommandEmpty>
+            )}
+
+            {!isLoading && availableAssets.length > 0 && (
+              <CommandGroup heading="Search Results">
+                {availableAssets.map((asset) => (
+                  <CommandItem
+                    key={asset.symbol}
+                    onSelect={() => setSelectedAsset(asset)}
+                    className={
+                      selectedAsset?.symbol === asset.symbol ? "bg-accent" : ""
+                    }
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <div>
+                        <div className="font-medium">{asset.symbol}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {asset.name}
+                        </div>
                       </div>
+                      <Badge variant="outline">{asset.type}</Badge>
                     </div>
-                    <Badge variant="outline">{asset.type}</Badge>
-                  </div>
-                </CommandItem>
-              ))}
-            </CommandGroup>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
           </CommandList>
         </Command>
         <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={() => setOpen(false)}>
+          <Button variant="outline" onClick={() => handleOpenChange(false)}>
             Cancel
           </Button>
           <Button onClick={handleAddAsset} disabled={!selectedAsset}>
