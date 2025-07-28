@@ -1,36 +1,33 @@
 # Stock API
 
-Clean, structured FastAPI service for stock market data.
+FastAPI service for market data.
 
 ## Structure
 
 ```
 src/
-├── config/         # Settings and configuration
-├── controllers/    # API route handlers
-├── dto/           # Request/Response models
-├── middleware/    # Error handling middleware
-├── services/      # Business logic
-└── utils/         # Shared utilities
+├── controllers/     # Route handlers
+├── services/        # Business logic
+├── dto/            # Request/Response models
+├── middleware/     # Error handling
+├── config/         # Settings
+└── utils/          # Helpers & data
 ```
 
 ## Standards
 
-- **Responses**: `{success: true, data: result}` or `{success: false, error: "message"}`
-- **Errors**: Factory functions (`BadRequest()`, `NotFound()`, etc.)
-- **Validation**: Pydantic models
-- **No**: Verbose comments, duplicate types, repository patterns
+- Responses: `{success: true, data: result}`
+- Errors: Factory functions (`BadRequest()`, `NotFound()`)
+- No verbose code or comments
 
-## API Endpoints
+## Endpoints
 
-- `GET /` - Health check
-- `GET /api/search?q={query}&limit={limit}` - Search stocks
-- `GET /api/quote/{symbol}` - Get stock quote
-- `POST /api/quotes` - Batch quotes
+- `GET /api/search?q={query}`
+- `GET /api/quote/{symbol}`
+- `POST /api/quotes`
 
 ## Usage
 
 ```bash
-python main.py
-# API runs on http://localhost:8001
+python main.py    # http://localhost:8001
 ```

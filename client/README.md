@@ -1,22 +1,28 @@
-# Monty Client
+# Client
 
-## Environment Configuration
+Next.js frontend for portfolio analysis.
 
-Auto-detects environment and connects to appropriate server:
+## Structure
 
-- Local: `localhost:3000` → `localhost:3001`
-- Remote: `monty.marc.tt` → `montyapi.marc.tt`
-
-Override with `.env.local`:
-
-```bash
-NEXT_PUBLIC_API_URL=http://localhost:3001
+```
+app/                 # Pages & routes
+components/          # UI components
+lib/                 # API client & utils
+types/               # TypeScript definitions
 ```
 
-## Getting Started
+## Environment
+
+Auto-detects API endpoints:
+
+- Local: `localhost:3001`
+- Remote: `montyapi.marc.tt`
+
+Override: `NEXT_PUBLIC_API_URL=http://localhost:3001`
+
+## Usage
 
 ```bash
-npm run dev
+npm run dev    # http://localhost:3000
+npm run build
 ```
-
-Open [http://localhost:3000](http://localhost:3000)

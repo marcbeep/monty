@@ -1,28 +1,27 @@
-# Monty Server
+# Server
+
+Node.js API for authentication and portfolios.
+
+## Structure
+
+```
+src/
+├── controllers/     # Route handlers
+├── services/        # Business logic
+├── middleware/      # Auth, validation, errors
+├── config/          # Environment & DB
+└── database/        # SQL schemas
+```
 
 ## Setup
 
-1. Run `src/database/schema.sql` in Supabase SQL editor
-2. Create `.env`:
-
-```env
-SUPABASE_URL=your_url
-SUPABASE_ANON_KEY=your_key
-```
-
+1. Run `src/database/*.sql` in Supabase
+2. Create `.env`: `SUPABASE_URL`, `SUPABASE_ANON_KEY`
 3. `npm install && npm run dev`
 
-## Features
+## Endpoints
 
-- Auto-creates 3 starter portfolios on user signup (Conservative, Moderate, Aggressive)
-
-## API
-
-| Method | Path                  | Auth | Description         |
-| ------ | --------------------- | ---- | ------------------- |
-| POST   | `/api/v1/auth/login`  | No   | User login          |
-| POST   | `/api/v1/auth/signup` | No   | User signup         |
-| POST   | `/api/v1/auth/logout` | Yes  | User logout         |
-| GET    | `/api/v1/auth/me`     | Yes  | Get user profile    |
-| GET    | `/api/v1/portfolios`  | Yes  | Get user portfolios |
-| GET    | `/api/v1/health`      | No   | Health check        |
+- `POST /api/v1/auth/login|signup|logout`
+- `GET /api/v1/auth/me`
+- `GET /api/v1/portfolios`
+- `GET /api/v1/health`
