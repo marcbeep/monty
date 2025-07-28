@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { ZodError } from "zod";
 import { env } from "../config/env";
 import { AppError } from "../utils/errors";
 
@@ -9,6 +10,21 @@ export const errorHandler = (
   _next: NextFunction
 ): void => {
   console.error("Error:", error.message);
+
+  // Handle Zod validation errors
+  if (error instanceof ZodError) {
+    const errors = error.errors.map((err) => ({
+      field: err.path.join("."),
+      message: err.message,
+    }));
+
+    res.status(400).json({
+      success: false,
+      error: "Validation failed",
+      details: errors,
+    });
+    return;
+  }
 
   // Handle operational errors (our custom AppError)
   if (error instanceof AppError) {

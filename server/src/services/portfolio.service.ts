@@ -1,95 +1,122 @@
 import { supabase } from "../config/supabase";
-import { PortfolioResponse } from "../dto/portfolio.dto";
+import {
+  PortfolioResponse,
+  CreatePortfolioRequest,
+  UpdatePortfolioRequest,
+} from "../dto/portfolio.dto";
 import { AppError } from "../utils/errors";
 
 export class PortfolioService {
-  async createStarterPortfolios(userId: string): Promise<void> {
-    console.log(`Creating starter portfolios for user: ${userId}`);
+  async createPortfolio(
+    userId: string,
+    data: CreatePortfolioRequest
+  ): Promise<PortfolioResponse> {
+    const { data: portfolio, error: portfolioError } = await supabase
+      .from("portfolios")
+      .insert({
+        user_id: userId,
+        name: data.name,
+        description: data.description || null,
+        risk_level: data.riskLevel,
+      })
+      .select()
+      .single();
 
-    const portfolios = [
-      {
-        name: "Conservative Portfolio",
-        description: "Capital preservation with steady income",
-        holdings: [
-          { symbol: "BND", allocation: 60.0 },
-          { symbol: "SCHD", allocation: 20.0 },
-          { symbol: "VT", allocation: 10.0 },
-          { symbol: "VGSH", allocation: 10.0 },
-        ],
-      },
-      {
-        name: "Moderate Portfolio",
-        description: "Balanced growth and income approach",
-        holdings: [
-          { symbol: "VTI", allocation: 35.0 },
-          { symbol: "VXUS", allocation: 20.0 },
-          { symbol: "BND", allocation: 30.0 },
-          { symbol: "VNQ", allocation: 10.0 },
-          { symbol: "TIP", allocation: 5.0 },
-        ],
-      },
-      {
-        name: "Aggressive Portfolio",
-        description: "Growth-focused with higher risk tolerance",
-        holdings: [
-          { symbol: "QQQ", allocation: 30.0 },
-          { symbol: "VTI", allocation: 30.0 },
-          { symbol: "IEMG", allocation: 15.0 },
-          { symbol: "VXUS", allocation: 15.0 },
-          { symbol: "ARKK", allocation: 10.0 },
-        ],
-      },
-    ];
+    if (portfolioError) throw new AppError(portfolioError.message, 500);
 
-    for (const portfolio of portfolios) {
-      console.log(`Creating portfolio: ${portfolio.name}`);
-
-      const { data: portfolioData, error: portfolioError } = await supabase
-        .from("portfolios")
-        .insert({
-          user_id: userId,
-          name: portfolio.name,
-          description: portfolio.description,
-        })
-        .select()
-        .single();
-
-      if (portfolioError) {
-        console.error(
-          `Portfolio creation failed for ${portfolio.name}:`,
-          portfolioError
-        );
-        throw new AppError(portfolioError.message, 500);
-      }
-
-      console.log(`Portfolio created with ID: ${portfolioData.id}`);
-
-      const holdings = portfolio.holdings.map((h) => ({
-        portfolio_id: portfolioData.id,
-        symbol: h.symbol,
-        allocation_percentage: h.allocation,
+    if (data.assets?.length) {
+      const holdings = data.assets.map((asset) => ({
+        portfolio_id: portfolio.id,
+        symbol: asset.symbol,
+        asset_name: asset.name,
+        asset_type: asset.type,
+        allocation_percentage: asset.allocation,
       }));
 
       const { error: holdingsError } = await supabase
         .from("portfolio_holdings")
         .insert(holdings);
 
-      if (holdingsError) {
-        console.error(
-          `Holdings creation failed for ${portfolio.name}:`,
-          holdingsError
-        );
-        throw new AppError(holdingsError.message, 500);
-      }
-
-      console.log(
-        `Holdings created for ${portfolio.name}: ${holdings.length} assets`
-      );
+      if (holdingsError) throw new AppError(holdingsError.message, 500);
     }
 
-    console.log(
-      `Successfully created all starter portfolios for user: ${userId}`
-    );
+    return this.getPortfolioById(userId, portfolio.id);
+  }
+
+  async updatePortfolio(
+    userId: string,
+    data: UpdatePortfolioRequest
+  ): Promise<PortfolioResponse> {
+    const { data: portfolio, error: portfolioError } = await supabase
+      .from("portfolios")
+      .update({
+        name: data.name,
+        description: data.description,
+        risk_level: data.riskLevel,
+      })
+      .eq("id", data.id)
+      .eq("user_id", userId)
+      .select()
+      .single();
+
+    if (portfolioError) throw new AppError(portfolioError.message, 500);
+
+    if (data.assets) {
+      await supabase
+        .from("portfolio_holdings")
+        .delete()
+        .eq("portfolio_id", data.id);
+
+      if (data.assets.length) {
+        const holdings = data.assets.map((asset) => ({
+          portfolio_id: data.id,
+          symbol: asset.symbol,
+          asset_name: asset.name,
+          asset_type: asset.type,
+          allocation_percentage: asset.allocation,
+        }));
+
+        const { error: holdingsError } = await supabase
+          .from("portfolio_holdings")
+          .insert(holdings);
+
+        if (holdingsError) throw new AppError(holdingsError.message, 500);
+      }
+    }
+
+    return this.getPortfolioById(userId, data.id!);
+  }
+
+  async deletePortfolio(userId: string, portfolioId: string): Promise<void> {
+    const { error } = await supabase
+      .from("portfolios")
+      .delete()
+      .eq("id", portfolioId)
+      .eq("user_id", userId);
+
+    if (error) throw new AppError(error.message, 500);
+  }
+
+  async getPortfolioById(
+    userId: string,
+    portfolioId: string
+  ): Promise<PortfolioResponse> {
+    const { data, error } = await supabase
+      .from("portfolios")
+      .select(
+        `
+        *,
+        portfolio_holdings (*)
+      `
+      )
+      .eq("id", portfolioId)
+      .eq("user_id", userId)
+      .single();
+
+    if (error) throw new AppError(error.message, 500);
+    if (!data) throw new AppError("Portfolio not found", 404);
+
+    return this.mapPortfolioResponse(data);
   }
 
   async getUserPortfolios(userId: string): Promise<PortfolioResponse[]> {
@@ -106,19 +133,138 @@ export class PortfolioService {
 
     if (error) throw new AppError(error.message, 500);
 
-    return data.map((portfolio) => ({
-      id: portfolio.id,
-      name: portfolio.name,
-      description: portfolio.description,
-      holdings: portfolio.portfolio_holdings.map((holding: any) => ({
-        id: holding.id,
+    return data.map((portfolio) => this.mapPortfolioResponse(portfolio));
+  }
+
+  private mapPortfolioResponse(data: any): PortfolioResponse {
+    return {
+      id: data.id,
+      name: data.name,
+      description: data.description,
+      riskLevel: data.risk_level,
+      assets: data.portfolio_holdings.map((holding: any) => ({
         symbol: holding.symbol,
-        allocationPercentage: holding.allocation_percentage,
-        createdAt: holding.created_at,
+        name: holding.asset_name,
+        type: holding.asset_type,
+        allocation: holding.allocation_percentage,
       })),
-      createdAt: portfolio.created_at,
-      updatedAt: portfolio.updated_at,
-    }));
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    };
+  }
+
+  async createStarterPortfolios(userId: string): Promise<void> {
+    const portfolios = [
+      {
+        name: "Conservative Portfolio",
+        description: "Capital preservation with steady income",
+        riskLevel: "Low" as const,
+        assets: [
+          {
+            symbol: "BND",
+            name: "Vanguard Total Bond Market ETF",
+            type: "Fixed Income" as const,
+            allocation: 60.0,
+          },
+          {
+            symbol: "SCHD",
+            name: "Schwab US Dividend Equity ETF",
+            type: "Equities" as const,
+            allocation: 20.0,
+          },
+          {
+            symbol: "VT",
+            name: "Vanguard Total World Stock ETF",
+            type: "Equities" as const,
+            allocation: 10.0,
+          },
+          {
+            symbol: "VGSH",
+            name: "Vanguard Short-Term Treasury ETF",
+            type: "Fixed Income" as const,
+            allocation: 10.0,
+          },
+        ],
+      },
+      {
+        name: "Moderate Portfolio",
+        description: "Balanced growth and income approach",
+        riskLevel: "Medium" as const,
+        assets: [
+          {
+            symbol: "VTI",
+            name: "Vanguard Total Stock Market ETF",
+            type: "Equities" as const,
+            allocation: 35.0,
+          },
+          {
+            symbol: "VXUS",
+            name: "Vanguard Total International Stock ETF",
+            type: "Equities" as const,
+            allocation: 20.0,
+          },
+          {
+            symbol: "BND",
+            name: "Vanguard Total Bond Market ETF",
+            type: "Fixed Income" as const,
+            allocation: 30.0,
+          },
+          {
+            symbol: "VNQ",
+            name: "Vanguard Real Estate Index Fund ETF",
+            type: "Alternatives" as const,
+            allocation: 10.0,
+          },
+          {
+            symbol: "TIP",
+            name: "iShares TIPS Bond ETF",
+            type: "Fixed Income" as const,
+            allocation: 5.0,
+          },
+        ],
+      },
+      {
+        name: "Aggressive Portfolio",
+        description: "Growth-focused with higher risk tolerance",
+        riskLevel: "High" as const,
+        assets: [
+          {
+            symbol: "QQQ",
+            name: "Invesco QQQ Trust ETF",
+            type: "Equities" as const,
+            allocation: 30.0,
+          },
+          {
+            symbol: "VTI",
+            name: "Vanguard Total Stock Market ETF",
+            type: "Equities" as const,
+            allocation: 30.0,
+          },
+          {
+            symbol: "IEMG",
+            name: "iShares Core MSCI Emerging Markets ETF",
+            type: "Equities" as const,
+            allocation: 15.0,
+          },
+          {
+            symbol: "VXUS",
+            name: "Vanguard Total International Stock ETF",
+            type: "Equities" as const,
+            allocation: 15.0,
+          },
+          {
+            symbol: "ARKK",
+            name: "ARK Innovation ETF",
+            type: "Equities" as const,
+            allocation: 10.0,
+          },
+        ],
+      },
+    ];
+
+    for (const portfolio of portfolios) {
+      await this.createPortfolio(userId, portfolio);
+    }
   }
 }
 

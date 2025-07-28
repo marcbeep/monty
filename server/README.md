@@ -21,7 +21,19 @@ src/
 
 ## Endpoints
 
+### Authentication
+
 - `POST /api/v1/auth/login|signup|logout`
 - `GET /api/v1/auth/me`
-- `GET /api/v1/portfolios`
-- `GET /api/v1/health`
+
+### Portfolios
+
+- `GET /api/v1/portfolios` - List user portfolios
+- `GET /api/v1/portfolios/:id` - Get specific portfolio
+- `POST /api/v1/portfolios` - Create portfolio
+- `PUT /api/v1/portfolios/:id` - Update portfolio
+- `DELETE /api/v1/portfolios/:id` - Delete portfolio
+
+### System
+
+- `GET /api/v1/health` - Health check
