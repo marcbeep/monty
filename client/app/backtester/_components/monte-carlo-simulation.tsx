@@ -195,7 +195,7 @@ export function MonteCarloSimulation({
                       <TrendingUp className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm font-medium">Best Case</span>
                     </div>
-                    <div className="text-lg font-semibold text-green-600 currency truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
+                    <div className="text-lg font-semibold text-financial-positive currency truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
                       {monteCarloResult.outcomes.bestCase.toLocaleString(
                         "en-US",
                         {
@@ -259,7 +259,7 @@ export function MonteCarloSimulation({
                   <h4 className="font-semibold mb-3">Projection Range</h4>
                   <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm">
                     <div className="text-center">
-                      <div className="text-red-600 font-semibold">
+                      <div className="text-financial-negative font-semibold">
                         {monteCarloResult.outcomes.worstCase.toLocaleString(
                           "en-US",
                           {
@@ -286,7 +286,7 @@ export function MonteCarloSimulation({
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="font-semibold text-blue-600">
+                      <div className="font-semibold text-financial-neutral">
                         {monteCarloResult.outcomes.median.toLocaleString(
                           "en-US",
                           {
@@ -313,7 +313,7 @@ export function MonteCarloSimulation({
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-green-600 font-semibold">
+                      <div className="text-financial-positive font-semibold">
                         {monteCarloResult.outcomes.bestCase.toLocaleString(
                           "en-US",
                           {
@@ -350,7 +350,7 @@ export function MonteCarloSimulation({
                 {/* Simulation Details */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-border/50">
                   <div className="text-center">
-                    <div className="text-lg font-semibold">
+                    <div className="text-lg font-semibold metric">
                       {monteCarloResult.params.simulations.toLocaleString()}
                     </div>
                     <div className="text-sm text-muted-foreground">
@@ -358,7 +358,7 @@ export function MonteCarloSimulation({
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-semibold">
+                    <div className="text-lg font-semibold metric">
                       {monteCarloResult.params.timeHorizon} years
                     </div>
                     <div className="text-sm text-muted-foreground">
@@ -366,7 +366,7 @@ export function MonteCarloSimulation({
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-semibold">
+                    <div className="text-lg font-semibold percentage">
                       {monteCarloResult.params.confidenceInterval}%
                     </div>
                     <div className="text-sm text-muted-foreground">

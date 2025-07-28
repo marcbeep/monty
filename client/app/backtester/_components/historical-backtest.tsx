@@ -224,7 +224,7 @@ export function HistoricalBacktest({
                       <TrendingDown className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm font-medium">Max Drawdown</span>
                     </div>
-                    <div className="text-lg font-semibold text-red-600 percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
+                    <div className="text-lg font-semibold text-financial-negative percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
                       -{backtestData.metrics.maxDrawdown.toFixed(1)}%
                     </div>
                     <div className="text-sm text-muted-foreground">
@@ -245,7 +245,7 @@ export function HistoricalBacktest({
                 {/* Additional Metrics */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-border/50">
                   <div className="text-center">
-                    <div className="text-lg font-semibold">
+                    <div className="text-lg font-semibold percentage">
                       {backtestData.metrics.annualizedReturnPercent.toFixed(1)}%
                     </div>
                     <div className="text-sm text-muted-foreground">
@@ -253,7 +253,7 @@ export function HistoricalBacktest({
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-semibold">
+                    <div className="text-lg font-semibold metric">
                       {backtestData.metrics.sortinoRatio.toFixed(2)}
                     </div>
                     <div className="text-sm text-muted-foreground">

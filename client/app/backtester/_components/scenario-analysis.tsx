@@ -58,15 +58,15 @@ export function ScenarioAnalysis({
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case "Low":
-        return "bg-green-500/10 text-green-700 border-green-500/20";
+        return "bg-financial-positive-subtle text-financial-positive border-financial-positive";
       case "Medium":
-        return "bg-yellow-500/10 text-yellow-700 border-yellow-500/20";
+        return "bg-surface-accent text-financial-neutral border-financial-neutral";
       case "High":
-        return "bg-orange-500/10 text-orange-700 border-orange-500/20";
+        return "bg-financial-negative-subtle text-financial-negative border-financial-negative";
       case "Extreme":
-        return "bg-red-500/10 text-red-700 border-red-500/20";
+        return "bg-financial-negative-subtle text-financial-negative border-financial-negative";
       default:
-        return "bg-gray-500/10 text-gray-700 border-gray-500/20";
+        return "bg-surface-accent text-muted-foreground border-border";
     }
   };
 
@@ -179,7 +179,7 @@ export function ScenarioAnalysis({
                           Crisis Impact
                         </span>
                       </div>
-                      <div className="text-lg font-semibold text-red-600 percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
+                      <div className="text-lg font-semibold text-financial-negative percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
                         -{result.recovery.maxDrawdown.toFixed(1)}%
                       </div>
                       <div className="text-sm text-muted-foreground">
@@ -253,7 +253,7 @@ export function ScenarioAnalysis({
                             }
                           )}
                         </div>
-                        <div className="text-xs text-green-600">
+                        <div className="text-xs text-financial-positive">
                           +{result.beforeMetrics.totalReturnPercent.toFixed(1)}%
                         </div>
                       </div>
@@ -270,7 +270,7 @@ export function ScenarioAnalysis({
                             }
                           )}
                         </div>
-                        <div className="text-xs text-red-600">
+                        <div className="text-xs text-financial-negative">
                           -{result.recovery.maxDrawdown.toFixed(1)}%
                         </div>
                       </div>
@@ -290,8 +290,8 @@ export function ScenarioAnalysis({
                         <div
                           className={`text-xs ${
                             result.afterMetrics.totalReturnPercent >= 0
-                              ? "text-green-600"
-                              : "text-red-600"
+                              ? "text-financial-positive"
+                              : "text-financial-negative"
                           }`}
                         >
                           {result.afterMetrics.totalReturnPercent >= 0
