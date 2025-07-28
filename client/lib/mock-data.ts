@@ -80,7 +80,7 @@ const BASE_AMOUNT = 10000; // $10,000 starting amount
 const YTD_START_DATE = "2024-01-01"; // Year-to-date start
 
 // Mock allocation strategies for each portfolio type (updated with simplified types)
-const mockAllocations = {
+const MOCK_ALLOCATIONS = {
   1: [
     // Conservative Portfolio - 70% Fixed Income, 25% Equities, 5% Cash
     {
@@ -282,7 +282,7 @@ function getDaysFromYTD(): number {
 // Generate portfolio metrics from allocations
 function generateMetrics(portfolioId: number): PortfolioMetrics {
   const allocations =
-    mockAllocations[portfolioId as keyof typeof mockAllocations] || [];
+    MOCK_ALLOCATIONS[portfolioId as keyof typeof MOCK_ALLOCATIONS] || [];
   const currentValue = allocations.reduce(
     (sum, allocation) => sum + allocation.currentValue,
     0
@@ -342,8 +342,8 @@ export function getMockDashboardData(
   const portfolio =
     portfolios.find((p) => p.id === portfolioId) || portfolios[0];
   const allocations =
-    mockAllocations[portfolioId as keyof typeof mockAllocations] ||
-    mockAllocations[1];
+    MOCK_ALLOCATIONS[portfolioId as keyof typeof MOCK_ALLOCATIONS] ||
+    MOCK_ALLOCATIONS[1];
   const metrics = generateMetrics(portfolioId);
   const chartData = generateChartData(portfolioId, timeframe);
 

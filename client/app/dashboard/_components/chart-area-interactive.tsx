@@ -29,10 +29,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { ChartDataPoint } from "@/types";
 
-export const description =
+export const DESCRIPTION =
   "Portfolio value evolution from $10K starting amount";
 
-const chartConfig = {
+const CHART_CONFIG = {
   portfolio: {
     label: "Portfolio Value",
     color: "var(--financial-positive)",
@@ -169,7 +169,7 @@ export function ChartAreaInteractive({
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         <div className="transition-opacity duration-300 ease-in-out">
           <ChartContainer
-            config={chartConfig}
+            config={CHART_CONFIG}
             className="aspect-auto h-[250px] w-full"
           >
             <AreaChart
