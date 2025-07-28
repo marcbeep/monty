@@ -41,15 +41,22 @@ export const API_CONFIG = {
   retries: 3,
 } as const;
 
+const getStoredToken = () => {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("monty_access_token");
+};
+
 export async function apiCall<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
   const url = `${API_CONFIG.baseURL}${endpoint}`;
+  const token = getStoredToken();
 
   const defaultOptions: RequestInit = {
     headers: {
       "Content-Type": "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
       ...options.headers,
     },
     ...options,

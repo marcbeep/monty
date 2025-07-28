@@ -47,7 +47,7 @@ export class PortfolioService {
     userId: string,
     data: UpdatePortfolioRequest
   ): Promise<PortfolioResponse> {
-    const { data: portfolio, error: portfolioError } = await supabase
+    const { error: portfolioError } = await supabase
       .from("portfolios")
       .update({
         name: data.name,

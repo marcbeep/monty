@@ -14,17 +14,14 @@ import {
   PortfolioActions,
   type Asset,
   type PortfolioAsset,
-  type ExistingPortfolio,
 } from "./_components";
-import type { AssetType } from "@/types";
+import type { AssetType, PortfolioResponse } from "@/types";
+import { portfolioApi } from "@/lib/portfolio-api";
+import { handleApiError } from "@/lib/api";
 
-// Mock assets for selection
+// Available assets for selection (hardcoded until stock-api integration)
 const availableAssets: Asset[] = [
-  {
-    symbol: "VTI",
-    name: "Vanguard Total Stock Market ETF",
-    type: "Equities",
-  },
+  { symbol: "VTI", name: "Vanguard Total Stock Market ETF", type: "Equities" },
   {
     symbol: "VXUS",
     name: "Vanguard Total International Stock ETF",
@@ -45,11 +42,7 @@ const availableAssets: Asset[] = [
     name: "Vanguard Real Estate Index Fund ETF",
     type: "Alternatives",
   },
-  {
-    symbol: "IAU",
-    name: "iShares Gold Trust",
-    type: "Alternatives",
-  },
+  { symbol: "IAU", name: "iShares Gold Trust", type: "Alternatives" },
   {
     symbol: "VMOT",
     name: "Vanguard Short-Term Inflation-Protected Securities ETF",
@@ -59,8 +52,9 @@ const availableAssets: Asset[] = [
 ];
 
 export default function PortfolioBuilderPage() {
+  const [portfolios, setPortfolios] = React.useState<PortfolioResponse[]>([]);
   const [selectedPortfolioId, setSelectedPortfolioId] = React.useState<
-    number | null
+    string | null
   >(null);
   const [isCreatingNew, setIsCreatingNew] = React.useState(false);
   const [portfolioName, setPortfolioName] = React.useState("");
@@ -69,6 +63,8 @@ export default function PortfolioBuilderPage() {
     "Medium"
   );
   const [assets, setAssets] = React.useState<PortfolioAsset[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [isSaving, setIsSaving] = React.useState(false);
 
   // Calculate total allocation percentage
   const totalAllocation = assets.reduce(
@@ -77,12 +73,22 @@ export default function PortfolioBuilderPage() {
   );
   const isValidAllocation = totalAllocation === 100;
 
-  // Mock existing portfolios for selector
-  const existingPortfolios: ExistingPortfolio[] = [
-    { id: 1, name: "Conservative Portfolio" },
-    { id: 2, name: "Moderate Portfolio" },
-    { id: 3, name: "Aggressive Portfolio" },
-  ];
+  // Load portfolios on mount (ProtectedRoute ensures user is authenticated)
+  React.useEffect(() => {
+    const loadPortfolios = async () => {
+      try {
+        const data = await portfolioApi.getPortfolios();
+        setPortfolios(data);
+      } catch (error) {
+        handleApiError(error);
+        setPortfolios([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadPortfolios();
+  }, []);
 
   const handleNewPortfolio = () => {
     setIsCreatingNew(true);
@@ -93,27 +99,34 @@ export default function PortfolioBuilderPage() {
     setAssets([]);
   };
 
-  const handlePortfolioSelect = (portfolioId: number) => {
-    setSelectedPortfolioId(portfolioId);
-    setIsCreatingNew(false);
-    // In a real app, this would load the portfolio data
-    const portfolio = existingPortfolios.find((p) => p.id === portfolioId);
-    if (portfolio) {
+  const handlePortfolioSelect = async (portfolioId: string) => {
+    try {
+      setIsLoading(true);
+      const portfolio = await portfolioApi.getPortfolio(portfolioId);
+
+      setSelectedPortfolioId(portfolioId);
+      setIsCreatingNew(false);
       setPortfolioName(portfolio.name);
-      setPortfolioDescription("Example portfolio description");
-      // Load existing assets...
+      setPortfolioDescription(portfolio.description || "");
+      setRiskLevel(portfolio.riskLevel);
+      setAssets(
+        portfolio.assets.map((asset) => ({
+          symbol: asset.symbol,
+          name: asset.name,
+          type: asset.type,
+          allocation: asset.allocation,
+        }))
+      );
+    } catch (error) {
+      handleApiError(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleAddAsset = (asset: Asset) => {
     if (!assets.find((a) => a.symbol === asset.symbol)) {
-      setAssets([
-        ...assets,
-        {
-          ...asset,
-          allocation: 0,
-        },
-      ]);
+      setAssets([...assets, { ...asset, allocation: 0 }]);
     }
   };
 
@@ -137,21 +150,51 @@ export default function PortfolioBuilderPage() {
     );
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!isValidAllocation || !portfolioName.trim()) return;
 
-    // In a real app, this would save to the backend
-    console.log("Saving portfolio:", {
-      name: portfolioName,
-      description: portfolioDescription,
-      riskLevel,
-      assets,
-    });
+    setIsSaving(true);
+    try {
+      // Only include assets with non-zero allocation
+      const assetsWithAllocation = assets.filter(
+        (asset) => asset.allocation > 0
+      );
 
-    // Show success message
-    toast.success("Portfolio saved successfully!", {
-      description: "Your portfolio has been created and saved.",
-    });
+      const portfolioData = {
+        name: portfolioName,
+        description: portfolioDescription || undefined,
+        riskLevel,
+        assets: assetsWithAllocation.map((asset) => ({
+          symbol: asset.symbol,
+          name: asset.name,
+          type: asset.type,
+          allocation: asset.allocation,
+        })),
+      };
+
+      if (selectedPortfolioId && !isCreatingNew) {
+        // Update existing portfolio
+        const updatedPortfolio = await portfolioApi.updatePortfolio(
+          selectedPortfolioId,
+          portfolioData
+        );
+        setPortfolios((prev) =>
+          prev.map((p) => (p.id === selectedPortfolioId ? updatedPortfolio : p))
+        );
+        toast.success("Portfolio updated successfully!");
+      } else {
+        // Create new portfolio
+        const newPortfolio = await portfolioApi.createPortfolio(portfolioData);
+        setPortfolios((prev) => [newPortfolio, ...prev]);
+        setSelectedPortfolioId(newPortfolio.id);
+        setIsCreatingNew(false);
+        toast.success("Portfolio created successfully!");
+      }
+    } catch (error) {
+      handleApiError(error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleReset = () => {
@@ -159,6 +202,23 @@ export default function PortfolioBuilderPage() {
     setPortfolioDescription("");
     setRiskLevel("Medium");
     setAssets([]);
+  };
+
+  const handleDelete = async (portfolioId: string) => {
+    try {
+      await portfolioApi.deletePortfolio(portfolioId);
+      setPortfolios((prev) => prev.filter((p) => p.id !== portfolioId));
+
+      if (selectedPortfolioId === portfolioId) {
+        setSelectedPortfolioId(null);
+        setIsCreatingNew(false);
+        handleReset();
+      }
+
+      toast.success("Portfolio deleted successfully!");
+    } catch (error) {
+      handleApiError(error);
+    }
   };
 
   return (
@@ -178,10 +238,12 @@ export default function PortfolioBuilderPage() {
             <div className="@container/main flex flex-col gap-4 md:gap-6">
               {/* Portfolio Selector */}
               <PortfolioSelector
-                existingPortfolios={existingPortfolios}
+                portfolios={portfolios}
                 selectedPortfolioId={selectedPortfolioId}
                 onPortfolioSelect={handlePortfolioSelect}
                 onNewPortfolio={handleNewPortfolio}
+                onDeletePortfolio={handleDelete}
+                isLoading={isLoading}
               />
 
               {(isCreatingNew || selectedPortfolioId) && (
@@ -219,6 +281,7 @@ export default function PortfolioBuilderPage() {
                     portfolioName={portfolioName}
                     onSave={handleSave}
                     onReset={handleReset}
+                    isSaving={isSaving}
                   />
                 </>
               )}

@@ -44,11 +44,13 @@ export function PortfolioSummary({
       Cash: "hsl(var(--chart-4))",
     };
 
-    return Array.from(typeMap.entries()).map(([type, percentage]) => ({
-      type,
-      percentage,
-      color: colors[type] || "hsl(var(--chart-5))",
-    }));
+    return Array.from(typeMap.entries())
+      .filter(([, percentage]) => percentage > 0) // Only include non-zero allocations
+      .map(([type, percentage]) => ({
+        type,
+        percentage,
+        color: colors[type] || "hsl(var(--chart-5))",
+      }));
   }, [assets]);
 
   // Generate individual asset allocations for detailed view

@@ -15,22 +15,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Building, Plus } from "lucide-react";
-import type { ExistingPortfolio } from "@/types";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Building, Plus, Trash2 } from "lucide-react";
+import type { PortfolioResponse } from "@/types";
 
 interface PortfolioSelectorProps {
-  existingPortfolios: ExistingPortfolio[];
-  selectedPortfolioId: number | null;
-  onPortfolioSelect: (portfolioId: number) => void;
+  portfolios: PortfolioResponse[];
+  selectedPortfolioId: string | null;
+  onPortfolioSelect: (portfolioId: string) => void;
   onNewPortfolio: () => void;
+  onDeletePortfolio: (portfolioId: string) => void;
+  isLoading?: boolean;
 }
 
 export function PortfolioSelector({
-  existingPortfolios,
+  portfolios,
   selectedPortfolioId,
   onPortfolioSelect,
   onNewPortfolio,
+  onDeletePortfolio,
+  isLoading = false,
 }: PortfolioSelectorProps) {
+  const selectedPortfolio = portfolios.find(
+    (p) => p.id === selectedPortfolioId
+  );
+
   return (
     <Card className="@container/card bg-surface-primary shadow-sm">
       <CardHeader>
@@ -45,26 +54,35 @@ export function PortfolioSelector({
             </CardDescription>
           </div>
           <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-2 sm:space-y-0">
-            <Select
-              value={selectedPortfolioId?.toString() || ""}
-              onValueChange={(value) =>
-                value ? onPortfolioSelect(Number(value)) : undefined
-              }
-            >
-              <SelectTrigger className="w-full sm:w-[200px]">
-                <SelectValue placeholder="Select Portfolio" />
-              </SelectTrigger>
-              <SelectContent>
-                {existingPortfolios.map((portfolio) => (
-                  <SelectItem
-                    key={portfolio.id}
-                    value={portfolio.id.toString()}
-                  >
-                    {portfolio.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {isLoading ? (
+              <Skeleton className="w-full sm:w-[200px] h-10" />
+            ) : (
+              <Select
+                value={selectedPortfolioId || ""}
+                onValueChange={(value) => value && onPortfolioSelect(value)}
+              >
+                <SelectTrigger className="w-full sm:w-[200px]">
+                  <SelectValue placeholder="Select Portfolio" />
+                </SelectTrigger>
+                <SelectContent>
+                  {portfolios.map((portfolio) => (
+                    <SelectItem key={portfolio.id} value={portfolio.id}>
+                      {portfolio.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            {selectedPortfolio && (
+              <Button
+                onClick={() => onDeletePortfolio(selectedPortfolio.id)}
+                variant="outline"
+                size="icon"
+                className="text-destructive hover:text-destructive-foreground hover:bg-destructive"
+              >
+                <Trash2 className="size-4" />
+              </Button>
+            )}
             <Button
               onClick={onNewPortfolio}
               variant="outline"

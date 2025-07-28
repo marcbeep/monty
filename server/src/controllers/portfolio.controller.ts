@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import { portfolioService } from "../services/portfolio.service";
 import { AuthenticatedRequest } from "../middleware/auth.middleware";
 import {

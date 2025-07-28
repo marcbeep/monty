@@ -4,7 +4,6 @@
 import type {
   AssetType,
   Asset,
-  ExistingPortfolio,
   Portfolio,
   ChartDataPoint,
   PortfolioMetrics,
@@ -400,15 +399,6 @@ export function getMockAvailableAssets(): Asset[] {
       type: "Fixed Income",
     },
     { symbol: "CASH", name: "Cash Reserves", type: "Cash" },
-  ];
-}
-
-// Existing portfolios for selection
-export function getMockExistingPortfolios(): ExistingPortfolio[] {
-  return [
-    { id: 1, name: "Conservative Portfolio" },
-    { id: 2, name: "Moderate Portfolio" },
-    { id: 3, name: "Aggressive Portfolio" },
   ];
 }
 

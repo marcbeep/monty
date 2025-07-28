@@ -1,6 +1,6 @@
-import { AssetType, RiskLevel, PortfolioType, AssetAllocation } from "./common";
+import { AssetType, RiskLevel, AssetAllocation } from "./common";
 
-// Portfolio Builder Types
+// Portfolio Builder Types (aligned with server)
 export interface Asset {
   symbol: string;
   name: string;
@@ -11,16 +11,43 @@ export interface PortfolioAsset extends Asset {
   allocation: number;
 }
 
-export interface ExistingPortfolio {
-  id: number;
+// Server API Types
+export interface CreatePortfolioRequest {
   name: string;
+  description?: string;
+  riskLevel: RiskLevel;
+  assets: {
+    symbol: string;
+    name: string;
+    type: AssetType;
+    allocation: number;
+  }[];
 }
 
-// Portfolio Data Types
+export interface UpdatePortfolioRequest extends CreatePortfolioRequest {
+  id: string;
+}
+
+export interface PortfolioResponse {
+  id: string;
+  name: string;
+  description: string | null;
+  riskLevel: RiskLevel;
+  assets: {
+    symbol: string;
+    name: string;
+    type: AssetType;
+    allocation: number;
+  }[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Legacy types for backward compatibility with dashboard/other components
 export interface Portfolio {
   id: number;
   name: string;
-  type: PortfolioType;
+  type: "Conservative" | "Moderate" | "Aggressive";
   description: string;
   strategy: AssetAllocation[];
   riskLevel: RiskLevel;
@@ -32,27 +59,27 @@ export interface Allocation {
   symbol: string;
   name: string;
   type: AssetType;
-  allocationPercent: number; // e.g., 60 for 60%
-  baseAmount: number; // Dollar amount allocated from $10K base
-  currentValue: number; // Current dollar value of this allocation
-  totalReturn: number; // Total return in dollars since start
-  totalReturnPercent: number; // Total return percentage since start
-  dayChange: number; // Change in dollars today
-  dayChangePercent: number; // Change percentage today
+  allocationPercent: number;
+  baseAmount: number;
+  currentValue: number;
+  totalReturn: number;
+  totalReturnPercent: number;
+  dayChange: number;
+  dayChangePercent: number;
 }
 
 export interface PortfolioMetrics {
-  baseAmount: number; // Always $10,000
-  currentValue: number; // Current total portfolio value
-  totalReturn: number; // Total gain/loss in dollars
-  totalReturnPercent: number; // Total return percentage
-  annualizedReturn: number; // Annualized return in dollars
-  annualizedReturnPercent: number; // Annualized return percentage - better for backtesting
-  volatility: number; // Portfolio volatility (annualized standard deviation %)
-  sortinoRatio: number; // Downside risk-adjusted return ratio - better than Sharpe
-  maxDrawdown: number; // Maximum peak-to-trough decline percentage
-  dayChange: number; // Today's change in dollars
-  dayChangePercent: number; // Today's change percentage
-  startDate: string; // Portfolio simulation start date
+  baseAmount: number;
+  currentValue: number;
+  totalReturn: number;
+  totalReturnPercent: number;
+  annualizedReturn: number;
+  annualizedReturnPercent: number;
+  volatility: number;
+  sortinoRatio: number;
+  maxDrawdown: number;
+  dayChange: number;
+  dayChangePercent: number;
+  startDate: string;
   lastUpdated: string;
 }
