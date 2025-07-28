@@ -59,6 +59,7 @@ export function ComparisonTable({
       value1: `$${metrics1.currentValue.toLocaleString()}`,
       value2: `$${metrics2.currentValue.toLocaleString()}`,
       comparison: compareValues(metrics1.currentValue, metrics2.currentValue),
+      type: "currency" as const,
     },
     {
       label: "Total Return",
@@ -68,6 +69,7 @@ export function ComparisonTable({
         metrics1.totalReturnPercent,
         metrics2.totalReturnPercent
       ),
+      type: "percentage" as const,
     },
     {
       label: "Annualized Return",
@@ -77,12 +79,14 @@ export function ComparisonTable({
         metrics1.annualizedReturnPercent,
         metrics2.annualizedReturnPercent
       ),
+      type: "percentage" as const,
     },
     {
       label: "Volatility",
       value1: `${metrics1.volatility.toFixed(2)}%`,
       value2: `${metrics2.volatility.toFixed(2)}%`,
       comparison: compareValues(metrics1.volatility, metrics2.volatility, true), // Lower is better for volatility
+      type: "percentage" as const,
     },
   ];
 
@@ -109,24 +113,24 @@ export function ComparisonTable({
             >
               <div className="font-medium">{row.label}</div>
               <div className="text-center flex items-center justify-center gap-1">
-                <span>{row.value1}</span>
+                <span className={row.type}>{row.value1}</span>
                 {row.comparison === "portfolio1" && (
-                  <ArrowUpIcon className="h-4 w-4 text-green-600" />
+                  <ArrowUpIcon className="h-4 w-4 text-financial-positive" />
                 )}
                 {row.comparison === "portfolio2" && (
-                  <ArrowDownIcon className="h-4 w-4 text-red-600" />
+                  <ArrowDownIcon className="h-4 w-4 text-financial-negative" />
                 )}
                 {row.comparison === "equal" && (
                   <MinusIcon className="h-4 w-4 text-muted-foreground" />
                 )}
               </div>
               <div className="text-center flex items-center justify-center gap-1">
-                <span>{row.value2}</span>
+                <span className={row.type}>{row.value2}</span>
                 {row.comparison === "portfolio2" && (
-                  <ArrowUpIcon className="h-4 w-4 text-green-600" />
+                  <ArrowUpIcon className="h-4 w-4 text-financial-positive" />
                 )}
                 {row.comparison === "portfolio1" && (
-                  <ArrowDownIcon className="h-4 w-4 text-red-600" />
+                  <ArrowDownIcon className="h-4 w-4 text-financial-negative" />
                 )}
                 {row.comparison === "equal" && (
                   <MinusIcon className="h-4 w-4 text-muted-foreground" />
