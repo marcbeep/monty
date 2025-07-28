@@ -16,6 +16,7 @@ import {
   type PortfolioAsset,
   type ExistingPortfolio,
 } from "./_components";
+import type { AssetType } from "@/types";
 
 // Mock assets for selection
 const availableAssets: Asset[] = [
@@ -123,9 +124,15 @@ export default function PortfolioBuilderPage() {
   const handleAllocationChange = (symbol: string, allocation: number) => {
     setAssets(
       assets.map((asset) =>
-        asset.symbol === symbol
-          ? { ...asset, allocation: Math.max(0, Math.min(100, allocation)) }
-          : asset
+        asset.symbol === symbol ? { ...asset, allocation } : asset
+      )
+    );
+  };
+
+  const handleAssetTypeChange = (symbol: string, type: AssetType) => {
+    setAssets(
+      assets.map((asset) =>
+        asset.symbol === symbol ? { ...asset, type } : asset
       )
     );
   };
@@ -196,12 +203,12 @@ export default function PortfolioBuilderPage() {
                     onAddAsset={handleAddAsset}
                     onRemoveAsset={handleRemoveAsset}
                     onAllocationChange={handleAllocationChange}
+                    onAssetTypeChange={handleAssetTypeChange}
                   />
 
                   {/* Portfolio Summary */}
                   <PortfolioSummary
                     assets={assets}
-                    riskLevel={riskLevel}
                     totalAllocation={totalAllocation}
                     isValidAllocation={isValidAllocation}
                   />
