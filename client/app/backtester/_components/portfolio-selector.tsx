@@ -26,6 +26,7 @@ import type { Portfolio } from "@/types";
 interface BacktesterPortfolioSelectorProps {
   portfolios: Portfolio[];
   selectedPortfolioId?: number | null;
+  selectedPortfolio?: Portfolio | null; // Full portfolio data with strategy
   onPortfolioChange: (portfolioId: number) => void;
   isLoading?: boolean;
 }
@@ -33,12 +34,14 @@ interface BacktesterPortfolioSelectorProps {
 export function BacktesterPortfolioSelector({
   portfolios,
   selectedPortfolioId,
+  selectedPortfolio: selectedPortfolioProp,
   onPortfolioChange,
   isLoading = false,
 }: BacktesterPortfolioSelectorProps) {
-  const selectedPortfolio = portfolios.find(
-    (p) => p.id === selectedPortfolioId
-  );
+  // Use provided selectedPortfolio (with full strategy data) or fallback to basic portfolio
+  const selectedPortfolio =
+    selectedPortfolioProp ||
+    portfolios.find((p) => p.id === selectedPortfolioId);
 
   if (isLoading) {
     return (
@@ -68,31 +71,30 @@ export function BacktesterPortfolioSelector({
               Portfolio Backtesting & Analysis
             </CardTitle>
             <CardDescription>
-              Test your portfolio with historical data, scenario analysis, and Monte Carlo simulation
+              Test your portfolio with historical data, scenario analysis, and
+              Monte Carlo simulation
             </CardDescription>
             {selectedPortfolio && (
-              <div className="flex flex-col gap-2 pt-1">
-                <div className="flex items-center gap-2">
-                  {(() => {
-                    const riskBadgeConfig = getRiskBadge(
-                      selectedPortfolio.riskLevel
-                    );
-                    const Icon = riskBadgeConfig.icon;
-                    return (
-                      <Badge
-                        variant="outline"
-                        className={riskBadgeConfig.className}
-                      >
-                        <Icon className="size-3" />
-                        {selectedPortfolio.riskLevel} Risk
-                      </Badge>
-                    );
-                  })()}
-                  <MiniPieChart
-                    allocations={selectedPortfolio.strategy}
-                    size={24}
-                  />
-                </div>
+              <div className="flex items-center gap-2 pt-1">
+                {(() => {
+                  const riskBadgeConfig = getRiskBadge(
+                    selectedPortfolio.riskLevel
+                  );
+                  const Icon = riskBadgeConfig.icon;
+                  return (
+                    <Badge
+                      variant="outline"
+                      className={riskBadgeConfig.className}
+                    >
+                      <Icon className="size-3" />
+                      {selectedPortfolio.riskLevel} Risk
+                    </Badge>
+                  );
+                })()}
+                <MiniPieChart
+                  allocations={selectedPortfolio.strategy}
+                  size={24}
+                />
                 <MiniPieChartLegend
                   allocations={selectedPortfolio.strategy}
                   className="text-xs"
@@ -114,12 +116,7 @@ export function BacktesterPortfolioSelector({
                     key={portfolio.id}
                     value={portfolio.id.toString()}
                   >
-                    <div className="flex items-center gap-2">
-                      <span>{portfolio.name}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {portfolio.riskLevel} Risk
-                      </Badge>
-                    </div>
+                    {portfolio.name}
                   </SelectItem>
                 ))}
               </SelectContent>

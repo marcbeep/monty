@@ -32,6 +32,8 @@ export default function BacktesterPage() {
     number | null
   >(null);
   const [portfolios, setPortfolios] = React.useState<Portfolio[]>([]);
+  const [selectedPortfolioData, setSelectedPortfolioData] =
+    React.useState<Portfolio | null>(null);
   const [scenarios, setScenarios] = React.useState<ScenarioEvent[]>([]);
   const [activeTab, setActiveTab] = React.useState<
     "historical" | "scenarios" | "montecarlo"
@@ -76,6 +78,34 @@ export default function BacktesterPage() {
     };
     loadInitialData();
   }, [handleError]);
+
+  // Fetch full portfolio data when selected portfolio changes
+  React.useEffect(() => {
+    const fetchSelectedPortfolioData = async () => {
+      if (!selectedPortfolioId) {
+        setSelectedPortfolioData(null);
+        return;
+      }
+
+      try {
+        // Get full portfolio data from dashboard API (includes strategy)
+        const dashboardData = await dashboardApi.getDashboardData(
+          selectedPortfolioId,
+          "YTD"
+        );
+        setSelectedPortfolioData(dashboardData.portfolio);
+      } catch (error) {
+        handleError(error);
+        // Fallback to summary data if dashboard data fails
+        const fallbackPortfolio = portfolios.find(
+          (p) => p.id === selectedPortfolioId
+        );
+        setSelectedPortfolioData(fallbackPortfolio || null);
+      }
+    };
+
+    fetchSelectedPortfolioData();
+  }, [selectedPortfolioId, portfolios, handleError]);
 
   // Handle portfolio selection
   const handlePortfolioChange = (portfolioId: number) => {
@@ -158,6 +188,7 @@ export default function BacktesterPage() {
               <BacktesterPortfolioSelector
                 portfolios={portfolios}
                 selectedPortfolioId={selectedPortfolioId}
+                selectedPortfolio={selectedPortfolioData}
                 onPortfolioChange={handlePortfolioChange}
                 isLoading={portfolios.length === 0}
               />
