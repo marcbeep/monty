@@ -125,7 +125,8 @@ export class DashboardService {
 
       // Generate analytics data
       const allocations = await this.generateAllocations(
-        portfolioResponse.assets
+        portfolioResponse.assets,
+        timeframeUpper
       );
       const metrics = this.generateMetrics(
         portfolio.type,
@@ -133,10 +134,10 @@ export class DashboardService {
         startDate,
         endDate
       );
-      const chartData = this.generateChartData(
-        portfolio.type,
+      const chartData = await this.generateChartData(
+        portfolioResponse.assets,
         startDate,
-        endDate
+        timeframeUpper
       );
 
       return {
@@ -174,7 +175,10 @@ export class DashboardService {
           portfolio,
           displayId
         );
-        const allocations = await this.generateAllocations(portfolio.assets);
+        const allocations = await this.generateAllocations(
+          portfolio.assets,
+          "YTD"
+        );
         const metrics = this.generateMetrics(
           dashboardPortfolio.type,
           allocations,
@@ -255,7 +259,10 @@ export class DashboardService {
     };
   }
 
-  private async generateAllocations(assets: any[]): Promise<Allocation[]> {
+  private async generateAllocations(
+    assets: any[],
+    timeframe: string = "YTD"
+  ): Promise<Allocation[]> {
     const allocations: Allocation[] = [];
 
     for (let i = 0; i < assets.length; i++) {
@@ -263,33 +270,86 @@ export class DashboardService {
       const baseAmount = (asset.allocation / 100) * BASE_AMOUNT;
 
       try {
-        // Get current stock data
-        const stockData = await stockService.getStockBasic(asset.symbol);
+        // Get current stock data and historical data in parallel
+        const [stockData, historicalData] = await Promise.all([
+          stockService.getStockBasic(asset.symbol),
+          stockService.getStockHistory(asset.symbol, timeframe).catch(() => []),
+        ]);
 
-        // Simulate some performance (in real implementation, this would use historical data)
-        const performanceMultiplier = 1 + (Math.random() * 0.4 - 0.1); // -10% to +30%
-        const currentValue = baseAmount * performanceMultiplier;
-        const totalReturn = currentValue - baseAmount;
-        const totalReturnPercent = (totalReturn / baseAmount) * 100;
+        if (historicalData.length === 0) {
+          // Fallback to basic calculation if no historical data
+          allocations.push({
+            id: 100 + i,
+            symbol: asset.symbol,
+            name: stockData?.name || asset.name || `Asset ${asset.symbol}`,
+            type: asset.type,
+            allocationPercent: asset.allocation,
+            baseAmount,
+            currentValue: baseAmount,
+            totalReturn: 0,
+            totalReturnPercent: 0,
+            dayChange: 0,
+            dayChangePercent: 0,
+          });
+          continue;
+        }
 
-        // Simulate day change
-        const dayChangeMultiplier = 1 + (Math.random() * 0.06 - 0.03); // -3% to +3%
-        const dayChange = currentValue * (dayChangeMultiplier - 1);
-        const dayChangePercent = (dayChangeMultiplier - 1) * 100;
+        // Get first and last prices from historical data
+        const firstPrice = historicalData[0]?.close;
+        const currentPrice = historicalData[historicalData.length - 1]?.close;
 
-        allocations.push({
-          id: 100 + i,
-          symbol: asset.symbol,
-          name: stockData?.name || asset.name || `Asset ${asset.symbol}`,
-          type: asset.type,
-          allocationPercent: asset.allocation,
-          baseAmount,
-          currentValue,
-          totalReturn,
-          totalReturnPercent,
-          dayChange,
-          dayChangePercent,
-        });
+        // Get previous day price for day change calculation
+        const previousPrice =
+          historicalData.length > 1
+            ? historicalData[historicalData.length - 2]?.close
+            : firstPrice;
+
+        if (firstPrice && currentPrice && firstPrice > 0) {
+          // Calculate how many shares we could buy with our allocation on the first day
+          const shares = baseAmount / firstPrice;
+
+          // Calculate current value of those shares
+          const currentValue = shares * currentPrice;
+          const totalReturn = currentValue - baseAmount;
+          const totalReturnPercent = (totalReturn / baseAmount) * 100;
+
+          // Calculate day change based on actual price movement
+          const dayChange = previousPrice
+            ? shares * (currentPrice - previousPrice)
+            : 0;
+          const dayChangePercent = previousPrice
+            ? ((currentPrice - previousPrice) / previousPrice) * 100
+            : 0;
+
+          allocations.push({
+            id: 100 + i,
+            symbol: asset.symbol,
+            name: stockData?.name || asset.name || `Asset ${asset.symbol}`,
+            type: asset.type,
+            allocationPercent: asset.allocation,
+            baseAmount,
+            currentValue,
+            totalReturn,
+            totalReturnPercent,
+            dayChange,
+            dayChangePercent,
+          });
+        } else {
+          // Fallback if prices are invalid
+          allocations.push({
+            id: 100 + i,
+            symbol: asset.symbol,
+            name: stockData?.name || asset.name || `Asset ${asset.symbol}`,
+            type: asset.type,
+            allocationPercent: asset.allocation,
+            baseAmount,
+            currentValue: baseAmount,
+            totalReturn: 0,
+            totalReturnPercent: 0,
+            dayChange: 0,
+            dayChangePercent: 0,
+          });
+        }
       } catch (error) {
         // Fallback if stock data unavailable
         const currentValue = baseAmount * 1.05; // 5% default gain
@@ -366,46 +426,122 @@ export class DashboardService {
     };
   }
 
-  private generateChartData(
-    portfolioType: "Conservative" | "Moderate" | "Aggressive",
+  private async generateChartData(
+    assets: any[],
     startDate: Date,
-    endDate: Date
-  ): ChartDataPoint[] {
-    // Simulate chart data based on portfolio type and actual timeframe
-    const points: ChartDataPoint[] = [];
-
-    const totalDays = Math.floor(
-      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    const interval = Math.max(1, Math.floor(totalDays / 50)); // ~50 data points
-
-    // Performance multipliers by portfolio type
-    const performanceFactors = {
-      Conservative: 0.6,
-      Moderate: 1.0,
-      Aggressive: 1.4,
-    };
-
-    const factor = performanceFactors[portfolioType];
-    let currentValue = BASE_AMOUNT;
-
-    for (let i = 0; i <= totalDays; i += interval) {
-      const date = new Date(startDate);
-      date.setDate(date.getDate() + i);
-
-      // Simulate gradual growth with some volatility
-      const randomWalk = (Math.random() - 0.5) * 0.02 * factor; // Daily volatility
-      const trendGrowth = 0.0002 * factor; // Upward trend
-      currentValue *= 1 + trendGrowth + randomWalk;
-
-      points.push({
-        date: date.toISOString().substring(0, 10),
-        value: Math.round(currentValue * 100) / 100,
-        timestamp: date.getTime(),
+    timeframe: string
+  ): Promise<ChartDataPoint[]> {
+    try {
+      // Fetch historical data for all assets in parallel
+      const assetHistoryPromises = assets.map(async (asset) => {
+        try {
+          const history = await stockService.getStockHistory(
+            asset.symbol,
+            timeframe
+          );
+          return {
+            symbol: asset.symbol,
+            allocation: asset.allocation,
+            history: history,
+          };
+        } catch (error) {
+          console.warn(`Failed to fetch history for ${asset.symbol}:`, error);
+          return {
+            symbol: asset.symbol,
+            allocation: asset.allocation,
+            history: [],
+          };
+        }
       });
-    }
 
-    return points;
+      const assetsWithHistory = await Promise.all(assetHistoryPromises);
+
+      // Filter out assets with no data
+      const validAssets = assetsWithHistory.filter(
+        (asset) => asset.history.length > 0
+      );
+
+      if (validAssets.length === 0) {
+        // Fallback to starting value if no historical data available
+        return [
+          {
+            date: startDate.toISOString().substring(0, 10),
+            value: BASE_AMOUNT,
+            timestamp: startDate.getTime(),
+          },
+        ];
+      }
+
+      // Create a map of all unique dates across all assets
+      const allDates = new Set<string>();
+      validAssets.forEach((asset) => {
+        asset.history.forEach((point) => allDates.add(point.date));
+      });
+
+      // Sort dates chronologically
+      const sortedDates = Array.from(allDates).sort();
+
+      // Calculate portfolio value for each date
+      const portfolioValues: ChartDataPoint[] = [];
+
+      for (const date of sortedDates) {
+        let totalPortfolioValue = 0;
+        let hasValidData = false;
+
+        for (const asset of validAssets) {
+          // Find the price for this asset on this date
+          const pricePoint = asset.history.find((point) => point.date === date);
+
+          if (pricePoint) {
+            // Get the first available price for this asset to calculate initial shares
+            const firstPrice = asset.history[0]?.close;
+
+            if (firstPrice && firstPrice > 0) {
+              // Calculate how many shares we could buy with our allocation on day 1
+              const allocatedAmount = (asset.allocation / 100) * BASE_AMOUNT;
+              const shares = allocatedAmount / firstPrice;
+
+              // Calculate current value of those shares
+              const currentValue = shares * pricePoint.close;
+              totalPortfolioValue += currentValue;
+              hasValidData = true;
+            }
+          }
+        }
+
+        // Only add the data point if we have valid data for at least one asset
+        if (hasValidData) {
+          portfolioValues.push({
+            date: date,
+            value: Math.round(totalPortfolioValue * 100) / 100,
+            timestamp: new Date(date).getTime(),
+          });
+        }
+      }
+
+      // Sort by date to ensure chronological order
+      portfolioValues.sort((a, b) => a.timestamp - b.timestamp);
+
+      return portfolioValues.length > 0
+        ? portfolioValues
+        : [
+            {
+              date: startDate.toISOString().substring(0, 10),
+              value: BASE_AMOUNT,
+              timestamp: startDate.getTime(),
+            },
+          ];
+    } catch (error) {
+      console.error("Error generating chart data:", error);
+      // Fallback to starting value
+      return [
+        {
+          date: startDate.toISOString().substring(0, 10),
+          value: BASE_AMOUNT,
+          timestamp: startDate.getTime(),
+        },
+      ];
+    }
   }
 }
 
