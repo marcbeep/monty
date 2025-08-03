@@ -1,7 +1,13 @@
 import yfinance as yf
 import time
 from typing import List
-from ..dto.stock import StockOverview, StockSearch, StockBasic
+from ..dto.stock import (
+    StockOverview,
+    StockSearch,
+    StockBasic,
+    StockHistory,
+    HistoricalDataPoint,
+)
 from ..utils.errors import NotFound, BadRequest, InternalServerError
 from ..config.settings import CACHE_DURATION, MIN_QUERY_LENGTH
 
@@ -10,6 +16,7 @@ class StockService:
     def __init__(self):
         self.overview_cache = {}
         self.search_cache = {}
+        self.history_cache = {}
 
     def search_stocks(self, query: str, limit: int = 10) -> List[StockSearch]:
         if len(query) < MIN_QUERY_LENGTH:
@@ -107,6 +114,37 @@ class StockService:
             raise
         except Exception as e:
             raise InternalServerError(f"Stock overview failed: {str(e)}")
+
+    def get_stock_history(self, symbol: str, period: str = "1y") -> StockHistory:
+        symbol = symbol.upper()
+        cache_key = f"{symbol}:{period}"
+
+        if cache_key in self.history_cache:
+            cached_data, timestamp = self.history_cache[cache_key]
+            if time.time() - timestamp < CACHE_DURATION:
+                return cached_data
+
+        try:
+            ticker = yf.Ticker(symbol)
+            hist = ticker.history(period=period)
+
+            if hist.empty:
+                raise NotFound("No historical data available")
+
+            historical_points = [
+                HistoricalDataPoint(date=date.strftime("%Y-%m-%d"), close=float(close))
+                for date, close in hist["Close"].items()
+            ]
+
+            history = StockHistory(symbol=symbol, period=period, data=historical_points)
+
+            self.history_cache[cache_key] = (history, time.time())
+            return history
+
+        except NotFound:
+            raise
+        except Exception as e:
+            raise InternalServerError(f"History failed: {str(e)}")
 
 
 stock_service = StockService()

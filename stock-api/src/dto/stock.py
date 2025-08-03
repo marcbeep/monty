@@ -22,6 +22,17 @@ class StockOverview(BaseModel):
     sector: Optional[str] = None
 
 
+class HistoricalDataPoint(BaseModel):
+    date: str
+    close: float
+
+
+class StockHistory(BaseModel):
+    symbol: str
+    period: str
+    data: List[HistoricalDataPoint]
+
+
 class SearchResponse(BaseModel):
     success: bool
     data: List[StockSearch]
@@ -35,6 +46,11 @@ class BasicResponse(BaseModel):
 class OverviewResponse(BaseModel):
     success: bool
     data: StockOverview
+
+
+class HistoryResponse(BaseModel):
+    success: bool
+    data: StockHistory
 
 
 class ErrorResponse(BaseModel):

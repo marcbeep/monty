@@ -4,6 +4,7 @@ from ..dto.stock import (
     SearchResponse,
     BasicResponse,
     OverviewResponse,
+    HistoryResponse,
 )
 from ..config.settings import DEFAULT_SEARCH_LIMIT
 
@@ -26,3 +27,9 @@ async def get_stock_basic(symbol: str):
 async def get_stock_overview(symbol: str):
     overview = stock_service.get_stock_overview(symbol)
     return OverviewResponse(success=True, data=overview)
+
+
+@router.get("/history/{symbol}", response_model=HistoryResponse)
+async def get_stock_history(symbol: str, period: str = "1y"):
+    history = stock_service.get_stock_history(symbol, period)
+    return HistoryResponse(success=True, data=history)
