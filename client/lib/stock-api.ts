@@ -24,8 +24,6 @@ export interface StockHistoryResult {
   data: HistoricalDataPoint[];
 }
 
-const STOCK_API_BASE = "http://localhost:8001";
-
 export const stockApi = {
   searchStocks: (
     query: string,
@@ -40,27 +38,13 @@ export const stockApi = {
       `/api/v1/stocks/${encodeURIComponent(symbol)}/basic`
     ),
 
-  getHistory: async (
+  getHistory: (
     symbol: string,
     period: string = "1y"
-  ): Promise<HistoricalDataPoint[]> => {
-    const response = await fetch(
-      `${STOCK_API_BASE}/api/history/${encodeURIComponent(symbol)}?period=${period}`
-    );
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch history for ${symbol}`);
-    }
-
-    const result: { success: boolean; data: StockHistoryResult } =
-      await response.json();
-
-    if (!result.success) {
-      throw new Error(`Stock API error for ${symbol}`);
-    }
-
-    return result.data.data;
-  },
+  ): Promise<HistoricalDataPoint[]> =>
+    api.get<HistoricalDataPoint[]>(
+      `/api/v1/stocks/${encodeURIComponent(symbol)}/history?period=${period}`
+    ),
 };
 
 export const transformToAsset = (stock: StockSearchResult): Asset => ({

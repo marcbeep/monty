@@ -1,4 +1,9 @@
-import { StockSearchResult, StockBasicResult } from "../dto/stock.dto";
+import {
+  StockSearchResult,
+  StockBasicResult,
+  StockHistoryResult,
+  HistoricalDataPoint,
+} from "../dto/stock.dto";
 import { AppError, NotFound } from "../utils/errors";
 
 const STOCK_API_URL = process.env["STOCK_API_URL"] || "http://localhost:8001";
@@ -18,6 +23,7 @@ interface StockApiResponse<T> {
 export class StockService {
   private searchCache = new Map<string, CacheEntry<StockSearchResult[]>>();
   private quoteCache = new Map<string, CacheEntry<StockBasicResult>>();
+  private historyCache = new Map<string, CacheEntry<HistoricalDataPoint[]>>();
 
   async searchStocks(
     query: string,
@@ -116,6 +122,59 @@ export class StockService {
       }
       throw new AppError(
         `Stock quote failed: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+        500
+      );
+    }
+  }
+
+  async getStockHistory(
+    symbol: string,
+    period: string = "1y"
+  ): Promise<HistoricalDataPoint[]> {
+    const cacheKey = `${symbol}:${period}`;
+    const cached = this.historyCache.get(cacheKey);
+
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      return cached.data;
+    }
+
+    try {
+      const url = `${STOCK_API_URL}/api/history/${encodeURIComponent(
+        symbol
+      )}?period=${period}`;
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw NotFound("Symbol not found");
+        }
+        throw new AppError(`Stock API responded with ${response.status}`, 500);
+      }
+
+      const result =
+        (await response.json()) as StockApiResponse<StockHistoryResult>;
+
+      if (!result.success) {
+        throw new AppError(result.error || "History failed", 500);
+      }
+
+      // Extract the historical data points from the response
+      const historyData: HistoricalDataPoint[] = result.data.data;
+
+      this.historyCache.set(cacheKey, {
+        data: historyData,
+        timestamp: Date.now(),
+      });
+
+      return historyData;
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError(
+        `Stock history failed: ${
           error instanceof Error ? error.message : "Unknown error"
         }`,
         500

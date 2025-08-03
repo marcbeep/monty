@@ -10,8 +10,14 @@ export const stockSymbolSchema = z.object({
   symbol: z.string().min(1, "Symbol is required"),
 });
 
+export const stockHistorySchema = z.object({
+  symbol: z.string().min(1, "Symbol is required"),
+  period: z.string().optional().default("1y"),
+});
+
 export type StockSearchRequest = z.infer<typeof stockSearchSchema>;
 export type StockSymbolRequest = z.infer<typeof stockSymbolSchema>;
+export type StockHistoryRequest = z.infer<typeof stockHistorySchema>;
 
 // Response types (matching frontend Asset interface)
 export interface StockSearchResult {
@@ -24,4 +30,15 @@ export interface StockBasicResult {
   name: string;
   current_price?: number;
   sector?: string;
+}
+
+export interface HistoricalDataPoint {
+  date: string;
+  close: number;
+}
+
+export interface StockHistoryResult {
+  symbol: string;
+  period: string;
+  data: HistoricalDataPoint[];
 }
