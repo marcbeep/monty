@@ -12,7 +12,9 @@ import {
 import { AppError } from "../utils/errors";
 
 const BASE_AMOUNT = 10000; // $10,000 starting amount
-const YTD_START_DATE = "2024-01-01";
+
+// Valid timeframes matching our UI
+const VALID_TIMEFRAMES = ["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "Max"];
 
 // Asset type color mapping
 const ASSET_COLORS: Record<string, string> = {
@@ -31,12 +33,59 @@ const RISK_METRICS = {
 };
 
 export class DashboardService {
+  private validateTimeframe(timeframe: string): void {
+    const timeframeUpper = timeframe.toUpperCase();
+    if (!VALID_TIMEFRAMES.includes(timeframeUpper)) {
+      throw new AppError(
+        `Invalid timeframe '${timeframe}'. Valid options: ${VALID_TIMEFRAMES.join(
+          ", "
+        )}`,
+        400
+      );
+    }
+  }
+
+  private getTimeframeStartDate(timeframe: string): Date {
+    const now = new Date();
+    const timeframeUpper = timeframe.toUpperCase();
+
+    switch (timeframeUpper) {
+      case "1D":
+        return new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000);
+      case "5D":
+        return new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000);
+      case "1M":
+        return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      case "6M":
+        return new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000);
+      case "YTD":
+        return new Date(now.getFullYear(), 0, 1);
+      case "1Y":
+        return new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+      case "5Y":
+        return new Date(now.getTime() - 5 * 365 * 24 * 60 * 60 * 1000);
+      case "Max":
+        // For "Max", we'll use a very old date and let the stock API determine the actual range
+        return new Date("1970-01-01");
+      default:
+        return new Date(now.getFullYear(), 0, 1); // Default to YTD
+    }
+  }
+
+  private getTimeframeEndDate(): Date {
+    return new Date(); // Always current date
+  }
+
   async getDashboardData(
     userId: string,
     portfolioId: string,
     timeframe: string = "YTD"
   ): Promise<DashboardData> {
     try {
+      // Validate timeframe
+      this.validateTimeframe(timeframe);
+      const timeframeUpper = timeframe.toUpperCase();
+
       // Handle both UUID and integer portfolio IDs
       let actualPortfolioId = portfolioId;
 
@@ -70,19 +119,32 @@ export class DashboardService {
         displayId
       );
 
+      // Calculate timeframe date range
+      const startDate = this.getTimeframeStartDate(timeframeUpper);
+      const endDate = this.getTimeframeEndDate();
+
       // Generate analytics data
       const allocations = await this.generateAllocations(
         portfolioResponse.assets
       );
-      const metrics = this.generateMetrics(portfolio.type, allocations);
-      const chartData = this.generateChartData(portfolio.type, timeframe);
+      const metrics = this.generateMetrics(
+        portfolio.type,
+        allocations,
+        startDate,
+        endDate
+      );
+      const chartData = this.generateChartData(
+        portfolio.type,
+        startDate,
+        endDate
+      );
 
       return {
         portfolio,
         metrics,
         chartData,
         allocations,
-        timeframe,
+        timeframe: timeframeUpper,
       };
     } catch (error) {
       if (error instanceof AppError) {
@@ -115,7 +177,9 @@ export class DashboardService {
         const allocations = await this.generateAllocations(portfolio.assets);
         const metrics = this.generateMetrics(
           dashboardPortfolio.type,
-          allocations
+          allocations,
+          new Date(new Date().getFullYear(), 0, 1), // YTD for summary
+          new Date()
         );
 
         summaries.push({
@@ -250,7 +314,9 @@ export class DashboardService {
 
   private generateMetrics(
     portfolioType: "Conservative" | "Moderate" | "Aggressive",
-    allocations: Allocation[]
+    allocations: Allocation[],
+    startDate: Date,
+    endDate: Date
   ): PortfolioMetrics {
     const currentValue = allocations.reduce(
       (sum, allocation) => sum + allocation.currentValue,
@@ -261,9 +327,9 @@ export class DashboardService {
 
     // Calculate days since start for annualization
     const daysSinceStart = Math.floor(
-      (Date.now() - new Date(YTD_START_DATE).getTime()) / (1000 * 60 * 60 * 24)
+      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
     );
-    const yearFraction = daysSinceStart / 365;
+    const yearFraction = Math.max(daysSinceStart / 365, 1 / 365); // Minimum 1 day
 
     // Calculate annualized metrics
     const annualizedReturnPercent =
@@ -295,19 +361,18 @@ export class DashboardService {
       maxDrawdown: riskMetrics.maxDrawdown,
       dayChange,
       dayChangePercent,
-      startDate: YTD_START_DATE,
+      startDate: startDate.toISOString().substring(0, 10),
       lastUpdated: new Date().toISOString(),
     };
   }
 
   private generateChartData(
     portfolioType: "Conservative" | "Moderate" | "Aggressive",
-    _timeframe: string
+    startDate: Date,
+    endDate: Date
   ): ChartDataPoint[] {
-    // Simulate chart data based on portfolio type and timeframe
+    // Simulate chart data based on portfolio type and actual timeframe
     const points: ChartDataPoint[] = [];
-    const startDate = new Date(YTD_START_DATE);
-    const endDate = new Date();
 
     const totalDays = Math.floor(
       (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)

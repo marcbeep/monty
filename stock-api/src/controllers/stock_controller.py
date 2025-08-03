@@ -30,6 +30,23 @@ async def get_stock_overview(symbol: str):
 
 
 @router.get("/history/{symbol}", response_model=HistoryResponse)
-async def get_stock_history(symbol: str, period: str = "1y"):
-    history = stock_service.get_stock_history(symbol, period)
+async def get_stock_history(symbol: str, timeframe: str = "1Y"):
+    """
+    Get historical stock data for the specified timeframe.
+
+    Args:
+        symbol: Stock symbol (e.g., "AAPL")
+        timeframe: One of "1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "Max"
+    """
+    history = stock_service.get_stock_history(symbol, timeframe)
     return HistoryResponse(success=True, data=history)
+
+
+@router.get("/availability/{symbol}")
+async def get_data_availability(symbol: str):
+    """
+    Get information about data availability for different timeframes.
+    Returns which timeframes have data and their oldest available dates.
+    """
+    availability = stock_service.get_data_availability_info(symbol)
+    return {"success": True, "data": availability}

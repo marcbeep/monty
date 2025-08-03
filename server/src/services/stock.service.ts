@@ -9,6 +9,9 @@ import { AppError, NotFound } from "../utils/errors";
 const STOCK_API_URL = process.env["STOCK_API_URL"] || "http://localhost:8001";
 const CACHE_DURATION = 300000; // 5 minutes
 
+// Valid timeframes matching our UI and Python API
+const VALID_TIMEFRAMES = ["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "Max"];
+
 interface CacheEntry<T> {
   data: T;
   timestamp: number;
@@ -24,6 +27,18 @@ export class StockService {
   private searchCache = new Map<string, CacheEntry<StockSearchResult[]>>();
   private quoteCache = new Map<string, CacheEntry<StockBasicResult>>();
   private historyCache = new Map<string, CacheEntry<HistoricalDataPoint[]>>();
+
+  private validateTimeframe(timeframe: string): void {
+    const timeframeUpper = timeframe.toUpperCase();
+    if (!VALID_TIMEFRAMES.includes(timeframeUpper)) {
+      throw new AppError(
+        `Invalid timeframe '${timeframe}'. Valid options: ${VALID_TIMEFRAMES.join(
+          ", "
+        )}`,
+        400
+      );
+    }
+  }
 
   async searchStocks(
     query: string,
@@ -131,9 +146,13 @@ export class StockService {
 
   async getStockHistory(
     symbol: string,
-    period: string = "1y"
+    timeframe: string = "1Y"
   ): Promise<HistoricalDataPoint[]> {
-    const cacheKey = `${symbol}:${period}`;
+    // Validate timeframe
+    this.validateTimeframe(timeframe);
+
+    const timeframeUpper = timeframe.toUpperCase();
+    const cacheKey = `${symbol}:${timeframeUpper}`;
     const cached = this.historyCache.get(cacheKey);
 
     if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
@@ -143,7 +162,7 @@ export class StockService {
     try {
       const url = `${STOCK_API_URL}/api/history/${encodeURIComponent(
         symbol
-      )}?period=${period}`;
+      )}?timeframe=${timeframeUpper}`;
       const response = await fetch(url);
 
       if (!response.ok) {
@@ -175,6 +194,44 @@ export class StockService {
       }
       throw new AppError(
         `Stock history failed: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+        500
+      );
+    }
+  }
+
+  async getDataAvailability(
+    symbol: string
+  ): Promise<Record<string, string | null>> {
+    try {
+      const url = `${STOCK_API_URL}/api/availability/${encodeURIComponent(
+        symbol
+      )}`;
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw NotFound("Symbol not found");
+        }
+        throw new AppError(`Stock API responded with ${response.status}`, 500);
+      }
+
+      const result = (await response.json()) as StockApiResponse<
+        Record<string, string | null>
+      >;
+
+      if (!result.success) {
+        throw new AppError(result.error || "Availability check failed", 500);
+      }
+
+      return result.data;
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError(
+        `Data availability check failed: ${
           error instanceof Error ? error.message : "Unknown error"
         }`,
         500
