@@ -13,8 +13,20 @@ export interface StockBasicResult {
   sector?: string;
 }
 
+export interface HistoricalDataPoint {
+  date: string;
+  close: number;
+}
+
+export interface StockHistoryResult {
+  symbol: string;
+  period: string;
+  data: HistoricalDataPoint[];
+}
+
+const STOCK_API_BASE = "http://localhost:8001";
+
 export const stockApi = {
-  // Search stocks with real-time data
   searchStocks: (
     query: string,
     limit: number = 10
@@ -23,16 +35,36 @@ export const stockApi = {
       `/api/v1/stocks/search?q=${encodeURIComponent(query)}&limit=${limit}`
     ),
 
-  // Get basic stock information
   getStockBasic: (symbol: string): Promise<StockBasicResult> =>
     api.get<StockBasicResult>(
       `/api/v1/stocks/${encodeURIComponent(symbol)}/basic`
     ),
+
+  getHistory: async (
+    symbol: string,
+    period: string = "1y"
+  ): Promise<HistoricalDataPoint[]> => {
+    const response = await fetch(
+      `${STOCK_API_BASE}/api/history/${encodeURIComponent(symbol)}?period=${period}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch history for ${symbol}`);
+    }
+
+    const result: { success: boolean; data: StockHistoryResult } =
+      await response.json();
+
+    if (!result.success) {
+      throw new Error(`Stock API error for ${symbol}`);
+    }
+
+    return result.data.data;
+  },
 };
 
-// Transform server response to frontend Asset interface
 export const transformToAsset = (stock: StockSearchResult): Asset => ({
   symbol: stock.symbol,
   name: stock.name,
-  type: "Unassigned", // User must specify asset type manually
+  type: "Unassigned",
 });
