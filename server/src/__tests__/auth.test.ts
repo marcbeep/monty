@@ -37,7 +37,7 @@ describe("Authentication", () => {
 
       const response = await request(app).post("/auth/login").send({
         email: "test@example.com",
-        password: "password123",
+        password: "Password123",
       });
 
       expect(response.status).toBe(200);
@@ -74,7 +74,7 @@ describe("Authentication", () => {
         firstName: "John",
         lastName: "Doe",
         email: "test@example.com",
-        password: "password123",
+        password: "Password123",
       });
 
       expect(response.status).toBe(201);
