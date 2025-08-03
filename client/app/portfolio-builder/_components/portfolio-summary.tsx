@@ -42,6 +42,7 @@ export function PortfolioSummary({
       "Fixed Income": "var(--asset-fixed-income)",
       Alternatives: "var(--asset-alternatives)",
       Cash: "var(--asset-cash)",
+      Unassigned: "hsl(var(--muted))",
     };
 
     return Array.from(typeMap.entries())

@@ -1,7 +1,5 @@
 // Asset-related types
-
-// Simplified security types for clean categorization
-export type AssetType = "Cash" | "Equities" | "Fixed Income" | "Alternatives";
+import { AssetType } from "./common";
 
 export interface Asset {
   symbol: string;

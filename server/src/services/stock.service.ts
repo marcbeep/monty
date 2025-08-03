@@ -51,7 +51,6 @@ export class StockService {
         (item: any) => ({
           symbol: item.symbol,
           name: item.name,
-          type: this.mapAssetType(item.type),
         })
       );
 
@@ -121,20 +120,6 @@ export class StockService {
         }`,
         500
       );
-    }
-  }
-
-  private mapAssetType(
-    stockApiType: string
-  ): "Cash" | "Equities" | "Fixed Income" | "Alternatives" {
-    switch (stockApiType) {
-      case "Fixed Income":
-        return "Fixed Income";
-      case "Alternatives":
-        return "Alternatives";
-      case "Equities":
-      default:
-        return "Equities";
     }
   }
 }

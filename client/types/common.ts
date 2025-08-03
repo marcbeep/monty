@@ -1,6 +1,11 @@
 // Common types used across the application
 
-export type AssetType = "Cash" | "Equities" | "Fixed Income" | "Alternatives";
+export type AssetType =
+  | "Cash"
+  | "Equities"
+  | "Fixed Income"
+  | "Alternatives"
+  | "Unassigned";
 
 export type RiskLevel = "Low" | "Medium" | "High";
 

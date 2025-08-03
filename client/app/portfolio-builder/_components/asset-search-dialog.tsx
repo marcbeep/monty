@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -142,7 +141,6 @@ export function AssetSearchDialog({
                           {asset.name}
                         </div>
                       </div>
-                      <Badge variant="outline">{asset.type}</Badge>
                     </div>
                   </CommandItem>
                 ))}

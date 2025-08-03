@@ -5,7 +5,6 @@ from typing import List, Optional
 class StockSearch(BaseModel):
     symbol: str
     name: str
-    type: str
 
 
 class StockBasic(BaseModel):

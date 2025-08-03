@@ -30,13 +30,8 @@ class StockService:
                 name = quote.get("shortname") or quote.get("longname", "")
                 quote_type = quote.get("quoteType", "")
 
-                # Classify asset type based on quote type and name
-                asset_type = self._classify_asset_type(quote_type, name)
-
                 if symbol and name:
-                    results.append(
-                        StockSearch(symbol=symbol, name=name, type=asset_type)
-                    )
+                    results.append(StockSearch(symbol=symbol, name=name))
 
             self.search_cache[cache_key] = (results, time.time())
             return results
@@ -112,27 +107,6 @@ class StockService:
             raise
         except Exception as e:
             raise InternalServerError(f"Stock overview failed: {str(e)}")
-
-    def _classify_asset_type(self, quote_type: str, name: str) -> str:
-        name_upper = name.upper()
-
-        # ETF/Fund classification
-        if quote_type in ["ETF", "MUTUALFUND"] or any(
-            term in name_upper for term in ["ETF", "FUND", "INDEX"]
-        ):
-            if any(term in name_upper for term in ["BOND", "TREASURY", "TIPS", "DEBT"]):
-                return "Fixed Income"
-            elif any(term in name_upper for term in ["REAL ESTATE", "REIT"]):
-                return "Alternatives"
-            elif any(
-                term in name_upper for term in ["GOLD", "COMMODITY", "OIL", "METAL"]
-            ):
-                return "Alternatives"
-            else:
-                return "Equities"
-
-        # Individual stocks
-        return "Equities"
 
 
 stock_service = StockService()

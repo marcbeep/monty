@@ -4,7 +4,6 @@ import type { Asset } from "@/types/asset";
 export interface StockSearchResult {
   symbol: string;
   name: string;
-  type: "Cash" | "Equities" | "Fixed Income" | "Alternatives";
 }
 
 export interface StockBasicResult {
@@ -35,5 +34,5 @@ export const stockApi = {
 export const transformToAsset = (stock: StockSearchResult): Asset => ({
   symbol: stock.symbol,
   name: stock.name,
-  type: stock.type,
+  type: "Unassigned", // User must specify asset type manually
 });

@@ -17,7 +17,6 @@ export type StockSymbolRequest = z.infer<typeof stockSymbolSchema>;
 export interface StockSearchResult {
   symbol: string;
   name: string;
-  type: "Cash" | "Equities" | "Fixed Income" | "Alternatives";
 }
 
 export interface StockBasicResult {

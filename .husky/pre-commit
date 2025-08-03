@@ -1,0 +1,16 @@
+echo "🔨 Building all services before commit..."
+
+# Build all services
+npm run build:all
+
+if [ $? -ne 0 ]; then
+  echo "❌ Build failed! Commit aborted."
+  exit 1
+fi
+
+echo "✅ All services built successfully!"
+
+# Run linting on staged files
+npx lint-staged
+
+echo "✅ Pre-commit checks passed!"
