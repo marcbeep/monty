@@ -73,10 +73,10 @@
   --border: oklch(0.89 0.01 142);
   --input: oklch(0.96 0.01 142);
   --ring: oklch(0.54 0.12 142);
-  /* Asset Allocation Colors - Centralized green monochrome system (from dashboard) */
+  /* Asset Allocation Colors - Modern Tailwind palette that complements green */
   --asset-equities: oklch(0.49 0.13 142); /* green-700: #15803d */
-  --asset-fixed-income: oklch(0.65 0.14 142); /* green-500: #22c55e */
-  --asset-alternatives: oklch(0.42 0.15 142); /* green-800: #166534 */
+  --asset-fixed-income: oklch(0.55 0.12 220); /* sky-600: #0284c7 */
+  --asset-alternatives: oklch(0.45 0.15 280); /* violet-700: #7c3aed */
   --asset-cash: oklch(0.72 0.16 120); /* lime-500: #84cc16 */
 
   /* Generic Chart Colors - For non-portfolio charts */
@@ -135,11 +135,11 @@
   /* Asset Allocation Colors - Dark Mode (brighter versions) */
   --asset-equities: oklch(0.59 0.11 142); /* Brighter green-700 for dark mode */
   --asset-fixed-income: oklch(
-    0.72 0.12 142
-  ); /* Brighter green-500 for dark mode */
+    0.65 0.1 220
+  ); /* Brighter sky-600 for dark mode */
   --asset-alternatives: oklch(
-    0.52 0.13 142
-  ); /* Brighter green-800 for dark mode */
+    0.55 0.13 280
+  ); /* Brighter violet-700 for dark mode */
   --asset-cash: oklch(0.78 0.14 120); /* Brighter lime-500 for dark mode */
 
   /* Generic Chart Colors - For non-portfolio charts */
