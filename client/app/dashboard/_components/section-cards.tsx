@@ -80,8 +80,7 @@ export function SectionCards({
             })()}
           </div>
           <div className="text-muted-foreground line-clamp-1 truncate">
-            Total portfolio value from <span className="currency">$10K</span>{" "}
-            start
+            {metrics.portfolioValueDescription}
           </div>
         </CardFooter>
       </Card>
@@ -126,7 +125,7 @@ export function SectionCards({
       <Card className="@container/card overflow-hidden bg-surface-primary shadow-sm">
         <CardHeader className="pb-3">
           <CardDescription className="line-clamp-1 truncate">
-            Volatility
+            {metrics.volatilityLabel}
           </CardDescription>
           <CardTitle className="text-lg font-semibold percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
             {metrics.volatility.toFixed(1)}%
@@ -152,7 +151,7 @@ export function SectionCards({
             })()}
           </div>
           <div className="text-muted-foreground line-clamp-1 truncate">
-            Annualized price fluctuation
+            {metrics.volatilityDescription}
           </div>
         </CardFooter>
       </Card>
@@ -161,7 +160,7 @@ export function SectionCards({
       <Card className="@container/card overflow-hidden bg-surface-primary shadow-sm">
         <CardHeader className="pb-3">
           <CardDescription className="line-clamp-1 truncate">
-            Sortino Ratio
+            {metrics.sortinoLabel}
           </CardDescription>
           <CardTitle className="text-lg font-semibold metric truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
             {metrics.sortinoRatio.toFixed(2)}
@@ -187,7 +186,7 @@ export function SectionCards({
             })()}
           </div>
           <div className="text-muted-foreground line-clamp-1 truncate">
-            Downside risk-adjusted returns
+            {metrics.sortinoDescription}
           </div>
         </CardFooter>
       </Card>

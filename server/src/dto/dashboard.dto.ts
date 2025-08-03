@@ -64,6 +64,12 @@ export interface PortfolioMetrics {
   timeframe: string;
   timeframeLabel: string; // e.g., "YTD Return", "1Y Return", "5Y Return"
   returnLabel: string; // e.g., "Return since Jan 1", "Return over 1 year"
+  portfolioValueLabel: string; // e.g., "Portfolio value change over 5 years"
+  volatilityLabel: string; // e.g., "5Y Volatility", "Price fluctuation over 5 years"
+  sortinoLabel: string; // e.g., "5Y Sortino Ratio", "Downside risk-adjusted returns over 5 years"
+  portfolioValueDescription: string; // e.g., "+$2,500 over 1 month"
+  volatilityDescription: string; // e.g., "high price fluctuation over 1 month"
+  sortinoDescription: string; // e.g., "Above 1.0, acceptable performance"
 }
 
 export interface DashboardData {

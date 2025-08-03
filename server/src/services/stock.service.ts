@@ -10,7 +10,7 @@ const STOCK_API_URL = process.env["STOCK_API_URL"] || "http://localhost:8001";
 const CACHE_DURATION = 300000; // 5 minutes
 
 // Valid timeframes matching our UI and Python API
-const VALID_TIMEFRAMES = ["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "Max"];
+const VALID_TIMEFRAMES = ["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "MAX"];
 
 interface CacheEntry<T> {
   data: T;
@@ -162,7 +162,7 @@ export class StockService {
     try {
       const url = `${STOCK_API_URL}/api/history/${encodeURIComponent(
         symbol
-      )}?timeframe=${timeframeUpper}`;
+      )}?timeframe=${timeframe}`;
       const response = await fetch(url);
 
       if (!response.ok) {
