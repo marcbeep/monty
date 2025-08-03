@@ -76,6 +76,63 @@ export class DashboardService {
     return new Date(); // Always current date
   }
 
+  private getTimeframeLabels(
+    timeframe: string,
+    startDate: Date
+  ): { timeframeLabel: string; returnLabel: string } {
+    const now = new Date();
+    const startYear = startDate.getFullYear();
+    const currentYear = now.getFullYear();
+
+    switch (timeframe.toUpperCase()) {
+      case "1D":
+        return {
+          timeframeLabel: "1D Return",
+          returnLabel: "Return over 1 day",
+        };
+      case "5D":
+        return {
+          timeframeLabel: "5D Return",
+          returnLabel: "Return over 5 days",
+        };
+      case "1M":
+        return {
+          timeframeLabel: "1M Return",
+          returnLabel: "Return over 1 month",
+        };
+      case "6M":
+        return {
+          timeframeLabel: "6M Return",
+          returnLabel: "Return over 6 months",
+        };
+      case "YTD":
+        return {
+          timeframeLabel: "YTD Return",
+          returnLabel: `Return since Jan 1, ${currentYear}`,
+        };
+      case "1Y":
+        return {
+          timeframeLabel: "1Y Return",
+          returnLabel: "Return over 1 year",
+        };
+      case "5Y":
+        return {
+          timeframeLabel: "5Y Return",
+          returnLabel: "Return over 5 years",
+        };
+      case "MAX":
+        return {
+          timeframeLabel: "Total Return",
+          returnLabel: `Return since ${startYear}`,
+        };
+      default:
+        return {
+          timeframeLabel: "Return",
+          returnLabel: "Return for selected period",
+        };
+    }
+  }
+
   async getDashboardData(
     userId: string,
     portfolioId: string,
@@ -132,7 +189,8 @@ export class DashboardService {
         portfolio.type,
         allocations,
         startDate,
-        endDate
+        endDate,
+        timeframeUpper
       );
       const chartData = await this.generateChartData(
         portfolioResponse.assets,
@@ -183,7 +241,8 @@ export class DashboardService {
           dashboardPortfolio.type,
           allocations,
           new Date(new Date().getFullYear(), 0, 1), // YTD for summary
-          new Date()
+          new Date(),
+          "YTD"
         );
 
         summaries.push({
@@ -376,7 +435,8 @@ export class DashboardService {
     portfolioType: "Conservative" | "Moderate" | "Aggressive",
     allocations: Allocation[],
     startDate: Date,
-    endDate: Date
+    endDate: Date,
+    timeframe: string
   ): PortfolioMetrics {
     const currentValue = allocations.reduce(
       (sum, allocation) => sum + allocation.currentValue,
@@ -409,6 +469,9 @@ export class DashboardService {
     const dayChangePercent =
       currentValue > 0 ? (dayChange / (currentValue - dayChange)) * 100 : 0;
 
+    // Generate timeframe-specific labels
+    const timeframeLabels = this.getTimeframeLabels(timeframe, startDate);
+
     return {
       baseAmount: BASE_AMOUNT,
       currentValue,
@@ -423,6 +486,9 @@ export class DashboardService {
       dayChangePercent,
       startDate: startDate.toISOString().substring(0, 10),
       lastUpdated: new Date().toISOString(),
+      timeframe,
+      timeframeLabel: timeframeLabels.timeframeLabel,
+      returnLabel: timeframeLabels.returnLabel,
     };
   }
 

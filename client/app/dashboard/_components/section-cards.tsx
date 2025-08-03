@@ -86,22 +86,22 @@ export function SectionCards({
         </CardFooter>
       </Card>
 
-      {/* Annualized Return Card */}
+      {/* Timeframe Return Card */}
       <Card className="@container/card overflow-hidden bg-surface-primary shadow-sm">
         <CardHeader className="pb-3">
           <CardDescription className="line-clamp-1 truncate">
-            Annualized Return
+            {metrics.timeframeLabel}
           </CardDescription>
           <CardTitle className="text-lg font-semibold percentage truncate @[180px]/card:text-xl @[220px]/card:text-2xl @[280px]/card:text-3xl">
-            {metrics.annualizedReturnPercent >= 0 ? "+" : ""}
-            {metrics.annualizedReturnPercent.toFixed(1)}%
+            {metrics.totalReturnPercent >= 0 ? "+" : ""}
+            {metrics.totalReturnPercent.toFixed(1)}%
           </CardTitle>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm pt-0">
           <div className="flex items-center gap-2">
             {(() => {
               const badgeConfig = getPerformanceBadge(
-                metrics.annualizedReturnPercent,
+                metrics.totalReturnPercent,
                 "return"
               );
               const Icon = badgeConfig.icon;
@@ -117,7 +117,7 @@ export function SectionCards({
             })()}
           </div>
           <div className="text-muted-foreground line-clamp-1 truncate">
-            Expected yearly return rate
+            {metrics.returnLabel}
           </div>
         </CardFooter>
       </Card>

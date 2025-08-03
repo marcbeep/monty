@@ -72,12 +72,12 @@ export function ComparisonTable({
       type: "percentage" as const,
     },
     {
-      label: "Annualized Return",
-      value1: `${metrics1.annualizedReturnPercent.toFixed(2)}%`,
-      value2: `${metrics2.annualizedReturnPercent.toFixed(2)}%`,
+      label: metrics1.timeframeLabel || "Return",
+      value1: `${metrics1.totalReturnPercent.toFixed(2)}%`,
+      value2: `${metrics2.totalReturnPercent.toFixed(2)}%`,
       comparison: compareValues(
-        metrics1.annualizedReturnPercent,
-        metrics2.annualizedReturnPercent
+        metrics1.totalReturnPercent,
+        metrics2.totalReturnPercent
       ),
       type: "percentage" as const,
     },

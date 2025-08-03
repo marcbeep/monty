@@ -82,4 +82,7 @@ export interface PortfolioMetrics {
   dayChangePercent: number;
   startDate: string;
   lastUpdated: string;
+  timeframe: string;
+  timeframeLabel: string; // e.g., "YTD Return", "1Y Return", "5Y Return"
+  returnLabel: string; // e.g., "Return since Jan 1", "Return over 1 year"
 }
