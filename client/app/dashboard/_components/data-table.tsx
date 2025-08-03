@@ -67,7 +67,7 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
                       Allocation
                     </TableHead>
                     <TableHead className="text-right font-semibold">
-                      Current Value
+                      Change
                     </TableHead>
                     <TableHead className="text-right font-semibold">
                       Return
@@ -131,7 +131,7 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
                     Allocation
                   </TableHead>
                   <TableHead className="text-right font-semibold">
-                    Current Value
+                    Change
                   </TableHead>
                   <TableHead className="text-right font-semibold">
                     Return
@@ -169,8 +169,15 @@ export function DataTable({ allocations, isLoading = false }: DataTableProps) {
                           </span>
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          <span className="currency">
-                            {allocation.currentValue.toLocaleString("en-US", {
+                          <span
+                            className={`font-medium currency ${
+                              allocation.totalReturn >= 0
+                                ? "text-financial-positive"
+                                : "text-financial-negative"
+                            }`}
+                          >
+                            {allocation.totalReturn >= 0 ? "+" : ""}
+                            {allocation.totalReturn.toLocaleString("en-US", {
                               style: "currency",
                               currency: "USD",
                             })}
