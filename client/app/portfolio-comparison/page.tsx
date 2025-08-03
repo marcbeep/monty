@@ -6,8 +6,8 @@ import { AppSidebar } from "@/components/shared/app-sidebar";
 import { SiteHeader } from "@/components/shared/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { PortfolioDualSelector, ComparisonTable } from "./_components";
-import { getMockDashboardData, getMockPortfolios } from "@/lib/mock-data";
-import { mockApiCall, handleApiError } from "@/lib/api";
+import { dashboardApi, transformSummaryToPortfolio } from "@/lib/dashboard-api";
+import { handleApiError } from "@/lib/api";
 import type { DashboardData, Portfolio } from "@/types";
 
 export default function PortfolioComparisonPage() {
@@ -33,14 +33,8 @@ export default function PortfolioComparisonPage() {
       setIsLoading(true);
       try {
         const [data1, data2] = await Promise.all([
-          mockApiCall(
-            getMockDashboardData(portfolio1Id, selectedTimeframe),
-            600
-          ),
-          mockApiCall(
-            getMockDashboardData(portfolio2Id, selectedTimeframe),
-            600
-          ),
+          dashboardApi.getDashboardData(portfolio1Id, selectedTimeframe),
+          dashboardApi.getDashboardData(portfolio2Id, selectedTimeframe),
         ]);
         setPortfolio1Data(data1);
         setPortfolio2Data(data2);
@@ -57,7 +51,10 @@ export default function PortfolioComparisonPage() {
   React.useEffect(() => {
     const loadPortfolios = async () => {
       try {
-        const portfolioList = await mockApiCall(getMockPortfolios(), 300);
+        const portfolioSummaries = await dashboardApi.getPortfolios();
+        const portfolioList = portfolioSummaries.map(
+          transformSummaryToPortfolio
+        );
         setPortfolios(portfolioList);
       } catch (error) {
         handleApiError(error);

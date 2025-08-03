@@ -12,14 +12,7 @@ import {
   ScenarioAnalysis,
   MonteCarloSimulation,
 } from "./_components";
-import {
-  getMockPortfolios,
-  getMockBacktestData,
-  getMockScenarios,
-  getMockScenarioResult,
-  getMockMonteCarloResult,
-} from "@/lib/mock-data";
-import { mockApiCall } from "@/lib/api";
+import { dashboardApi, transformSummaryToPortfolio } from "@/lib/dashboard-api";
 import { useErrorHandler } from "@/hooks/use-error-handler";
 import type { Portfolio } from "@/types";
 import type {
@@ -68,12 +61,15 @@ export default function BacktesterPage() {
   React.useEffect(() => {
     const loadInitialData = async () => {
       try {
-        const [portfolioList, scenarioList] = await Promise.all([
-          mockApiCall(getMockPortfolios(), 300),
-          mockApiCall(getMockScenarios(), 200),
-        ]);
+        // TODO: Implement real backtester API endpoints
+        const portfolioSummaries = await dashboardApi.getPortfolios();
+        const portfolioList = portfolioSummaries.map(
+          transformSummaryToPortfolio
+        );
         setPortfolios(portfolioList);
-        setScenarios(scenarioList);
+
+        // TODO: Replace with real scenario API
+        setScenarios([]);
       } catch (error) {
         handleError(error);
       }
@@ -95,8 +91,9 @@ export default function BacktesterPage() {
   const handleRunBacktest = async (params: BacktestParams) => {
     setIsBacktestLoading(true);
     try {
-      const data = await mockApiCall(getMockBacktestData(params), 1200);
-      setBacktestData(data);
+      // TODO: Implement real backtest API endpoint
+      console.log("Backtest params:", params);
+      setBacktestData(null);
     } catch (error) {
       handleError(error);
     } finally {
@@ -114,13 +111,12 @@ export default function BacktesterPage() {
     setScenarioResults([]);
 
     try {
-      const result = await mockApiCall(
-        getMockScenarioResult(selectedPortfolioId, scenarioId),
-        1000
-      );
-
-      // Replace all results with the new single result
-      setScenarioResults([result]);
+      // TODO: Implement real scenario API endpoint
+      console.log("Scenario params:", {
+        portfolioId: selectedPortfolioId,
+        scenarioId,
+      });
+      setScenarioResults([]);
     } catch (error) {
       handleError(error);
     } finally {
@@ -133,8 +129,9 @@ export default function BacktesterPage() {
   const handleRunMonteCarloSimulation = async (params: MonteCarloParams) => {
     setIsMonteCarloLoading(true);
     try {
-      const result = await mockApiCall(getMockMonteCarloResult(params), 1500);
-      setMonteCarloResult(result);
+      // TODO: Implement real Monte Carlo API endpoint
+      console.log("Monte Carlo params:", params);
+      setMonteCarloResult(null);
     } catch (error) {
       handleError(error);
     } finally {
