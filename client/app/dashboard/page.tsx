@@ -10,8 +10,8 @@ import { SectionCards } from "./_components/section-cards";
 import { SiteHeader } from "@/components/shared/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-import { getMockDashboardData, getMockPortfolios } from "@/lib/mock-data";
-import { mockApiCall, handleApiError } from "@/lib/api";
+import { dashboardApi, transformSummaryToPortfolio } from "@/lib/dashboard-api";
+import { handleApiError } from "@/lib/api";
 import type { DashboardData, Portfolio } from "@/types";
 
 export default function Page() {
@@ -23,15 +23,14 @@ export default function Page() {
   const [portfolios, setPortfolios] = React.useState<Portfolio[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
 
-  // Simulate dashboard API call
+  // Fetch dashboard API data
   const fetchDashboardData = React.useCallback(
     async (portfolioId: number, selectedTimeframe: string) => {
       setIsLoading(true);
       try {
-        // Simulate API call with delay
-        const data = await mockApiCall(
-          getMockDashboardData(portfolioId, selectedTimeframe),
-          600
+        const data = await dashboardApi.getDashboardData(
+          portfolioId,
+          selectedTimeframe
         );
         setDashboardData(data);
       } catch (error) {
@@ -47,7 +46,10 @@ export default function Page() {
   React.useEffect(() => {
     const loadPortfolios = async () => {
       try {
-        const portfolioList = await mockApiCall(getMockPortfolios(), 300);
+        const portfolioSummaries = await dashboardApi.getPortfolios();
+        const portfolioList = portfolioSummaries.map(
+          transformSummaryToPortfolio
+        );
         setPortfolios(portfolioList);
       } catch (error) {
         handleApiError(error);
