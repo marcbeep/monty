@@ -37,14 +37,38 @@ export class DashboardService {
     timeframe: string = "YTD"
   ): Promise<DashboardData> {
     try {
-      // Get portfolio from database
+      // Handle both UUID and integer portfolio IDs
+      let actualPortfolioId = portfolioId;
+
+      // If portfolioId is a number, we need to find the actual UUID
+      if (/^\d+$/.test(portfolioId)) {
+        const userPortfolios = await portfolioService.getUserPortfolios(userId);
+        const portfolioIndex = parseInt(portfolioId) - 1; // Convert to 0-based index
+
+        if (portfolioIndex < 0 || portfolioIndex >= userPortfolios.length) {
+          throw new AppError("Portfolio not found", 404);
+        }
+
+        const selectedPortfolio = userPortfolios[portfolioIndex];
+        if (!selectedPortfolio) {
+          throw new AppError("Portfolio not found", 404);
+        }
+
+        actualPortfolioId = selectedPortfolio.id;
+      }
+
+      // Get portfolio from database using actual UUID
       const portfolioResponse = await portfolioService.getPortfolioById(
         userId,
-        portfolioId
+        actualPortfolioId
       );
 
-      // Transform to dashboard format
-      const portfolio = this.transformPortfolioToDashboard(portfolioResponse);
+      // Transform to dashboard format (use the integer ID passed from client)
+      const displayId = /^\d+$/.test(portfolioId) ? parseInt(portfolioId) : 1;
+      const portfolio = this.transformPortfolioToDashboard(
+        portfolioResponse,
+        displayId
+      );
 
       // Generate analytics data
       const allocations = await this.generateAllocations(
@@ -79,9 +103,15 @@ export class DashboardService {
 
       const summaries: PortfolioSummary[] = [];
 
-      for (const portfolio of portfolios) {
-        const dashboardPortfolio =
-          this.transformPortfolioToDashboard(portfolio);
+      for (let i = 0; i < portfolios.length; i++) {
+        const portfolio = portfolios[i];
+        if (!portfolio) continue; // Skip if portfolio is undefined
+
+        const displayId = i + 1; // 1-based index
+        const dashboardPortfolio = this.transformPortfolioToDashboard(
+          portfolio,
+          displayId
+        );
         const allocations = await this.generateAllocations(portfolio.assets);
         const metrics = this.generateMetrics(
           dashboardPortfolio.type,
@@ -89,7 +119,7 @@ export class DashboardService {
         );
 
         summaries.push({
-          id: parseInt(portfolio.id),
+          id: displayId,
           name: portfolio.name,
           type: dashboardPortfolio.type,
           riskLevel: portfolio.riskLevel,
@@ -114,7 +144,10 @@ export class DashboardService {
     }
   }
 
-  private transformPortfolioToDashboard(portfolio: any): DashboardPortfolio {
+  private transformPortfolioToDashboard(
+    portfolio: any,
+    displayId?: number
+  ): DashboardPortfolio {
     // Determine portfolio type based on asset allocation
     const equityAllocation = portfolio.assets
       .filter((asset: any) => asset.type === "Equities")
@@ -148,7 +181,7 @@ export class DashboardService {
     });
 
     return {
-      id: parseInt(portfolio.id),
+      id: displayId || 1, // Use provided displayId or default to 1
       name: portfolio.name,
       type,
       description: portfolio.description || `${type} portfolio strategy`,
