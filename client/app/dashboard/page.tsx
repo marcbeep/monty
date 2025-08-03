@@ -96,6 +96,7 @@ export default function Page() {
               <PortfolioSelector
                 portfolios={portfolios}
                 selectedPortfolioId={selectedPortfolioId}
+                selectedPortfolio={dashboardData?.portfolio}
                 onPortfolioChange={handlePortfolioChange}
                 onAddPortfolio={handleAddPortfolio}
                 isLoading={isLoading}

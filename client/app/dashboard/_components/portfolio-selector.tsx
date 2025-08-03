@@ -28,6 +28,7 @@ import type { Portfolio } from "@/types";
 interface PortfolioSelectorProps {
   portfolios: Portfolio[];
   selectedPortfolioId?: number;
+  selectedPortfolio?: Portfolio; // Full portfolio data with strategy
   onPortfolioChange: (portfolioId: number) => void;
   onAddPortfolio: () => void;
   isLoading?: boolean;
@@ -39,13 +40,15 @@ const getRiskBadgeVariant = () => "outline" as const;
 export function PortfolioSelector({
   portfolios,
   selectedPortfolioId,
+  selectedPortfolio: selectedPortfolioProp,
   onPortfolioChange,
   onAddPortfolio,
   isLoading = false,
 }: PortfolioSelectorProps) {
-  const selectedPortfolio = portfolios.find(
-    (p) => p.id === selectedPortfolioId
-  );
+  // Use provided selectedPortfolio (with full strategy data) or fallback to basic portfolio
+  const selectedPortfolio =
+    selectedPortfolioProp ||
+    portfolios.find((p) => p.id === selectedPortfolioId);
 
   if (isLoading) {
     return (
