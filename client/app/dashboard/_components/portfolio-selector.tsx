@@ -83,28 +83,26 @@ export function PortfolioSelector({
               <span className="currency">$10,000</span> starting amount
             </CardDescription>
             {selectedPortfolio && (
-              <div className="flex flex-col gap-2 pt-1">
-                <div className="flex items-center gap-2">
-                  {(() => {
-                    const riskBadgeConfig = getRiskBadge(
-                      selectedPortfolio.riskLevel
-                    );
-                    const Icon = riskBadgeConfig.icon;
-                    return (
-                      <Badge
-                        variant={getRiskBadgeVariant()}
-                        className={riskBadgeConfig.className}
-                      >
-                        <Icon className="size-3" />
-                        {selectedPortfolio.riskLevel} Risk
-                      </Badge>
-                    );
-                  })()}
-                  <MiniPieChart
-                    allocations={selectedPortfolio.strategy}
-                    size={24}
-                  />
-                </div>
+              <div className="flex items-center gap-2 pt-1">
+                {(() => {
+                  const riskBadgeConfig = getRiskBadge(
+                    selectedPortfolio.riskLevel
+                  );
+                  const Icon = riskBadgeConfig.icon;
+                  return (
+                    <Badge
+                      variant={getRiskBadgeVariant()}
+                      className={riskBadgeConfig.className}
+                    >
+                      <Icon className="size-3" />
+                      {selectedPortfolio.riskLevel} Risk
+                    </Badge>
+                  );
+                })()}
+                <MiniPieChart
+                  allocations={selectedPortfolio.strategy}
+                  size={24}
+                />
                 <MiniPieChartLegend
                   allocations={selectedPortfolio.strategy}
                   className="text-xs"
