@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowUpIcon, ArrowDownIcon, MinusIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { Portfolio } from "@/types";
 import type { PortfolioMetrics } from "@/types/portfolio";
 
@@ -53,39 +53,69 @@ export function ComparisonTable({
     );
   }
 
+  // Helper function to get color class for values
+  const getValueColorClass = (value: number, isReturn: boolean = false) => {
+    if (isReturn) {
+      return value >= 0 ? "text-financial-positive" : "text-financial-negative";
+    }
+    return ""; // No color for non-return values
+  };
+
   const comparisonRows = [
     {
       label: "Portfolio Value",
       value1: `$${metrics1.currentValue.toLocaleString()}`,
       value2: `$${metrics2.currentValue.toLocaleString()}`,
-      comparison: compareValues(metrics1.currentValue, metrics2.currentValue),
+      colorClass1: getValueColorClass(metrics1.totalReturnPercent, true),
+      colorClass2: getValueColorClass(metrics2.totalReturnPercent, true),
       type: "currency" as const,
     },
     {
-      label: "Total Return",
-      value1: `${metrics1.totalReturnPercent.toFixed(2)}%`,
-      value2: `${metrics2.totalReturnPercent.toFixed(2)}%`,
-      comparison: compareValues(
-        metrics1.totalReturnPercent,
-        metrics2.totalReturnPercent
-      ),
-      type: "percentage" as const,
+      label: "Value Change",
+      value1: `${metrics1.totalReturn >= 0 ? "+" : ""}$${metrics1.totalReturn.toLocaleString()}`,
+      value2: `${metrics2.totalReturn >= 0 ? "+" : ""}$${metrics2.totalReturn.toLocaleString()}`,
+      colorClass1: getValueColorClass(metrics1.totalReturn, true),
+      colorClass2: getValueColorClass(metrics2.totalReturn, true),
+      type: "currency" as const,
     },
     {
       label: metrics1.timeframeLabel || "Return",
-      value1: `${metrics1.totalReturnPercent.toFixed(2)}%`,
-      value2: `${metrics2.totalReturnPercent.toFixed(2)}%`,
-      comparison: compareValues(
-        metrics1.totalReturnPercent,
-        metrics2.totalReturnPercent
-      ),
+      value1: `${metrics1.totalReturnPercent >= 0 ? "+" : ""}${metrics1.totalReturnPercent.toFixed(2)}%`,
+      value2: `${metrics2.totalReturnPercent >= 0 ? "+" : ""}${metrics2.totalReturnPercent.toFixed(2)}%`,
+      colorClass1: getValueColorClass(metrics1.totalReturnPercent, true),
+      colorClass2: getValueColorClass(metrics2.totalReturnPercent, true),
+      type: "percentage" as const,
+    },
+    {
+      label: "Annualized Return",
+      value1: `${metrics1.annualizedReturnPercent >= 0 ? "+" : ""}${metrics1.annualizedReturnPercent.toFixed(2)}%`,
+      value2: `${metrics2.annualizedReturnPercent >= 0 ? "+" : ""}${metrics2.annualizedReturnPercent.toFixed(2)}%`,
+      colorClass1: getValueColorClass(metrics1.annualizedReturnPercent, true),
+      colorClass2: getValueColorClass(metrics2.annualizedReturnPercent, true),
       type: "percentage" as const,
     },
     {
       label: "Volatility",
       value1: `${metrics1.volatility.toFixed(2)}%`,
       value2: `${metrics2.volatility.toFixed(2)}%`,
-      comparison: compareValues(metrics1.volatility, metrics2.volatility, true), // Lower is better for volatility
+      colorClass1: "",
+      colorClass2: "",
+      type: "percentage" as const,
+    },
+    {
+      label: "Sortino Ratio",
+      value1: metrics1.sortinoRatio.toFixed(2),
+      value2: metrics2.sortinoRatio.toFixed(2),
+      colorClass1: "",
+      colorClass2: "",
+      type: "number" as const,
+    },
+    {
+      label: "Max Drawdown",
+      value1: `${metrics1.maxDrawdown.toFixed(2)}%`,
+      value2: `${metrics2.maxDrawdown.toFixed(2)}%`,
+      colorClass1: getValueColorClass(metrics1.maxDrawdown, true),
+      colorClass2: getValueColorClass(metrics2.maxDrawdown, true),
       type: "percentage" as const,
     },
   ];
@@ -112,29 +142,15 @@ export function ComparisonTable({
               className="grid grid-cols-3 gap-4 py-3 border-b last:border-b-0"
             >
               <div className="font-medium">{row.label}</div>
-              <div className="text-center flex items-center justify-center gap-1">
-                <span className={row.type}>{row.value1}</span>
-                {row.comparison === "portfolio1" && (
-                  <ArrowUpIcon className="h-4 w-4 text-financial-positive" />
-                )}
-                {row.comparison === "portfolio2" && (
-                  <ArrowDownIcon className="h-4 w-4 text-financial-negative" />
-                )}
-                {row.comparison === "equal" && (
-                  <MinusIcon className="h-4 w-4 text-muted-foreground" />
-                )}
+              <div className="text-center">
+                <span className={cn("font-mono", row.colorClass1)}>
+                  {row.value1}
+                </span>
               </div>
-              <div className="text-center flex items-center justify-center gap-1">
-                <span className={row.type}>{row.value2}</span>
-                {row.comparison === "portfolio2" && (
-                  <ArrowUpIcon className="h-4 w-4 text-financial-positive" />
-                )}
-                {row.comparison === "portfolio1" && (
-                  <ArrowDownIcon className="h-4 w-4 text-financial-negative" />
-                )}
-                {row.comparison === "equal" && (
-                  <MinusIcon className="h-4 w-4 text-muted-foreground" />
-                )}
+              <div className="text-center">
+                <span className={cn("font-mono", row.colorClass2)}>
+                  {row.value2}
+                </span>
               </div>
             </div>
           ))}
@@ -142,24 +158,4 @@ export function ComparisonTable({
       </CardContent>
     </Card>
   );
-}
-
-// Helper function to compare values and determine which is better
-function compareValues(
-  value1: number,
-  value2: number,
-  lowerIsBetter: boolean = false
-): "portfolio1" | "portfolio2" | "equal" {
-  const diff = Math.abs(value1 - value2);
-
-  // If values are very close, consider them equal
-  if (diff < 0.01) {
-    return "equal";
-  }
-
-  if (lowerIsBetter) {
-    return value1 < value2 ? "portfolio1" : "portfolio2";
-  } else {
-    return value1 > value2 ? "portfolio1" : "portfolio2";
-  }
 }

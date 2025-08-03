@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   MiniPieChart,
   MiniPieChartLegend,
@@ -28,8 +29,12 @@ interface PortfolioDualSelectorProps {
   portfolios: Portfolio[];
   selectedPortfolio1Id?: number;
   selectedPortfolio2Id?: number;
+  selectedPortfolio1?: Portfolio; // Full portfolio data with strategy
+  selectedPortfolio2?: Portfolio; // Full portfolio data with strategy
+  timeframe?: string;
   onPortfolio1Change: (portfolioId: number) => void;
   onPortfolio2Change: (portfolioId: number) => void;
+  onTimeframeChange?: (timeframe: string) => void;
   isLoading?: boolean;
 }
 
@@ -37,12 +42,21 @@ export function PortfolioDualSelector({
   portfolios,
   selectedPortfolio1Id,
   selectedPortfolio2Id,
+  selectedPortfolio1: selectedPortfolio1Prop,
+  selectedPortfolio2: selectedPortfolio2Prop,
+  timeframe = "YTD",
   onPortfolio1Change,
   onPortfolio2Change,
+  onTimeframeChange,
   isLoading = false,
 }: PortfolioDualSelectorProps) {
-  const portfolio1 = portfolios.find((p) => p.id === selectedPortfolio1Id);
-  const portfolio2 = portfolios.find((p) => p.id === selectedPortfolio2Id);
+  // Use provided full portfolio data (with strategy) or fallback to basic portfolio
+  const portfolio1 =
+    selectedPortfolio1Prop ||
+    portfolios.find((p) => p.id === selectedPortfolio1Id);
+  const portfolio2 =
+    selectedPortfolio2Prop ||
+    portfolios.find((p) => p.id === selectedPortfolio2Id);
 
   if (isLoading) {
     return (
@@ -68,8 +82,51 @@ export function PortfolioDualSelector({
   return (
     <Card className="bg-surface-primary shadow-sm">
       <CardHeader>
-        <CardTitle>Portfolio Selection</CardTitle>
-        <CardDescription>Choose two portfolios to compare</CardDescription>
+        <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
+          <div className="space-y-1.5">
+            <CardTitle>Portfolio Selection</CardTitle>
+            <CardDescription>Choose two portfolios to compare</CardDescription>
+          </div>
+          {onTimeframeChange && (
+            <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-2 sm:space-y-0">
+              <ToggleGroup
+                type="single"
+                value={timeframe}
+                onValueChange={onTimeframeChange}
+                variant="outline"
+                className="hidden sm:flex"
+              >
+                <ToggleGroupItem value="1M" className="font-medium text-xs">
+                  1M
+                </ToggleGroupItem>
+                <ToggleGroupItem value="6M" className="font-medium text-xs">
+                  6M
+                </ToggleGroupItem>
+                <ToggleGroupItem value="YTD" className="font-medium text-xs">
+                  YTD
+                </ToggleGroupItem>
+                <ToggleGroupItem value="1Y" className="font-medium text-xs">
+                  1Y
+                </ToggleGroupItem>
+                <ToggleGroupItem value="5Y" className="font-medium text-xs">
+                  5Y
+                </ToggleGroupItem>
+              </ToggleGroup>
+              <Select value={timeframe} onValueChange={onTimeframeChange}>
+                <SelectTrigger className="w-40 sm:hidden">
+                  <SelectValue placeholder="Select timeframe" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1M">1 Month</SelectItem>
+                  <SelectItem value="6M">6 Months</SelectItem>
+                  <SelectItem value="YTD">Year to Date</SelectItem>
+                  <SelectItem value="1Y">1 Year</SelectItem>
+                  <SelectItem value="5Y">5 Years</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+        </div>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 gap-6 @lg/main:grid-cols-2">
