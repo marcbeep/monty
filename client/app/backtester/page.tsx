@@ -8,18 +8,15 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   BacktesterPortfolioSelector,
-  HistoricalBacktest,
-  ScenarioAnalysis,
+  StressTest,
   MonteCarloSimulation,
 } from "./_components";
 import { dashboardApi, transformSummaryToPortfolio } from "@/lib/dashboard-api";
 import { useErrorHandler } from "@/hooks/use-error-handler";
 import type { Portfolio } from "@/types";
 import type {
-  BacktestData,
-  BacktestParams,
-  ScenarioEvent,
-  ScenarioResult,
+  StressTestParams,
+  StressTestResult,
   MonteCarloParams,
   MonteCarloResult,
 } from "@/types/backtester";
@@ -34,25 +31,14 @@ export default function BacktesterPage() {
   const [portfolios, setPortfolios] = React.useState<Portfolio[]>([]);
   const [selectedPortfolioData, setSelectedPortfolioData] =
     React.useState<Portfolio | null>(null);
-  const [scenarios, setScenarios] = React.useState<ScenarioEvent[]>([]);
-  const [activeTab, setActiveTab] = React.useState<
-    "historical" | "scenarios" | "montecarlo"
-  >("historical");
-
-  // Historical backtesting state
-  const [backtestData, setBacktestData] = React.useState<BacktestData | null>(
-    null
+  const [activeTab, setActiveTab] = React.useState<"stresstest" | "montecarlo">(
+    "stresstest"
   );
-  const [isBacktestLoading, setIsBacktestLoading] = React.useState(false);
 
-  // Scenario analysis state
-  const [scenarioResults, setScenarioResults] = React.useState<
-    ScenarioResult[]
-  >([]);
-  const [isScenarioLoading, setIsScenarioLoading] = React.useState(false);
-  const [runningScenarioId, setRunningScenarioId] = React.useState<
-    string | null
-  >(null);
+  // Stress test state
+  const [stressTestResult, setStressTestResult] =
+    React.useState<StressTestResult | null>(null);
+  const [isStressTestLoading, setIsStressTestLoading] = React.useState(false);
 
   // Monte Carlo simulation state
   const [monteCarloResult, setMonteCarloResult] =
@@ -69,9 +55,6 @@ export default function BacktesterPage() {
           transformSummaryToPortfolio
         );
         setPortfolios(portfolioList);
-
-        // TODO: Replace with real scenario API
-        setScenarios([]);
       } catch (error) {
         handleError(error);
       }
@@ -111,47 +94,21 @@ export default function BacktesterPage() {
   const handlePortfolioChange = (portfolioId: number) => {
     setSelectedPortfolioId(portfolioId);
     // Clear previous results when portfolio changes
-    setBacktestData(null);
-    setScenarioResults([]);
+    setStressTestResult(null);
     setMonteCarloResult(null);
-    setRunningScenarioId(null);
   };
 
-  // Handle historical backtest
-  const handleRunBacktest = async (params: BacktestParams) => {
-    setIsBacktestLoading(true);
+  // Handle stress test
+  const handleRunStressTest = async (params: StressTestParams) => {
+    setIsStressTestLoading(true);
     try {
-      // TODO: Implement real backtest API endpoint
-      console.log("Backtest params:", params);
-      setBacktestData(null);
+      // TODO: Implement real stress test API endpoint
+      console.log("Stress test params:", params);
+      setStressTestResult(null);
     } catch (error) {
       handleError(error);
     } finally {
-      setIsBacktestLoading(false);
-    }
-  };
-
-  // Handle scenario analysis
-  const handleRunScenario = async (scenarioId: string) => {
-    if (!selectedPortfolioId || isScenarioLoading) return;
-
-    setIsScenarioLoading(true);
-    setRunningScenarioId(scenarioId);
-    // Clear previous results when starting a new scenario
-    setScenarioResults([]);
-
-    try {
-      // TODO: Implement real scenario API endpoint
-      console.log("Scenario params:", {
-        portfolioId: selectedPortfolioId,
-        scenarioId,
-      });
-      setScenarioResults([]);
-    } catch (error) {
-      handleError(error);
-    } finally {
-      setIsScenarioLoading(false);
-      setRunningScenarioId(null);
+      setIsStressTestLoading(false);
     }
   };
 
@@ -201,26 +158,17 @@ export default function BacktesterPage() {
                 }
                 className="w-full"
               >
-                <TabsList className="grid w-full grid-cols-3 h-auto">
+                <TabsList className="grid w-full grid-cols-2 h-12 bg-surface-primary rounded-lg p-1 shadow-sm">
                   <TabsTrigger
-                    value="historical"
-                    className="text-xs sm:text-sm px-2 py-2 sm:px-3"
+                    value="stresstest"
+                    className="text-sm font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground hover:text-foreground transition-all"
                   >
-                    <span className="hidden sm:inline">
-                      Historical Backtesting
-                    </span>
-                    <span className="sm:hidden">Historical</span>
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="scenarios"
-                    className="text-xs sm:text-sm px-2 py-2 sm:px-3"
-                  >
-                    <span className="hidden sm:inline">Scenario Analysis</span>
-                    <span className="sm:hidden">Scenarios</span>
+                    <span className="hidden sm:inline">Stress Test</span>
+                    <span className="sm:hidden">Stress Test</span>
                   </TabsTrigger>
                   <TabsTrigger
                     value="montecarlo"
-                    className="text-xs sm:text-sm px-2 py-2 sm:px-3"
+                    className="text-sm font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground hover:text-foreground transition-all"
                   >
                     <span className="hidden sm:inline">
                       Monte Carlo Simulation
@@ -229,23 +177,12 @@ export default function BacktesterPage() {
                   </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="historical" className="mt-6">
-                  <HistoricalBacktest
+                <TabsContent value="stresstest" className="mt-6">
+                  <StressTest
                     portfolioId={selectedPortfolioId}
-                    backtestData={backtestData}
-                    isLoading={isBacktestLoading}
-                    onRunBacktest={handleRunBacktest}
-                  />
-                </TabsContent>
-
-                <TabsContent value="scenarios" className="mt-6">
-                  <ScenarioAnalysis
-                    portfolioId={selectedPortfolioId}
-                    scenarios={scenarios}
-                    scenarioResults={scenarioResults}
-                    isLoading={isScenarioLoading}
-                    runningScenarioId={runningScenarioId}
-                    onRunScenario={handleRunScenario}
+                    stressTestResult={stressTestResult}
+                    isLoading={isStressTestLoading}
+                    onRunStressTest={handleRunStressTest}
                   />
                 </TabsContent>
 

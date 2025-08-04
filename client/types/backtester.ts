@@ -2,14 +2,39 @@
 import type { Portfolio, PortfolioMetrics } from "./portfolio";
 import type { ChartDataPoint } from "./api";
 
-// Historical Backtesting Types
-export interface BacktestData {
+// Stress Test Types (Unified Historical & Scenario)
+export interface StressTestParams {
+  portfolioId: number;
+  mode: "historical" | "scenario";
+
+  // For historical mode
+  historical?: {
+    startDate: string;
+    endDate: string;
+  };
+
+  // For scenario mode
+  scenario?: {
+    scenarioId: string;
+  };
+}
+
+export interface StressTestResult {
+  mode: "historical" | "scenario";
+  timeRange: {
+    startDate: string;
+    endDate: string;
+  };
   portfolio: Portfolio;
-  startDate: string;
-  endDate: string;
   metrics: PortfolioMetrics;
   chartData: ChartDataPoint[];
   drawdownData: DrawdownDataPoint[];
+  recovery?: {
+    timeToRecover: number; // Days to recover to pre-crisis level
+    maxDrawdown: number; // Maximum drawdown during crisis
+    recoveryDate: string;
+  };
+  scenario?: ScenarioEvent; // Only present if mode is 'scenario'
 }
 
 export interface DrawdownDataPoint {
@@ -19,6 +44,8 @@ export interface DrawdownDataPoint {
   value: number; // Current portfolio value
 }
 
+// Legacy types for backward compatibility
+export interface BacktestData extends StressTestResult {}
 export interface BacktestParams {
   portfolioId: number;
   startDate: string;
@@ -36,18 +63,10 @@ export interface ScenarioEvent {
   severity: "Low" | "Medium" | "High" | "Extreme";
 }
 
-export interface ScenarioResult {
-  scenario: ScenarioEvent;
-  portfolio: Portfolio;
+export interface ScenarioResult extends StressTestResult {
   beforeMetrics: PortfolioMetrics;
   duringMetrics: PortfolioMetrics;
   afterMetrics: PortfolioMetrics;
-  chartData: ChartDataPoint[];
-  recovery: {
-    timeToRecover: number; // Days to recover to pre-crisis level
-    maxDrawdown: number; // Maximum drawdown during crisis
-    recoveryDate: string;
-  };
 }
 
 // Monte Carlo Simulation Types
@@ -84,9 +103,8 @@ export interface MonteCarloResult {
 // General Backtesting Types
 export interface BacktesterState {
   selectedPortfolioId: number | null;
-  historicalData: BacktestData | null;
-  scenarioResults: ScenarioResult[];
+  stressTestResult: StressTestResult | null;
   monteCarloResult: MonteCarloResult | null;
   isLoading: boolean;
-  activeTab: "historical" | "scenarios" | "montecarlo";
+  activeTab: "stresstest" | "montecarlo";
 }
