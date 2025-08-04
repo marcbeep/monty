@@ -9,18 +9,24 @@ A modern portfolio management application built with Next.js, Express, and Pytho
 - **Stock API**: Python FastAPI with yfinance
 - **Database**: Supabase (PostgreSQL)
 
-## API Configuration
+## Environment Configuration
 
-The app automatically detects the environment and configures API endpoints:
+### Development
 
-- **Local**: `localhost:3001`
-- **Remote**: `api.monty.marc.tt`
+```bash
+ENV=development
+```
 
-Override: `NEXT_PUBLIC_API_URL=http://localhost:3001`
+### Production
+
+```bash
+ENV=production
+NEXT_PUBLIC_API_URL=your_api_url  # Required
+```
 
 ## Development
 
 ```bash
 npm install
-npm run dev    # http://localhost:3000
+npm run dev
 ```

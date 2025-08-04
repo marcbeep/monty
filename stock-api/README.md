@@ -9,6 +9,15 @@ FastAPI service for stock data using yfinance.
 - Historical data
 - Multiple timeframes
 
+## Environment Configuration
+
+### Optional Variables
+
+```bash
+ENV=development    # development/production
+PORT=8001          # Server port
+```
+
 ## Structure
 
 ```
@@ -25,5 +34,5 @@ src/
 
 ```bash
 pip install -r requirements.txt
-python main.py    # https://stock.monty.marc.tt
+python main.py
 ```

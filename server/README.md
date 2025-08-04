@@ -1,39 +1,33 @@
-# Server
+# Monty Server
 
-Node.js API for authentication and portfolios.
+Express.js API server for portfolio management.
 
-## Structure
+## Environment Configuration
 
-```
-src/
-├── controllers/     # Route handlers
-├── services/        # Business logic
-├── middleware/      # Auth, validation, errors
-├── config/          # Environment & DB
-└── database/        # SQL schemas
+### Required Variables
+
+```bash
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-## Setup
+### Optional Variables
 
-1. Run `src/database/*.sql` in Supabase
-2. Create `.env`: `SUPABASE_URL`, `SUPABASE_ANON_KEY`
-3. `npm install && npm run dev`
+```bash
+ENV=development          # development/production/test
+PORT=3001                # Server port
+STOCK_API_URL=your_stock_api_url  # Required in production
+```
 
-## Endpoints
+## Development
 
-### Authentication
+```bash
+npm install
+npm run dev
+```
 
-- `POST /api/v1/auth/login|signup|logout`
-- `GET /api/v1/auth/me`
+## Testing
 
-### Portfolios
-
-- `GET /api/v1/portfolios` - List user portfolios
-- `GET /api/v1/portfolios/:id` - Get specific portfolio
-- `POST /api/v1/portfolios` - Create portfolio
-- `PUT /api/v1/portfolios/:id` - Update portfolio
-- `DELETE /api/v1/portfolios/:id` - Delete portfolio
-
-### System
-
-- `GET /api/v1/health` - Health check
+```bash
+npm test
+```

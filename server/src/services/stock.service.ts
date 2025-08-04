@@ -5,9 +5,23 @@ import {
   HistoricalDataPoint,
 } from "../dto/stock.dto";
 import { AppError, NotFound } from "../utils/errors";
+import { env } from "../config/env";
 
-const STOCK_API_URL =
-  process.env["STOCK_API_URL"] || "https://stock.monty.marc.tt";
+const getStockApiUrl = () => {
+  if (env.STOCK_API_URL) {
+    return env.STOCK_API_URL;
+  }
+
+  const isProduction = env.ENV === "production";
+
+  if (isProduction) {
+    throw new Error("STOCK_API_URL is required in production");
+  }
+
+  return "http://localhost:8001";
+};
+
+const STOCK_API_URL = getStockApiUrl();
 const CACHE_DURATION = 300000; // 5 minutes
 
 // Valid timeframes matching our UI and Python API

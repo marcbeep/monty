@@ -20,19 +20,13 @@ const getApiBaseUrl = () => {
     return process.env.NEXT_PUBLIC_API_URL;
   }
 
-  if (typeof window !== "undefined") {
-    const hostname = window.location.hostname;
+  const isProduction = process.env.ENV === "production";
 
-    if (hostname === "localhost" || hostname === "127.0.0.1") {
-      return "http://localhost:3001";
-    }
-
-    if (hostname === "monty.marc.tt" || hostname.includes("marc.tt")) {
-      return "https://api.monty.marc.tt";
-    }
+  if (isProduction) {
+    throw new Error("NEXT_PUBLIC_API_URL is required in production");
   }
 
-  return "https://api.monty.marc.tt";
+  return "http://localhost:3001";
 };
 
 export const API_CONFIG = {
