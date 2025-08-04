@@ -6,7 +6,8 @@ import {
 } from "../dto/stock.dto";
 import { AppError, NotFound } from "../utils/errors";
 
-const STOCK_API_URL = process.env["STOCK_API_URL"] || "http://localhost:8001";
+const STOCK_API_URL =
+  process.env["STOCK_API_URL"] || "https://stock.monty.marc.tt";
 const CACHE_DURATION = 300000; // 5 minutes
 
 // Valid timeframes matching our UI and Python API

@@ -28,11 +28,11 @@ const getApiBaseUrl = () => {
     }
 
     if (hostname === "monty.marc.tt" || hostname.includes("marc.tt")) {
-      return "https://montyapi.marc.tt";
+      return "https://api.monty.marc.tt";
     }
   }
 
-  return "https://montyapi.marc.tt";
+  return "https://api.monty.marc.tt";
 };
 
 export const API_CONFIG = {

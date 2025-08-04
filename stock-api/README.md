@@ -1,40 +1,29 @@
 # Stock API
 
-FastAPI service for real-time market data via Yahoo Finance.
+FastAPI service for stock data using yfinance.
+
+## Features
+
+- Stock search
+- Real-time quotes
+- Historical data
+- Multiple timeframes
 
 ## Structure
 
 ```
 src/
-├── controllers/     # Route handlers
-├── services/        # Business logic
-├── dto/            # Request/Response models
-├── middleware/     # Error handling
 ├── config/         # Settings
-└── utils/          # Helpers
+├── controllers/    # API endpoints
+├── dto/           # Data models
+├── middleware/    # Request/response handling
+├── services/      # Business logic
+└── utils/         # Helper functions
 ```
 
-## Standards
-
-- Responses: `{success: true, data: result}`
-- Errors: Factory functions (`BadRequest()`, `NotFound()`)
-- No verbose code or comments
-
-## Endpoints
-
-- `GET /api/search?q={query}&limit={N}` - Real-time stock search
-- `GET /api/basic/{symbol}` - Minimal stock data
-- `GET /api/quote/{symbol}` - Stock overview (legacy)
-
-## Usage
+## Development
 
 ```bash
-python main.py    # http://localhost:8001
+pip install -r requirements.txt
+python main.py    # https://stock.monty.marc.tt
 ```
-
-## Features
-
-- Real Yahoo Finance search (no hardcoded data)
-- Smart asset classification (Equities, Fixed Income, Alternatives)
-- Cached responses for performance
-- Lean data structures for portfolio building

@@ -1,28 +1,26 @@
-# Client
+# Monty - Portfolio Management App
 
-Next.js frontend for portfolio analysis.
+A modern portfolio management application built with Next.js, Express, and Python.
 
-## Structure
+## Architecture
 
-```
-app/                 # Pages & routes
-components/          # UI components
-lib/                 # API client & utils
-types/               # TypeScript definitions
-```
+- **Frontend**: Next.js 15 with TypeScript
+- **Backend**: Express.js with TypeScript
+- **Stock API**: Python FastAPI with yfinance
+- **Database**: Supabase (PostgreSQL)
 
-## Environment
+## API Configuration
 
-Auto-detects API endpoints:
+The app automatically detects the environment and configures API endpoints:
 
-- Local: `localhost:3001`
-- Remote: `montyapi.marc.tt`
+- **Local**: `localhost:3001`
+- **Remote**: `api.monty.marc.tt`
 
 Override: `NEXT_PUBLIC_API_URL=http://localhost:3001`
 
-## Usage
+## Development
 
 ```bash
+npm install
 npm run dev    # http://localhost:3000
-npm run build
 ```
