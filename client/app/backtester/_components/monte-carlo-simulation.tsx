@@ -20,13 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Play,
-  TrendingUp,
-  Target,
-  Percent,
-  Zap,
-} from "lucide-react";
+import { Play, TrendingUp, Target, Percent, Zap } from "lucide-react";
 import { MonteCarloProjectionChart } from "./monte-carlo-projection-chart";
 import { MonteCarloDistributionChart } from "./monte-carlo-distribution-chart";
 import type { MonteCarloParams, MonteCarloResult } from "@/types/backtester";
