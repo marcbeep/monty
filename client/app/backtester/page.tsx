@@ -12,6 +12,7 @@ import {
   MonteCarloSimulation,
 } from "./_components";
 import { dashboardApi, transformSummaryToPortfolio } from "@/lib/dashboard-api";
+import { scenarioApi } from "@/lib/scenario-api";
 import { useErrorHandler } from "@/hooks/use-error-handler";
 import type { Portfolio } from "@/types";
 import type {
@@ -102,10 +103,12 @@ export default function BacktesterPage() {
   const handleRunStressTest = async (params: StressTestParams) => {
     setIsStressTestLoading(true);
     try {
-      // TODO: Implement real stress test API endpoint
       console.log("Stress test params:", params);
-      setStressTestResult(null);
+      const result = await scenarioApi.runStressTest(params);
+      console.log("Stress test result:", result);
+      setStressTestResult(result);
     } catch (error) {
+      console.error("Stress test error:", error);
       handleError(error);
     } finally {
       setIsStressTestLoading(false);
@@ -116,10 +119,12 @@ export default function BacktesterPage() {
   const handleRunMonteCarloSimulation = async (params: MonteCarloParams) => {
     setIsMonteCarloLoading(true);
     try {
-      // TODO: Implement real Monte Carlo API endpoint
       console.log("Monte Carlo params:", params);
-      setMonteCarloResult(null);
+      const result = await scenarioApi.runMonteCarlo(params);
+      console.log("Monte Carlo result:", result);
+      setMonteCarloResult(result);
     } catch (error) {
+      console.error("Monte Carlo error:", error);
       handleError(error);
     } finally {
       setIsMonteCarloLoading(false);
