@@ -1,20 +1,25 @@
-class ScenarioAPIError(Exception):
+class AppError(Exception):
     def __init__(self, message: str, status_code: int = 500):
+        super().__init__(message)
         self.message = message
         self.status_code = status_code
-        super().__init__(message)
 
 
-class BadRequest(ScenarioAPIError):
-    def __init__(self, message: str):
-        super().__init__(message, 400)
+def BadRequest(msg: str) -> AppError:
+    return AppError(msg, 400)
 
 
-class NotFound(ScenarioAPIError):
-    def __init__(self, message: str):
-        super().__init__(message, 404)
+def Unauthorized(msg: str = "Unauthorized") -> AppError:
+    return AppError(msg, 401)
 
 
-class InternalError(ScenarioAPIError):
-    def __init__(self, message: str):
-        super().__init__(message, 500)
+def Forbidden(msg: str = "Forbidden") -> AppError:
+    return AppError(msg, 403)
+
+
+def NotFound(msg: str = "Not found") -> AppError:
+    return AppError(msg, 404)
+
+
+def InternalServerError(msg: str = "Internal server error") -> AppError:
+    return AppError(msg, 500)

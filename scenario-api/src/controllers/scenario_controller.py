@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from ..services.scenario_service import scenario_service
 from ..dto.scenario import (
     StressTestParams,
@@ -6,7 +6,6 @@ from ..dto.scenario import (
     MonteCarloParams,
     MonteCarloResponse,
 )
-from ..utils.errors import BadRequest
 
 router = APIRouter()
 
@@ -18,13 +17,8 @@ async def run_stress_test(params: StressTestParams):
 
     Supports both historical period analysis and predefined scenario testing.
     """
-    try:
-        result = scenario_service.run_stress_test(params)
-        return StressTestResponse(success=True, data=result)
-    except BadRequest as e:
-        raise HTTPException(status_code=400, detail=e.message)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    result = scenario_service.run_stress_test(params)
+    return StressTestResponse(success=True, data=result)
 
 
 @router.post("/monte-carlo", response_model=MonteCarloResponse)
@@ -34,13 +28,8 @@ async def run_monte_carlo(params: MonteCarloParams):
 
     Generates probabilistic projections based on historical data and correlation patterns.
     """
-    try:
-        result = scenario_service.run_monte_carlo(params)
-        return MonteCarloResponse(success=True, data=result)
-    except BadRequest as e:
-        raise HTTPException(status_code=400, detail=e.message)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    result = scenario_service.run_monte_carlo(params)
+    return MonteCarloResponse(success=True, data=result)
 
 
 @router.get("/health")

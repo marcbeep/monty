@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from .config.settings import CORS_ORIGINS, HOST, PORT
 from .controllers.scenario_controller import router as scenario_router
 from .middleware.error_handler import error_handler
