@@ -5,22 +5,26 @@
   "description": "Portfolio backtesting and analysis platform",
   "scripts": {
     "build": "npm run build:all",
-    "build:all": "npm run build:client && npm run build:server && npm run build:stock-api",
+    "build:all": "npm run build:client && npm run build:server && npm run build:stock-api && npm run build:scenario-api",
     "build:client": "cd client && npm run build",
     "build:server": "cd server && npm run build",
     "build:stock-api": "cd stock-api && python validate.py",
+    "build:scenario-api": "cd scenario-api && python validate.py",
     "test": "npm run test:all",
-    "test:all": "npm run test:client && npm run test:server && npm run test:stock-api",
+    "test:all": "npm run test:client && npm run test:server && npm run test:stock-api && npm run test:scenario-api",
     "test:client": "cd client && npm run lint",
     "test:server": "cd server && npm test",
     "test:stock-api": "cd stock-api && python validate.py",
-    "install:all": "npm run install:client && npm run install:server && npm run install:stock-api",
+    "test:scenario-api": "cd scenario-api && python validate.py",
+    "install:all": "npm run install:client && npm run install:server && npm run install:stock-api && npm run install:scenario-api",
     "install:client": "cd client && npm ci",
     "install:server": "cd server && npm ci",
     "install:stock-api": "cd stock-api && pip install -r requirements.txt",
+    "install:scenario-api": "cd scenario-api && pip install -r requirements.txt",
     "dev:client": "cd client && npm run dev",
     "dev:server": "cd server && npm run dev",
     "dev:stock-api": "cd stock-api && python main.py",
+    "dev:scenario-api": "cd scenario-api && python main.py",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -30,6 +34,12 @@
   "lint-staged": {
     "client/**/*.{ts,tsx,js,jsx}": [
       "cd client && npx eslint --fix"
+    ],
+    "stock-api/src/**/*.py": [
+      "cd stock-api && python validate.py"
+    ],
+    "scenario-api/src/**/*.py": [
+      "cd scenario-api && python validate.py"
     ]
   }
 }
