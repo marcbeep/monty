@@ -62,7 +62,7 @@ export function MonteCarloDistributionChart({
     // Assuming base investment of $100K for return calculation
     const baseValue = 100000;
     return ((median - baseValue) / baseValue) * 100;
-  }, [median]);
+  }, [median, distributionData.finalValues.length]);
 
   // Find confidence interval bounds
   const confidenceBounds = React.useMemo(() => {

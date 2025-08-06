@@ -2,25 +2,18 @@
 import type { Portfolio, PortfolioMetrics } from "./portfolio";
 import type { ChartDataPoint } from "./api";
 
-// Stress Test Types (Unified Historical & Scenario)
+// Stress Test Types
 export interface StressTestParams {
   portfolioId: number;
-  mode: "historical" | "scenario";
-
-  // For historical mode
-  historical?: {
+  mode: "historical";
+  historical: {
     startDate: string;
     endDate: string;
-  };
-
-  // For scenario mode
-  scenario?: {
-    scenarioId: string;
   };
 }
 
 export interface StressTestResult {
-  mode: "historical" | "scenario";
+  mode: "historical";
   timeRange: {
     startDate: string;
     endDate: string;
@@ -34,7 +27,6 @@ export interface StressTestResult {
     maxDrawdown: number; // Maximum drawdown during crisis
     recoveryDate: string;
   };
-  scenario?: ScenarioEvent; // Only present if mode is 'scenario'
 }
 
 export interface DrawdownDataPoint {

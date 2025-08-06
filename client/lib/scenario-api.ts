@@ -104,18 +104,11 @@ interface ServerMonteCarloResult {
 const transformStressTestParams = (params: StressTestParams) => {
   return {
     portfolio_id: params.portfolioId,
-    mode: params.mode,
-    ...(params.historical && {
-      historical: {
-        start_date: params.historical.startDate,
-        end_date: params.historical.endDate,
-      },
-    }),
-    ...(params.scenario && {
-      scenario: {
-        scenario_id: params.scenario.scenarioId,
-      },
-    }),
+    mode: "historical" as const,
+    historical: {
+      start_date: params.historical.startDate,
+      end_date: params.historical.endDate,
+    },
   };
 };
 
@@ -160,7 +153,7 @@ const transformStressTestResult = (
   };
 
   return {
-    mode: result.mode,
+    mode: "historical" as const,
     timeRange: {
       startDate: result.time_range.start_date,
       endDate: result.time_range.end_date,
@@ -191,17 +184,6 @@ const transformStressTestResult = (
         timeToRecover: result.recovery.time_to_recover,
         maxDrawdown: result.recovery.max_drawdown,
         recoveryDate: result.recovery.recovery_date,
-      },
-    }),
-    ...(result.scenario && {
-      scenario: {
-        id: result.scenario.id,
-        name: result.scenario.name,
-        description: result.scenario.description,
-        startDate: result.scenario.start_date,
-        endDate: result.scenario.end_date,
-        marketConditions: result.scenario.market_conditions,
-        severity: result.scenario.severity,
       },
     }),
   };

@@ -13,33 +13,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import {
   Play,
   TrendingUp,
   TrendingDown,
   BarChart3,
   DollarSign,
-  Shield,
-  AlertTriangle,
   Clock,
-  Calendar,
-  Target,
 } from "lucide-react";
 import { getReturnBadge, getPerformanceBadge } from "@/lib/badge-utils";
 import { StressTestPerformanceChart } from "./stress-test-performance-chart";
 import { StressTestDrawdownChart } from "./stress-test-drawdown-chart";
-import type {
-  StressTestParams,
-  StressTestResult,
-  ScenarioEvent,
-} from "@/types/backtester";
+import type { StressTestParams, StressTestResult } from "@/types/backtester";
 
 interface StressTestProps {
   portfolioId: number | null;
@@ -48,47 +34,7 @@ interface StressTestProps {
   onRunStressTest: (params: StressTestParams) => void;
 }
 
-// Predefined scenarios
-const PREDEFINED_SCENARIOS: ScenarioEvent[] = [
-  {
-    id: "financial-crisis-2008",
-    name: "2008 Financial Crisis",
-    description: "Subprime mortgage crisis and global financial meltdown",
-    startDate: "2007-10-01",
-    endDate: "2009-03-31",
-    marketConditions: "Severe market downturn, banking crisis, credit freeze",
-    severity: "Extreme",
-  },
-  {
-    id: "covid-crash-2020",
-    name: "2020 COVID-19 Crash",
-    description: "Global pandemic-induced market crash and recovery",
-    startDate: "2020-02-01",
-    endDate: "2020-06-30",
-    marketConditions: "Rapid market decline followed by unprecedented recovery",
-    severity: "High",
-  },
-  {
-    id: "dotcom-bubble-2000",
-    name: "Dot-com Bubble Burst",
-    description: "Technology stock crash and NASDAQ collapse",
-    startDate: "2000-03-01",
-    endDate: "2002-10-31",
-    marketConditions: "Technology sector collapse, recession fears",
-    severity: "High",
-  },
-  {
-    id: "european-debt-2011",
-    name: "European Debt Crisis",
-    description: "Sovereign debt crisis in European Union",
-    startDate: "2011-05-01",
-    endDate: "2012-12-31",
-    marketConditions: "European sovereign debt concerns, banking stress",
-    severity: "Medium",
-  },
-];
-
-// Quick preset date ranges
+// Predefined date ranges for quick selection
 type QuickPreset =
   | { label: string; months: number }
   | { label: string; startDate: string; endDate: string };
@@ -99,6 +45,8 @@ const QUICK_PRESETS: QuickPreset[] = [
   { label: "Last 5 Years", months: 60 },
   { label: "2008 Crisis", startDate: "2007-10-01", endDate: "2009-03-31" },
   { label: "2020 COVID", startDate: "2020-02-01", endDate: "2020-06-30" },
+  { label: "Dot-com Bubble", startDate: "2000-03-01", endDate: "2002-10-31" },
+  { label: "European Debt", startDate: "2011-05-01", endDate: "2012-12-31" },
 ];
 
 export function StressTest({
@@ -107,14 +55,8 @@ export function StressTest({
   isLoading,
   onRunStressTest,
 }: StressTestProps) {
-  const [mode, setMode] = React.useState<"historical" | "scenario">(
-    "historical"
-  );
   const [startDate, setStartDate] = React.useState("2020-01-01");
   const [endDate, setEndDate] = React.useState("2023-12-31");
-  const [selectedScenario, setSelectedScenario] = React.useState<string | null>(
-    null
-  );
   const [selectedPreset, setSelectedPreset] = React.useState<string | null>(
     null
   );
@@ -122,30 +64,21 @@ export function StressTest({
   const handleRunTest = () => {
     if (!portfolioId) return;
 
-    if (mode === "historical") {
-      onRunStressTest({
-        portfolioId,
-        mode: "historical",
-        historical: {
-          startDate,
-          endDate,
-        },
-      });
-    } else if (mode === "scenario" && selectedScenario) {
-      onRunStressTest({
-        portfolioId,
-        mode: "scenario",
-        scenario: {
-          scenarioId: selectedScenario,
-        },
-      });
-    }
+    onRunStressTest({
+      portfolioId,
+      mode: "historical",
+      historical: {
+        startDate,
+        endDate,
+      },
+    });
   };
 
   const handleQuickPreset = (preset: QuickPreset) => {
     if ("startDate" in preset && "endDate" in preset) {
       setStartDate(preset.startDate);
       setEndDate(preset.endDate);
+      setSelectedPreset(preset.label);
     } else {
       const endDate = new Date();
       const startDate = new Date();
@@ -153,47 +86,15 @@ export function StressTest({
 
       setEndDate(endDate.toISOString().split("T")[0]);
       setStartDate(startDate.toISOString().split("T")[0]);
+      setSelectedPreset(preset.label);
     }
-    setSelectedPreset(preset.label);
   };
 
   const canRunTest =
     portfolioId &&
-    ((mode === "historical" &&
-      startDate &&
-      endDate &&
-      new Date(startDate) < new Date(endDate)) ||
-      (mode === "scenario" && selectedScenario));
-
-  const getSeverityIcon = (severity: string) => {
-    switch (severity) {
-      case "Low":
-        return Shield;
-      case "Medium":
-        return TrendingDown;
-      case "High":
-        return AlertTriangle;
-      case "Extreme":
-        return AlertTriangle;
-      default:
-        return Shield;
-    }
-  };
-
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case "Low":
-        return "bg-financial-positive-subtle text-financial-positive border-financial-positive";
-      case "Medium":
-        return "bg-surface-accent text-financial-neutral border-financial-neutral";
-      case "High":
-        return "bg-financial-negative-subtle text-financial-negative border-financial-negative";
-      case "Extreme":
-        return "bg-financial-negative-subtle text-financial-negative border-financial-negative";
-      default:
-        return "bg-surface-accent text-muted-foreground border-border";
-    }
-  };
+    startDate &&
+    endDate &&
+    new Date(startDate) < new Date(endDate);
 
   return (
     <div className="space-y-6">
@@ -202,145 +103,66 @@ export function StressTest({
         <CardHeader>
           <CardTitle>Stress Test</CardTitle>
           <CardDescription>
-            Test your portfolio against historical periods or predefined crisis
-            scenarios
+            Test your portfolio performance using quick presets for historical
+            periods and crisis scenarios
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Mode Selector */}
+          {/* Quick Presets */}
           <div className="space-y-3">
-            <Label>Test Mode</Label>
-            <Select
-              value={mode}
-              onValueChange={(value) => setMode(value as typeof mode)}
-            >
-              <SelectTrigger className="w-full md:w-[250px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="historical">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
-                    Historical Period
-                  </div>
-                </SelectItem>
-                <SelectItem value="scenario">
-                  <div className="flex items-center gap-2">
-                    <Target className="h-4 w-4" />
-                    Predefined Scenarios
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <Label>Quick Presets</Label>
+            <div className="flex flex-wrap gap-2">
+              {QUICK_PRESETS.map((preset) => {
+                const isSelected = selectedPreset === preset.label;
+                return (
+                  <Button
+                    key={preset.label}
+                    variant={isSelected ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handleQuickPreset(preset)}
+                    className={
+                      isSelected ? "bg-primary text-primary-foreground" : ""
+                    }
+                  >
+                    {preset.label}
+                  </Button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Historical Mode Configuration */}
-          {mode === "historical" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="start-date">Start Date</Label>
-                  <Input
-                    id="start-date"
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => {
-                      setStartDate(e.target.value);
-                      setSelectedPreset(null); // Clear preset when manually changed
-                    }}
-                    max={endDate}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="end-date">End Date</Label>
-                  <Input
-                    id="end-date"
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => {
-                      setEndDate(e.target.value);
-                      setSelectedPreset(null); // Clear preset when manually changed
-                    }}
-                    min={startDate}
-                    max={new Date().toISOString().split("T")[0]}
-                  />
-                </div>
-              </div>
-
-              {/* Quick Presets */}
+          {/* Date Configuration */}
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Quick Presets</Label>
-                <div className="flex flex-wrap gap-2">
-                  {QUICK_PRESETS.map((preset) => {
-                    const isSelected = selectedPreset === preset.label;
-                    return (
-                      <Button
-                        key={preset.label}
-                        variant={isSelected ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => handleQuickPreset(preset)}
-                        className={
-                          isSelected ? "bg-primary text-primary-foreground" : ""
-                        }
-                      >
-                        {preset.label}
-                      </Button>
-                    );
-                  })}
-                </div>
+                <Label htmlFor="start-date">Start Date</Label>
+                <Input
+                  id="start-date"
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => {
+                    setStartDate(e.target.value);
+                    setSelectedPreset(null); // Clear preset when manually changed
+                  }}
+                  max={endDate}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="end-date">End Date</Label>
+                <Input
+                  id="end-date"
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => {
+                    setEndDate(e.target.value);
+                    setSelectedPreset(null); // Clear preset when manually changed
+                  }}
+                  min={startDate}
+                  max={new Date().toISOString().split("T")[0]}
+                />
               </div>
             </div>
-          )}
-
-          {/* Scenario Mode Configuration */}
-          {mode === "scenario" && (
-            <div className="space-y-4">
-              <Label>Select Crisis Scenario</Label>
-              <div className="grid grid-cols-1 gap-4 @xl/main:grid-cols-2">
-                {PREDEFINED_SCENARIOS.map((scenario) => {
-                  const SeverityIcon = getSeverityIcon(scenario.severity);
-                  const isSelected = selectedScenario === scenario.id;
-
-                  return (
-                    <div
-                      key={scenario.id}
-                      className={`border rounded-lg p-4 space-y-3 cursor-pointer transition-all ${
-                        isSelected
-                          ? "border-primary bg-primary/5"
-                          : "border-border/50 hover:border-border"
-                      }`}
-                      onClick={() => setSelectedScenario(scenario.id)}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-1">
-                          <h4 className="font-semibold">{scenario.name}</h4>
-                          <p className="text-sm text-muted-foreground">
-                            {scenario.description}
-                          </p>
-                        </div>
-                        <Badge
-                          variant="outline"
-                          className={getSeverityColor(scenario.severity)}
-                        >
-                          <SeverityIcon className="size-3" />
-                          {scenario.severity}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          {new Date(
-                            scenario.startDate
-                          ).toLocaleDateString()} -{" "}
-                          {new Date(scenario.endDate).toLocaleDateString()}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+          </div>
 
           {/* Run Test Button */}
           <Button
@@ -387,16 +209,16 @@ export function StressTest({
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5" />
               Stress Test Results
-              {stressTestResult.scenario && (
-                <Badge variant="outline" className="ml-2">
-                  {stressTestResult.scenario.name}
-                </Badge>
-              )}
             </CardTitle>
             <CardDescription>
-              {stressTestResult.mode === "historical"
-                ? `Performance from ${new Date(stressTestResult.timeRange.startDate).toLocaleDateString()} to ${new Date(stressTestResult.timeRange.endDate).toLocaleDateString()}`
-                : `Scenario analysis: ${stressTestResult.scenario?.description}`}
+              Performance from{" "}
+              {new Date(
+                stressTestResult.timeRange.startDate
+              ).toLocaleDateString()}{" "}
+              to{" "}
+              {new Date(
+                stressTestResult.timeRange.endDate
+              ).toLocaleDateString()}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -477,7 +299,7 @@ export function StressTest({
 
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Target className="h-4 w-4" />
+                  <BarChart3 className="h-4 w-4" />
                   Sharpe Ratio
                 </div>
                 <div className="flex items-center gap-2">
@@ -527,8 +349,6 @@ export function StressTest({
                 chartData={stressTestResult.chartData}
                 startDate={stressTestResult.timeRange.startDate}
                 endDate={stressTestResult.timeRange.endDate}
-                mode={stressTestResult.mode}
-                scenarioName={stressTestResult.scenario?.name}
               />
 
               <StressTestDrawdownChart

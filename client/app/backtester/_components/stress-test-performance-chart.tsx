@@ -22,8 +22,6 @@ interface StressTestPerformanceChartProps {
   chartData: ChartDataPoint[];
   startDate: string;
   endDate: string;
-  mode?: "historical" | "scenario";
-  scenarioName?: string;
 }
 
 const CHART_CONFIG = {
@@ -37,8 +35,6 @@ export function StressTestPerformanceChart({
   chartData,
   startDate,
   endDate,
-  mode = "historical",
-  scenarioName,
 }: StressTestPerformanceChartProps) {
   // Transform data for recharts
   const transformedData = React.useMemo(() => {
@@ -94,11 +90,6 @@ export function StressTestPerformanceChart({
         <CardTitle className="flex items-center gap-2">
           <BarChart3 className="h-5 w-5" />
           Performance Chart
-          {mode === "scenario" && scenarioName && (
-            <span className="text-sm font-normal text-muted-foreground">
-              - {scenarioName}
-            </span>
-          )}
         </CardTitle>
         <CardDescription>
           Portfolio value change from {new Date(startDate).toLocaleDateString()}{" "}
