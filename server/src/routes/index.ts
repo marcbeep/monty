@@ -3,6 +3,7 @@ import authRoutes from "./auth.routes";
 import portfolioRoutes from "./portfolio.routes";
 import stockRoutes from "./stock.routes";
 import dashboardRoutes from "./dashboard.routes";
+import scenarioRoutes from "./scenario.routes";
 
 const router = Router();
 
@@ -10,6 +11,7 @@ router.use("/auth", authRoutes);
 router.use("/portfolios", portfolioRoutes);
 router.use("/stocks", stockRoutes);
 router.use("/dashboard", dashboardRoutes);
+router.use("/scenarios", scenarioRoutes);
 
 router.get("/health", (_req, res) => {
   res.json({

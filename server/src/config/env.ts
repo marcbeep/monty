@@ -12,6 +12,7 @@ const envSchema = z.object({
   SUPABASE_URL: z.string().url(),
   SUPABASE_ANON_KEY: z.string().min(1),
   STOCK_API_URL: z.string().url().optional(),
+  SCENARIO_API_URL: z.string().url().optional(),
 });
 
 export const env = envSchema.parse({
