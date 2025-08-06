@@ -67,7 +67,7 @@ export class StockService {
     }
 
     try {
-      const url = `${STOCK_API_URL}/api/search?q=${encodeURIComponent(
+      const url = `${STOCK_API_URL}/api/v1/search?q=${encodeURIComponent(
         query
       )}&limit=${limit}`;
       const response = await fetch(url);
@@ -117,7 +117,7 @@ export class StockService {
     }
 
     try {
-      const url = `${STOCK_API_URL}/api/basic/${encodeURIComponent(symbol)}`;
+      const url = `${STOCK_API_URL}/api/v1/basic/${encodeURIComponent(symbol)}`;
       const response = await fetch(url);
 
       if (!response.ok) {
@@ -175,7 +175,7 @@ export class StockService {
     }
 
     try {
-      const url = `${STOCK_API_URL}/api/history/${encodeURIComponent(
+      const url = `${STOCK_API_URL}/api/v1/history/${encodeURIComponent(
         symbol
       )}?timeframe=${timeframe}`;
       const response = await fetch(url);
@@ -220,7 +220,7 @@ export class StockService {
     symbol: string
   ): Promise<Record<string, string | null>> {
     try {
-      const url = `${STOCK_API_URL}/api/availability/${encodeURIComponent(
+      const url = `${STOCK_API_URL}/api/v1/availability/${encodeURIComponent(
         symbol
       )}`;
       const response = await fetch(url);

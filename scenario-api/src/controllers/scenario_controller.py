@@ -45,5 +45,13 @@ async def run_monte_carlo(params: MonteCarloParams):
 
 @router.get("/health")
 async def health_check():
-    """Health check endpoint"""
-    return {"success": True, "data": {"status": "healthy", "service": "scenario-api"}}
+    """Health check endpoint with version info"""
+    return {
+        "success": True,
+        "data": {
+            "status": "healthy",
+            "service": "scenario-api",
+            "version": "v1",
+            "api_prefix": "/api/v1",
+        },
+    }

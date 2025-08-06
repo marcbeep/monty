@@ -13,9 +13,15 @@ router.use("/dashboard", dashboardRoutes);
 
 router.get("/health", (_req, res) => {
   res.json({
-    status: "healthy",
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString(),
+    success: true,
+    data: {
+      status: "healthy",
+      service: "monty-server-hub",
+      version: "v1",
+      api_prefix: "/api/v1",
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+    },
   });
 });
 

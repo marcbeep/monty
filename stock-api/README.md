@@ -36,3 +36,7 @@ src/
 pip install -r requirements.txt
 python main.py
 ```
+
+## API
+
+All endpoints are versioned under `/api/v1/*` (e.g., `/api/v1/search`, `/api/v1/health`).

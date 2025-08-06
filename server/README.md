@@ -31,3 +31,7 @@ npm run dev
 ```bash
 npm test
 ```
+
+## API
+
+All endpoints are versioned under `/api/v1/*` (e.g., `/api/v1/health`, `/api/v1/portfolios`).

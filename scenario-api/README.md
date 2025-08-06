@@ -40,6 +40,6 @@ python main.py
 
 ## API Endpoints
 
-- `POST /api/stress-test` - Run portfolio stress test
-- `POST /api/monte-carlo` - Run Monte Carlo simulation
-- `GET /api/health` - Health check
+- `POST /api/v1/stress-test` - Run portfolio stress test
+- `POST /api/v1/monte-carlo` - Run Monte Carlo simulation
+- `GET /api/v1/health` - Health check

@@ -20,7 +20,7 @@ app.add_middleware(
 
 app.middleware("http")(error_handler)
 
-app.include_router(stock_router, prefix="/api")
+app.include_router(stock_router, prefix="/api/v1")
 
 
 @app.get("/")

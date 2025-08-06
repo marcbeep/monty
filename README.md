@@ -28,3 +28,10 @@ monty/
 - **Analytics**: Python, FastAPI, numpy, pandas, scipy
 - **Auth**: Supabase Auth
 - **Database**: PostgreSQL (Supabase)
+
+## API Versioning
+
+All services use `/api/v1` versioning following Hub-and-Spoke architecture:
+
+- Client → Server Hub (`/api/v1/*`)
+- Server Hub → Spoke Services (`/api/v1/*`)

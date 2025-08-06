@@ -50,3 +50,17 @@ async def get_data_availability(symbol: str):
     """
     availability = stock_service.get_data_availability_info(symbol)
     return {"success": True, "data": availability}
+
+
+@router.get("/health")
+async def health_check():
+    """Health check endpoint with version info"""
+    return {
+        "success": True,
+        "data": {
+            "status": "healthy",
+            "service": "stock-api",
+            "version": "v1",
+            "api_prefix": "/api/v1",
+        },
+    }
