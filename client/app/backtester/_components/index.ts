@@ -2,3 +2,5 @@
 export { BacktesterPortfolioSelector } from "./portfolio-selector";
 export { StressTest } from "./stress-test";
 export { MonteCarloSimulation } from "./monte-carlo-simulation";
+export { StressTestPerformanceChart } from "./stress-test-performance-chart";
+export { StressTestDrawdownChart } from "./stress-test-drawdown-chart";

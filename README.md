@@ -1,6 +1,7 @@
 # Monty
 
 Portfolio backtesting and analysis platform.
+This project uses a Hub and Spoke model with the server being the Hub.
 
 ## Services
 

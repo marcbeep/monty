@@ -32,7 +32,9 @@ import {
   Calendar,
   Target,
 } from "lucide-react";
-import { getReturnBadge } from "@/lib/badge-utils";
+import { getReturnBadge, getPerformanceBadge } from "@/lib/badge-utils";
+import { StressTestPerformanceChart } from "./stress-test-performance-chart";
+import { StressTestDrawdownChart } from "./stress-test-drawdown-chart";
 import type {
   StressTestParams,
   StressTestResult,
@@ -407,11 +409,16 @@ export function StressTest({
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-2xl font-bold">
-                    {stressTestResult.metrics.totalReturn?.toFixed(2) ?? "N/A"}%
+                    {stressTestResult.metrics.totalReturnPercent >= 0
+                      ? "+"
+                      : ""}
+                    {stressTestResult.metrics.totalReturnPercent?.toFixed(2) ??
+                      "N/A"}
+                    %
                   </span>
                   {(() => {
                     const badge = getReturnBadge(
-                      stressTestResult.metrics.totalReturn ?? 0
+                      stressTestResult.metrics.totalReturnPercent ?? 0
                     );
                     const Icon = badge.icon;
                     return (
@@ -428,8 +435,22 @@ export function StressTest({
                   <TrendingDown className="h-4 w-4" />
                   Max Drawdown
                 </div>
-                <div className="text-2xl font-bold text-financial-negative">
-                  {stressTestResult.recovery?.maxDrawdown?.toFixed(2) ?? "N/A"}%
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl font-bold">
+                    {stressTestResult.metrics.maxDrawdown?.toFixed(2) ?? "N/A"}%
+                  </span>
+                  {(() => {
+                    const badge = getPerformanceBadge(
+                      stressTestResult.metrics.maxDrawdown ?? 0,
+                      "drawdown"
+                    );
+                    const Icon = badge.icon;
+                    return (
+                      <Badge variant="outline" className={badge.className}>
+                        <Icon className="size-3" />
+                      </Badge>
+                    );
+                  })()}
                 </div>
               </div>
 
@@ -439,9 +460,51 @@ export function StressTest({
                   Current Value
                 </div>
                 <div className="text-2xl font-bold">
-                  $
-                  {stressTestResult.metrics.currentValue?.toLocaleString() ??
-                    "N/A"}
+                  {(() => {
+                    const currentValue =
+                      stressTestResult.chartData?.length > 0
+                        ? stressTestResult.chartData[
+                            stressTestResult.chartData.length - 1
+                          ].value
+                        : (stressTestResult.metrics.currentValue ?? 0);
+                    return currentValue.toLocaleString("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    });
+                  })()}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Target className="h-4 w-4" />
+                  Sharpe Ratio
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl font-bold">
+                    {stressTestResult.metrics.annualizedReturn &&
+                    stressTestResult.metrics.volatility
+                      ? (
+                          stressTestResult.metrics.annualizedReturn /
+                          stressTestResult.metrics.volatility
+                        ).toFixed(2)
+                      : "N/A"}
+                  </span>
+                  {(() => {
+                    const sharpeValue =
+                      stressTestResult.metrics.annualizedReturn &&
+                      stressTestResult.metrics.volatility
+                        ? stressTestResult.metrics.annualizedReturn /
+                          stressTestResult.metrics.volatility
+                        : 0;
+                    const badge = getPerformanceBadge(sharpeValue, "ratio");
+                    const Icon = badge.icon;
+                    return (
+                      <Badge variant="outline" className={badge.className}>
+                        <Icon className="size-3" />
+                      </Badge>
+                    );
+                  })()}
                 </div>
               </div>
 
@@ -458,18 +521,22 @@ export function StressTest({
               )}
             </div>
 
-            {/* Performance Chart Placeholder */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Performance Chart</h3>
-              <div className="h-64 bg-muted/30 rounded-lg flex items-center justify-center">
-                <div className="text-center space-y-2">
-                  <BarChart3 className="h-8 w-8 mx-auto text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">
-                    Chart visualization will be implemented when backend API is
-                    available
-                  </p>
-                </div>
-              </div>
+            {/* Performance Charts */}
+            <div className="space-y-6">
+              <StressTestPerformanceChart
+                chartData={stressTestResult.chartData}
+                startDate={stressTestResult.timeRange.startDate}
+                endDate={stressTestResult.timeRange.endDate}
+                mode={stressTestResult.mode}
+                scenarioName={stressTestResult.scenario?.name}
+              />
+
+              <StressTestDrawdownChart
+                drawdownData={stressTestResult.drawdownData}
+                maxDrawdown={stressTestResult.metrics.maxDrawdown}
+                startDate={stressTestResult.timeRange.startDate}
+                endDate={stressTestResult.timeRange.endDate}
+              />
             </div>
           </CardContent>
         </Card>
