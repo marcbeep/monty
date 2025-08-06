@@ -21,13 +21,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  BarChart3,
   Play,
   TrendingUp,
   Target,
   Percent,
   Zap,
 } from "lucide-react";
+import { MonteCarloProjectionChart } from "./monte-carlo-projection-chart";
+import { MonteCarloDistributionChart } from "./monte-carlo-distribution-chart";
 import type { MonteCarloParams, MonteCarloResult } from "@/types/backtester";
 
 interface MonteCarloSimulationProps {
@@ -274,12 +275,18 @@ export function MonteCarloSimulation({
                     </div>
                     <div className="text-center">
                       <div className="font-semibold">
-                        {(
-                          monteCarloResult.outcomes.median * 0.75
-                        ).toLocaleString("en-US", {
-                          style: "currency",
-                          currency: "USD",
-                        })}
+                        {(() => {
+                          const percentile25 =
+                            monteCarloResult.projections.percentile25;
+                          const finalValue =
+                            percentile25.length > 0
+                              ? percentile25[percentile25.length - 1].value
+                              : monteCarloResult.outcomes.median * 0.8;
+                          return finalValue.toLocaleString("en-US", {
+                            style: "currency",
+                            currency: "USD",
+                          });
+                        })()}
                       </div>
                       <div className="text-xs text-muted-foreground">
                         25th percentile
@@ -287,13 +294,18 @@ export function MonteCarloSimulation({
                     </div>
                     <div className="text-center">
                       <div className="font-semibold text-financial-neutral">
-                        {monteCarloResult.outcomes.median.toLocaleString(
-                          "en-US",
-                          {
+                        {(() => {
+                          const percentile50 =
+                            monteCarloResult.projections.percentile50;
+                          const finalValue =
+                            percentile50.length > 0
+                              ? percentile50[percentile50.length - 1].value
+                              : monteCarloResult.outcomes.median;
+                          return finalValue.toLocaleString("en-US", {
                             style: "currency",
                             currency: "USD",
-                          }
-                        )}
+                          });
+                        })()}
                       </div>
                       <div className="text-xs text-muted-foreground">
                         50th percentile
@@ -301,12 +313,18 @@ export function MonteCarloSimulation({
                     </div>
                     <div className="text-center">
                       <div className="font-semibold">
-                        {(
-                          monteCarloResult.outcomes.median * 1.25
-                        ).toLocaleString("en-US", {
-                          style: "currency",
-                          currency: "USD",
-                        })}
+                        {(() => {
+                          const percentile75 =
+                            monteCarloResult.projections.percentile75;
+                          const finalValue =
+                            percentile75.length > 0
+                              ? percentile75[percentile75.length - 1].value
+                              : monteCarloResult.outcomes.median * 1.2;
+                          return finalValue.toLocaleString("en-US", {
+                            style: "currency",
+                            currency: "USD",
+                          });
+                        })()}
                       </div>
                       <div className="text-xs text-muted-foreground">
                         75th percentile
@@ -329,22 +347,21 @@ export function MonteCarloSimulation({
                   </div>
                 </div>
 
-                {/* Chart Placeholders */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <div className="h-[250px] border border-border/50 rounded-lg flex items-center justify-center bg-muted/20">
-                    <div className="text-center text-muted-foreground">
-                      <BarChart3 className="h-10 w-10 mx-auto mb-2" />
-                      <p>Projection Bands Chart</p>
-                      <p className="text-sm">Portfolio value over time</p>
-                    </div>
-                  </div>
-                  <div className="h-[250px] border border-border/50 rounded-lg flex items-center justify-center bg-muted/20">
-                    <div className="text-center text-muted-foreground">
-                      <BarChart3 className="h-10 w-10 mx-auto mb-2" />
-                      <p>Return Distribution</p>
-                      <p className="text-sm">Probability histogram</p>
-                    </div>
-                  </div>
+                {/* Monte Carlo Charts */}
+                <div className="space-y-6">
+                  <MonteCarloProjectionChart
+                    projections={monteCarloResult.projections}
+                    timeHorizon={monteCarloResult.params.timeHorizon}
+                    simulations={monteCarloResult.params.simulations}
+                  />
+
+                  <MonteCarloDistributionChart
+                    distributionData={monteCarloResult.distributionData}
+                    median={monteCarloResult.outcomes.median}
+                    confidenceInterval={
+                      monteCarloResult.params.confidenceInterval
+                    }
+                  />
                 </div>
 
                 {/* Simulation Details */}
