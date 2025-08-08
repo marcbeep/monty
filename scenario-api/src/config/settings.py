@@ -19,3 +19,7 @@ DEFAULT_SEARCH_LIMIT = 10
 # Server settings
 HOST = "0.0.0.0" if IS_PRODUCTION else "127.0.0.1"
 PORT = int(os.getenv("PORT", "8002"))
+
+# Hub (server) URL
+HUB_URL = os.getenv("MONTY_SERVER_URL", "http://127.0.0.1:3001")
+API_PREFIX = "/api/v1"

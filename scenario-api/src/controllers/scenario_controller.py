@@ -17,7 +17,7 @@ async def run_stress_test(params: StressTestParams):
 
     Supports both historical period analysis and predefined scenario testing.
     """
-    result = scenario_service.run_stress_test(params)
+    result = await scenario_service.run_stress_test(params)
     return StressTestResponse(success=True, data=result)
 
 
