@@ -6,6 +6,7 @@ import { ProtectedRoute } from "@/components/shared/protected-route";
 import { AppSidebar } from "@/components/shared/app-sidebar";
 import { SiteHeader } from "@/components/shared/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { LoaderScreen } from "@/components/shared/loader-screen";
 import {
   PortfolioSelector,
   PortfolioDetailsForm,
@@ -35,6 +36,8 @@ export default function PortfolioBuilderPage() {
   const [assets, setAssets] = React.useState<PortfolioAsset[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isSaving, setIsSaving] = React.useState(false);
+  const [hasInitialLoaded, setHasInitialLoaded] = React.useState(false);
+  const [progress, setProgress] = React.useState(10);
 
   // Calculate total allocation percentage
   const totalAllocation = assets.reduce(
@@ -49,6 +52,7 @@ export default function PortfolioBuilderPage() {
       try {
         const data = await portfolioApi.getPortfolios();
         setPortfolios(data);
+        setProgress((p) => (p < 60 ? 60 : p));
       } catch (error) {
         handleApiError(error);
         setPortfolios([]);
@@ -59,6 +63,22 @@ export default function PortfolioBuilderPage() {
 
     loadPortfolios();
   }, []);
+
+  // Mark initial load complete when we have finished initial fetch
+  React.useEffect(() => {
+    if (!hasInitialLoaded && !isLoading) {
+      setProgress(100);
+      const t = setTimeout(() => setHasInitialLoaded(true), 200);
+      return () => clearTimeout(t);
+    }
+  }, [hasInitialLoaded, isLoading]);
+
+  // Safety timeout to prevent perpetual loading overlay
+  React.useEffect(() => {
+    if (hasInitialLoaded) return;
+    const timeout = setTimeout(() => setHasInitialLoaded(true), 10000);
+    return () => clearTimeout(timeout);
+  }, [hasInitialLoaded]);
 
   const handleNewPortfolio = () => {
     setIsCreatingNew(true);
@@ -193,6 +213,13 @@ export default function PortfolioBuilderPage() {
 
   return (
     <ProtectedRoute>
+      {!hasInitialLoaded && (
+        <LoaderScreen
+          title="Loading portfolio builder"
+          description="Fetching your portfolios..."
+          progress={progress}
+        />
+      )}
       <SidebarProvider
         style={
           {

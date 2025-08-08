@@ -9,6 +9,7 @@ import { PortfolioSelector } from "./_components/portfolio-selector";
 import { SectionCards } from "./_components/section-cards";
 import { SiteHeader } from "@/components/shared/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { LoaderScreen } from "@/components/shared/loader-screen";
 
 import { dashboardApi, transformSummaryToPortfolio } from "@/lib/dashboard-api";
 import { handleApiError } from "@/lib/api";
@@ -22,6 +23,8 @@ export default function Page() {
     React.useState<DashboardData | null>(null);
   const [portfolios, setPortfolios] = React.useState<Portfolio[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [hasInitialLoaded, setHasInitialLoaded] = React.useState(false);
+  const [progress, setProgress] = React.useState(10);
 
   // Fetch dashboard API data
   const fetchDashboardData = React.useCallback(
@@ -33,6 +36,8 @@ export default function Page() {
           selectedTimeframe
         );
         setDashboardData(data);
+        // If this is the first load, advance progress
+        setProgress((p) => (p < 90 ? 90 : p));
       } catch (error) {
         handleApiError(error);
       } finally {
@@ -51,6 +56,7 @@ export default function Page() {
           transformSummaryToPortfolio
         );
         setPortfolios(portfolioList);
+        setProgress((p) => (p < 50 ? 50 : p));
       } catch (error) {
         handleApiError(error);
       }
@@ -64,6 +70,21 @@ export default function Page() {
       fetchDashboardData(selectedPortfolioId, timeframe);
     }
   }, [selectedPortfolioId, timeframe, fetchDashboardData]);
+
+  // Mark initial load complete when we have data and are no longer loading
+  React.useEffect(() => {
+    if (
+      !hasInitialLoaded &&
+      !isLoading &&
+      dashboardData &&
+      portfolios.length > 0
+    ) {
+      setProgress(100);
+      // Small delay to let the bar reach 100% before hiding
+      const t = setTimeout(() => setHasInitialLoaded(true), 200);
+      return () => clearTimeout(t);
+    }
+  }, [hasInitialLoaded, isLoading, dashboardData, portfolios.length]);
 
   const handlePortfolioChange = (portfolioId: number) => {
     setSelectedPortfolioId(portfolioId);
@@ -80,6 +101,13 @@ export default function Page() {
 
   return (
     <ProtectedRoute>
+      {!hasInitialLoaded && (
+        <LoaderScreen
+          title="Preparing your dashboard"
+          description="Fetching portfolios and market data..."
+          progress={progress}
+        />
+      )}
       <SidebarProvider
         style={
           {

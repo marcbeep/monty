@@ -9,6 +9,7 @@ import { PortfolioDualSelector, ComparisonTable } from "./_components";
 import { dashboardApi, transformSummaryToPortfolio } from "@/lib/dashboard-api";
 import { handleApiError } from "@/lib/api";
 import type { DashboardData, Portfolio } from "@/types";
+import { LoaderScreen } from "@/components/shared/loader-screen";
 
 export default function PortfolioComparisonPage() {
   const [selectedPortfolio1Id, setSelectedPortfolio1Id] =
@@ -22,6 +23,8 @@ export default function PortfolioComparisonPage() {
     React.useState<DashboardData | null>(null);
   const [portfolios, setPortfolios] = React.useState<Portfolio[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [hasInitialLoaded, setHasInitialLoaded] = React.useState(false);
+  const [progress, setProgress] = React.useState(10);
 
   // Fetch comparison data for both portfolios
   const fetchComparisonData = React.useCallback(
@@ -56,6 +59,7 @@ export default function PortfolioComparisonPage() {
           transformSummaryToPortfolio
         );
         setPortfolios(portfolioList);
+        setProgress((p) => (p < 50 ? 50 : p));
       } catch (error) {
         handleApiError(error);
       }
@@ -79,11 +83,34 @@ export default function PortfolioComparisonPage() {
     fetchComparisonData,
   ]);
 
+  // Mark initial load complete when first comparison data arrives
+  React.useEffect(() => {
+    if (!hasInitialLoaded && !isLoading && portfolio1Data && portfolio2Data) {
+      setProgress(100);
+      const t = setTimeout(() => setHasInitialLoaded(true), 200);
+      return () => clearTimeout(t);
+    }
+  }, [hasInitialLoaded, isLoading, portfolio1Data, portfolio2Data]);
+
+  // Safety timeout
+  React.useEffect(() => {
+    if (hasInitialLoaded) return;
+    const timeout = setTimeout(() => setHasInitialLoaded(true), 10000);
+    return () => clearTimeout(timeout);
+  }, [hasInitialLoaded]);
+
   const portfolio1 = portfolios.find((p) => p.id === selectedPortfolio1Id);
   const portfolio2 = portfolios.find((p) => p.id === selectedPortfolio2Id);
 
   return (
     <ProtectedRoute>
+      {!hasInitialLoaded && (
+        <LoaderScreen
+          title="Loading comparison"
+          description="Fetching portfolios and metrics..."
+          progress={progress}
+        />
+      )}
       <SidebarProvider
         style={
           {

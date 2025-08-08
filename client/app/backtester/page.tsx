@@ -15,6 +15,7 @@ import { dashboardApi, transformSummaryToPortfolio } from "@/lib/dashboard-api";
 import { scenarioApi } from "@/lib/scenario-api";
 import { useErrorHandler } from "@/hooks/use-error-handler";
 import type { Portfolio } from "@/types";
+import { LoaderScreen } from "@/components/shared/loader-screen";
 import type {
   StressTestParams,
   StressTestResult,
@@ -35,6 +36,8 @@ export default function BacktesterPage() {
   const [activeTab, setActiveTab] = React.useState<"stresstest" | "montecarlo">(
     "stresstest"
   );
+  const [hasInitialLoaded, setHasInitialLoaded] = React.useState(false);
+  const [progress, setProgress] = React.useState(10);
 
   // Stress test state
   const [stressTestResult, setStressTestResult] =
@@ -56,12 +59,28 @@ export default function BacktesterPage() {
           transformSummaryToPortfolio
         );
         setPortfolios(portfolioList);
+        setProgress((p) => (p < 100 ? 100 : p));
       } catch (error) {
         handleError(error);
       }
     };
     loadInitialData();
   }, [handleError]);
+
+  // Mark initial load complete when portfolios fetched or after timeout
+  React.useEffect(() => {
+    if (!hasInitialLoaded && portfolios.length > 0) {
+      const t = setTimeout(() => setHasInitialLoaded(true), 200);
+      return () => clearTimeout(t);
+    }
+  }, [hasInitialLoaded, portfolios.length]);
+
+  // Safety timeout
+  React.useEffect(() => {
+    if (hasInitialLoaded) return;
+    const timeout = setTimeout(() => setHasInitialLoaded(true), 10000);
+    return () => clearTimeout(timeout);
+  }, [hasInitialLoaded]);
 
   // Fetch full portfolio data when selected portfolio changes
   React.useEffect(() => {
@@ -133,6 +152,13 @@ export default function BacktesterPage() {
 
   return (
     <ProtectedRoute>
+      {!hasInitialLoaded && (
+        <LoaderScreen
+          title="Loading backtester"
+          description="Preparing portfolios and tools..."
+          progress={progress}
+        />
+      )}
       <SidebarProvider
         style={
           {
