@@ -64,6 +64,8 @@ class StressTestParams(BaseModel):
     mode: Literal["historical", "scenario"]
     historical: Optional[Dict[str, str]] = None
     scenario: Optional[Dict[str, str]] = None
+    # Optional holdings payload provided by hub for deterministic calculations
+    holdings: Optional[List[Dict[str, Any]]] = None
 
 
 # Stress test result
@@ -84,6 +86,8 @@ class MonteCarloParams(BaseModel):
     time_horizon: int
     simulations: int
     confidence_interval: int
+    # Optional holdings payload provided by hub for deterministic calculations
+    holdings: Optional[List[Dict[str, Any]]] = None
 
 
 # Monte Carlo projections

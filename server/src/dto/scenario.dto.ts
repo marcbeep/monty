@@ -20,6 +20,17 @@ export const stressTestSchema = z.object({
       scenario_id: z.string().optional(),
     })
     .optional(),
+  // Enriched by server from portfolio holdings
+  holdings: z
+    .array(
+      z.object({
+        symbol: z.string(),
+        allocation: z.number(),
+        type: z.string(),
+        name: z.string(),
+      })
+    )
+    .optional(),
 });
 
 export const monteCarloSchema = z.object({
@@ -42,6 +53,17 @@ export const monteCarloSchema = z.object({
     .int()
     .min(50)
     .max(99, "Confidence interval must be between 50 and 99"),
+  // Enriched by server from portfolio holdings
+  holdings: z
+    .array(
+      z.object({
+        symbol: z.string(),
+        allocation: z.number(),
+        type: z.string(),
+        name: z.string(),
+      })
+    )
+    .optional(),
 });
 
 export type StressTestRequest = z.infer<typeof stressTestSchema>;
