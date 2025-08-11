@@ -26,7 +26,7 @@ import { MonteCarloDistributionChart } from "./monte-carlo-distribution-chart";
 import type { MonteCarloParams, MonteCarloResult } from "@/types/backtester";
 
 interface MonteCarloSimulationProps {
-  portfolioId: number | null;
+  portfolioId: string | null;
   monteCarloResult: MonteCarloResult | null;
   isLoading: boolean;
   onRunSimulation: (params: MonteCarloParams) => void;

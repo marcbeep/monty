@@ -28,7 +28,7 @@ import { StressTestDrawdownChart } from "./stress-test-drawdown-chart";
 import type { StressTestParams, StressTestResult } from "@/types/backtester";
 
 interface StressTestProps {
-  portfolioId: number | null;
+  portfolioId: string | null;
   stressTestResult: StressTestResult | null;
   isLoading: boolean;
   onRunStressTest: (params: StressTestParams) => void;

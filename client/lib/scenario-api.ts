@@ -101,23 +101,56 @@ interface ServerMonteCarloResult {
 }
 
 // Transform camelCase client params to snake_case server params
-const transformStressTestParams = (params: StressTestParams) => {
+interface PortfolioHolding {
+  symbol: string;
+  allocation: number;
+  type: string;
+  name: string;
+}
+
+interface PortfolioData {
+  id: string;
+}
+
+const transformStressTestParams = (
+  params: StressTestParams,
+  holdings: PortfolioHolding[],
+  portfolios: PortfolioData[]
+) => {
+  // Convert UUID to numeric display ID (1-based index)
+  const portfolioIndex = portfolios.findIndex(
+    (p) => p.id === params.portfolioId
+  );
+  const displayId = portfolioIndex + 1;
+
   return {
-    portfolio_id: params.portfolioId,
+    portfolio_id: displayId,
     mode: "historical" as const,
     historical: {
       start_date: params.historical.startDate,
       end_date: params.historical.endDate,
     },
+    holdings,
   };
 };
 
-const transformMonteCarloParams = (params: MonteCarloParams) => {
+const transformMonteCarloParams = (
+  params: MonteCarloParams,
+  holdings: PortfolioHolding[],
+  portfolios: PortfolioData[]
+) => {
+  // Convert UUID to numeric display ID (1-based index)
+  const portfolioIndex = portfolios.findIndex(
+    (p) => p.id === params.portfolioId
+  );
+  const displayId = portfolioIndex + 1;
+
   return {
-    portfolio_id: params.portfolioId,
+    portfolio_id: displayId,
     time_horizon: params.timeHorizon,
     simulations: params.simulations,
     confidence_interval: params.confidenceInterval,
+    holdings,
   };
 };
 
@@ -203,7 +236,7 @@ const transformMonteCarloResult = (
       lastUpdated: new Date().toISOString(),
     },
     params: {
-      portfolioId: result.params.portfolio_id,
+      portfolioId: result.params.portfolio_id.toString(),
       timeHorizon: result.params.time_horizon,
       simulations: result.params.simulations,
       confidenceInterval: result.params.confidence_interval,
@@ -255,9 +288,15 @@ export const scenarioApi = {
    * Supports both historical period analysis and predefined scenario testing
    */
   runStressTest: async (
-    params: StressTestParams
+    params: StressTestParams,
+    holdings: PortfolioHolding[] = [],
+    portfolios: PortfolioData[] = []
   ): Promise<StressTestResult> => {
-    const serverParams = transformStressTestParams(params);
+    const serverParams = transformStressTestParams(
+      params,
+      holdings,
+      portfolios
+    );
     const serverResult = await api.post<ServerStressTestResult>(
       "/api/v1/scenarios/stress-test",
       serverParams
@@ -270,9 +309,15 @@ export const scenarioApi = {
    * Generates probabilistic projections based on historical data and correlation patterns
    */
   runMonteCarlo: async (
-    params: MonteCarloParams
+    params: MonteCarloParams,
+    holdings: PortfolioHolding[] = [],
+    portfolios: PortfolioData[] = []
   ): Promise<MonteCarloResult> => {
-    const serverParams = transformMonteCarloParams(params);
+    const serverParams = transformMonteCarloParams(
+      params,
+      holdings,
+      portfolios
+    );
     const serverResult = await api.post<ServerMonteCarloResult>(
       "/api/v1/scenarios/monte-carlo",
       serverParams

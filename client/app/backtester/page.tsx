@@ -11,10 +11,10 @@ import {
   StressTest,
   MonteCarloSimulation,
 } from "./_components";
-import { dashboardApi, transformSummaryToPortfolio } from "@/lib/dashboard-api";
+import { portfolioApi } from "@/lib/portfolio-api";
 import { scenarioApi } from "@/lib/scenario-api";
 import { useErrorHandler } from "@/hooks/use-error-handler";
-import type { Portfolio } from "@/types";
+import type { PortfolioResponse } from "@/types";
 import { LoaderScreen } from "@/components/shared/loader-screen";
 import type {
   StressTestParams,
@@ -28,11 +28,11 @@ export default function BacktesterPage() {
 
   // State management
   const [selectedPortfolioId, setSelectedPortfolioId] = React.useState<
-    number | null
+    string | null
   >(null);
-  const [portfolios, setPortfolios] = React.useState<Portfolio[]>([]);
+  const [portfolios, setPortfolios] = React.useState<PortfolioResponse[]>([]);
   const [selectedPortfolioData, setSelectedPortfolioData] =
-    React.useState<Portfolio | null>(null);
+    React.useState<PortfolioResponse | null>(null);
   const [activeTab, setActiveTab] = React.useState<"stresstest" | "montecarlo">(
     "stresstest"
   );
@@ -53,11 +53,8 @@ export default function BacktesterPage() {
   React.useEffect(() => {
     const loadInitialData = async () => {
       try {
-        // TODO: Implement real backtester API endpoints
-        const portfolioSummaries = await dashboardApi.getPortfolios();
-        const portfolioList = portfolioSummaries.map(
-          transformSummaryToPortfolio
-        );
+        const portfolioList = await portfolioApi.getPortfolios();
+        console.log("Backtester portfolios loaded:", portfolioList.length);
         setPortfolios(portfolioList);
         setProgress((p) => (p < 100 ? 100 : p));
       } catch (error) {
@@ -91,15 +88,21 @@ export default function BacktesterPage() {
       }
 
       try {
-        // Get full portfolio data from dashboard API (includes strategy)
-        const dashboardData = await dashboardApi.getDashboardData(
-          selectedPortfolioId,
-          "YTD"
-        );
-        setSelectedPortfolioData(dashboardData.portfolio);
+        const portfolioData =
+          await portfolioApi.getPortfolio(selectedPortfolioId);
+        console.log("Selected portfolio data:", {
+          id: portfolioData.id,
+          name: portfolioData.name,
+          assets: portfolioData.assets.length,
+          totalAllocation: portfolioData.assets.reduce(
+            (sum, a) => sum + a.allocation,
+            0
+          ),
+        });
+        setSelectedPortfolioData(portfolioData);
       } catch (error) {
         handleError(error);
-        // Fallback to summary data if dashboard data fails
+        // Fallback to portfolios list
         const fallbackPortfolio = portfolios.find(
           (p) => p.id === selectedPortfolioId
         );
@@ -111,7 +114,7 @@ export default function BacktesterPage() {
   }, [selectedPortfolioId, portfolios, handleError]);
 
   // Handle portfolio selection
-  const handlePortfolioChange = (portfolioId: number) => {
+  const handlePortfolioChange = (portfolioId: string) => {
     setSelectedPortfolioId(portfolioId);
     // Clear previous results when portfolio changes
     setStressTestResult(null);
@@ -122,8 +125,22 @@ export default function BacktesterPage() {
   const handleRunStressTest = async (params: StressTestParams) => {
     setIsStressTestLoading(true);
     try {
+      const holdings =
+        selectedPortfolioData?.assets.map((asset) => ({
+          symbol: asset.symbol,
+          allocation: asset.allocation,
+          type: asset.type,
+          name: asset.name,
+        })) || [];
+
       console.log("Stress test params:", params);
-      const result = await scenarioApi.runStressTest(params);
+      console.log("Portfolio holdings:", holdings);
+
+      const result = await scenarioApi.runStressTest(
+        params,
+        holdings,
+        portfolios
+      );
       console.log("Stress test result:", result);
       setStressTestResult(result);
     } catch (error) {
@@ -138,8 +155,22 @@ export default function BacktesterPage() {
   const handleRunMonteCarloSimulation = async (params: MonteCarloParams) => {
     setIsMonteCarloLoading(true);
     try {
+      const holdings =
+        selectedPortfolioData?.assets.map((asset) => ({
+          symbol: asset.symbol,
+          allocation: asset.allocation,
+          type: asset.type,
+          name: asset.name,
+        })) || [];
+
       console.log("Monte Carlo params:", params);
-      const result = await scenarioApi.runMonteCarlo(params);
+      console.log("Portfolio holdings:", holdings);
+
+      const result = await scenarioApi.runMonteCarlo(
+        params,
+        holdings,
+        portfolios
+      );
       console.log("Monte Carlo result:", result);
       setMonteCarloResult(result);
     } catch (error) {

@@ -16,18 +16,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  MiniPieChart,
-  MiniPieChartLegend,
-} from "@/components/ui/mini-pie-chart";
+
 import { getRiskBadge } from "@/lib/badge-utils";
-import type { Portfolio } from "@/types";
+import type { PortfolioResponse } from "@/types";
 
 interface BacktesterPortfolioSelectorProps {
-  portfolios: Portfolio[];
-  selectedPortfolioId?: number | null;
-  selectedPortfolio?: Portfolio | null; // Full portfolio data with strategy
-  onPortfolioChange: (portfolioId: number) => void;
+  portfolios: PortfolioResponse[];
+  selectedPortfolioId?: string | null;
+  selectedPortfolio?: PortfolioResponse | null; // Full portfolio data with assets
+  onPortfolioChange: (portfolioId: string) => void;
   isLoading?: boolean;
 }
 
@@ -91,31 +88,29 @@ export function BacktesterPortfolioSelector({
                     </Badge>
                   );
                 })()}
-                <MiniPieChart
-                  allocations={selectedPortfolio.strategy}
-                  size={24}
-                />
-                <MiniPieChartLegend
-                  allocations={selectedPortfolio.strategy}
-                  className="text-xs"
-                />
+                {/* Temporarily disabled - data structure mismatch */}
+                <div className="text-xs text-muted-foreground">
+                  {selectedPortfolio.assets.length} assets •{" "}
+                  {selectedPortfolio.assets.reduce(
+                    (sum, a) => sum + a.allocation,
+                    0
+                  )}
+                  % allocated
+                </div>
               </div>
             )}
           </div>
           <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-2 sm:space-y-0">
             <Select
-              value={selectedPortfolioId?.toString() || ""}
-              onValueChange={(value) => onPortfolioChange(Number(value))}
+              value={selectedPortfolioId || ""}
+              onValueChange={(value) => onPortfolioChange(value)}
             >
               <SelectTrigger className="w-full sm:w-[250px]">
                 <SelectValue placeholder="Select Portfolio" />
               </SelectTrigger>
               <SelectContent>
                 {portfolios.map((portfolio) => (
-                  <SelectItem
-                    key={portfolio.id}
-                    value={portfolio.id.toString()}
-                  >
+                  <SelectItem key={portfolio.id} value={portfolio.id}>
                     {portfolio.name}
                   </SelectItem>
                 ))}

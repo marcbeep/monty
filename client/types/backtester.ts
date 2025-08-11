@@ -4,7 +4,7 @@ import type { ChartDataPoint } from "./api";
 
 // Stress Test Types
 export interface StressTestParams {
-  portfolioId: number;
+  portfolioId: string;
   mode: "historical";
   historical: {
     startDate: string;
@@ -39,7 +39,7 @@ export interface DrawdownDataPoint {
 // Legacy types for backward compatibility
 export interface BacktestData extends StressTestResult {}
 export interface BacktestParams {
-  portfolioId: number;
+  portfolioId: string;
   startDate: string;
   endDate: string;
 }
@@ -63,7 +63,7 @@ export interface ScenarioResult extends StressTestResult {
 
 // Monte Carlo Simulation Types
 export interface MonteCarloParams {
-  portfolioId: number;
+  portfolioId: string;
   timeHorizon: number; // Years
   simulations: number; // Number of simulation runs
   confidenceInterval: number; // e.g., 95 for 95% confidence
@@ -94,7 +94,7 @@ export interface MonteCarloResult {
 
 // General Backtesting Types
 export interface BacktesterState {
-  selectedPortfolioId: number | null;
+  selectedPortfolioId: string | null;
   stressTestResult: StressTestResult | null;
   monteCarloResult: MonteCarloResult | null;
   isLoading: boolean;
