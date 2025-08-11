@@ -28,6 +28,21 @@ async def run_monte_carlo(params: MonteCarloParams):
 
     Generates probabilistic projections based on historical data and correlation patterns.
     """
+    import logging
+
+    print(
+        f"🔥 DEBUG: Monte Carlo controller received request: portfolio_id={params.portfolio_id}"
+    )
+    print(f"🔥 DEBUG: Full request params: {params}")
+    print(f"🔥 DEBUG: Request params dict: {params.model_dump()}")
+
+    logger = logging.getLogger(__name__)
+    logger.info(
+        f"Monte Carlo controller received request: portfolio_id={params.portfolio_id}"
+    )
+    logger.info(f"Full request params: {params}")
+    logger.info(f"Request params dict: {params.model_dump()}")
+
     result = await scenario_service.run_monte_carlo(params)
     return MonteCarloResponse(success=True, data=result)
 

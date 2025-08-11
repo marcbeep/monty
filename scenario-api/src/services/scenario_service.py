@@ -133,28 +133,72 @@ class ScenarioService:
     async def _fetch_histories(
         self, symbols: List[str], timeframe: str
     ) -> Dict[str, List[Dict[str, float]]]:
+        print(
+            f"🔥 _FETCH_HISTORIES: Called with symbols={symbols}, timeframe={timeframe}"
+        )
         import aiohttp
 
         async def fetch_one(session: aiohttp.ClientSession, symbol: str):
             url = f"{HUB_URL}{API_PREFIX}/stocks/{urllib.parse.quote(symbol)}/history?period={urllib.parse.quote(timeframe.upper())}"
-            async with session.get(url, timeout=10) as resp:
-                resp.raise_for_status()
-                data = await resp.json()
-                # hub responds { success, data: { symbol, period, data: [ {date, close} ] } }
-                if not data.get("success"):
-                    return symbol, []
-                arr = data.get("data", {}).get("data", [])
-                return symbol, arr
+            print(f"🔥 FETCH_ONE: Fetching stock data for {symbol} from: {url}")
+            logger.info(f"Fetching stock data for {symbol} from: {url}")
+            try:
+                async with session.get(url, timeout=10) as resp:
+                    print(
+                        f"🔥 FETCH_ONE: Got response for {symbol}: status={resp.status}"
+                    )
+                    resp.raise_for_status()
+                    data = await resp.json()
+                    print(
+                        f"🔥 FETCH_ONE: JSON response for {symbol}: success={data.get('success')}"
+                    )
+                    print(
+                        f"🔥 FETCH_ONE: Data type for {symbol}: {type(data.get('data'))}"
+                    )
+                    logger.info(
+                        f"Stock API response for {symbol}: success={data.get('success')}, data_type={type(data.get('data'))}"
+                    )
+                    # hub responds { success, data: [ {date, close} ] } - data is directly the array
+                    if not data.get("success"):
+                        print(
+                            f"🔥 FETCH_ONE: Stock API returned success=False for {symbol}"
+                        )
+                        logger.warning(f"Stock API returned success=False for {symbol}")
+                        return symbol, []
+
+                    # The server returns the data array directly, not nested in a data object
+                    arr = data.get("data", [])
+                    print(
+                        f"🔥 FETCH_ONE: Stock data for {symbol}: {len(arr)} price points"
+                    )
+                    logger.info(
+                        f"Stock data for {symbol}: {len(arr)} price points, sample: {arr[:3] if arr else 'None'}"
+                    )
+                    return symbol, arr
+            except Exception as e:
+                print(f"🔥 FETCH_ONE: Exception for {symbol}: {type(e).__name__}: {e}")
+                logger.error(f"Exception fetching {symbol}: {type(e).__name__}: {e}")
+                return symbol, []
 
         history_map: Dict[str, List[Dict[str, float]]] = {}
         async with aiohttp.ClientSession() as session:
             tasks = [fetch_one(session, s) for s in symbols]
+            print(f"🔥 GATHER: Starting asyncio.gather for {len(tasks)} tasks")
             results = await asyncio.gather(*tasks, return_exceptions=True)
-        for res in results:
+            print(f"🔥 GATHER: Got {len(results)} results")
+
+        for i, res in enumerate(results):
+            print(f"🔥 RESULTS: Processing result {i}: {type(res)}")
             if isinstance(res, Exception):
+                print(f"🔥 RESULTS: Exception in result {i}: {res}")
                 continue
             sym, arr = res
+            print(f"🔥 RESULTS: Adding {sym} with {len(arr)} data points")
             history_map[sym] = arr
+
+        print(
+            f"🔥 FINAL: History map has {len(history_map)} entries: {list(history_map.keys())}"
+        )
         return history_map
 
     def _compute_portfolio_series(
@@ -271,21 +315,54 @@ class ScenarioService:
 
     async def run_monte_carlo(self, params: MonteCarloParams) -> MonteCarloResult:
         """Run Monte Carlo simulation on portfolio"""
+        print(
+            f"🔥 SERVICE DEBUG: Running Monte Carlo for portfolio {params.portfolio_id}, {params.simulations} sims, {params.time_horizon}Y"
+        )
+        print(f"🔥 SERVICE DEBUG: Full params object: {params}")
+        print(f"🔥 SERVICE DEBUG: Params model dump: {params.model_dump()}")
+
         logger.info(
             f"Running Monte Carlo for portfolio {params.portfolio_id}, {params.simulations} sims, {params.time_horizon}Y"
         )
+        logger.info(f"Full params object: {params}")
+        logger.info(f"Params model dump: {params.model_dump()}")
 
         # Validate inputs
         holdings = params.model_dump().get("holdings") or []
+        print(f"🔥 HOLDINGS DEBUG: Holdings received: {len(holdings)} assets")
+        print(f"🔥 HOLDINGS DEBUG: Raw holdings data: {holdings}")
         logger.info(f"Holdings received: {len(holdings)} assets")
+        logger.info(f"Raw holdings data: {holdings}")
         if not holdings:
             raise BadRequest("Holdings are required for Monte Carlo simulation")
 
         # Fetch 2Y historical data for return/volatility calculation
         symbols = [h.get("symbol") for h in holdings if h.get("allocation", 0) > 0]
-        logger.info(f"Fetching market data for symbols: {symbols}")
+        print(f"🔥 SYMBOLS DEBUG: Extracted symbols from holdings: {symbols}")
+        print(
+            f"🔥 SYMBOLS DEBUG: Holdings with allocations > 0: {[(h.get('symbol'), h.get('allocation')) for h in holdings if h.get('allocation', 0) > 0]}"
+        )
+
+        logger.info(f"Extracted symbols from holdings: {symbols}")
+        logger.info(
+            f"Holdings with allocations > 0: {[(h.get('symbol'), h.get('allocation')) for h in holdings if h.get('allocation', 0) > 0]}"
+        )
+        logger.info(f"About to fetch market data for symbols: {symbols}")
+
+        if not symbols:
+            print(f"🔥 ERROR: No symbols to fetch! Holdings processing failed.")
+            logger.error("No symbols to fetch! Holdings processing failed.")
+            return
+
+        print(f"🔥 FETCH DEBUG: Starting _fetch_histories call for symbols: {symbols}")
         history_map = await self._fetch_histories(symbols, "5Y")  # Use 5Y instead of 2Y
+        print(
+            f"🔥 FETCH DEBUG: _fetch_histories completed, got {len(history_map)} results"
+        )
+        print(f"🔥 FETCH DEBUG: History map keys: {list(history_map.keys())}")
+
         logger.info(f"Market data fetched for {len(history_map)} symbols")
+        logger.info(f"History map keys: {list(history_map.keys())}")
 
         # Calculate returns and covariance matrix
         returns_data = self._calculate_asset_returns(history_map)
@@ -327,24 +404,49 @@ class ScenarioService:
         """Calculate mean returns and volatility for each asset"""
         import numpy as np
 
+        logger.info(
+            f"Processing asset returns for {len(history_map)} symbols: {list(history_map.keys())}"
+        )
         returns_data = {}
         for symbol, prices in history_map.items():
+            logger.info(f"Processing {symbol}: {len(prices)} price points")
             if len(prices) < 2:
+                logger.warning(
+                    f"Skipping {symbol}: insufficient price data ({len(prices)} points)"
+                )
                 continue
 
             # Calculate daily returns
+            logger.info(
+                f"Sample prices for {symbol}: {prices[:3] if prices else 'None'}"
+            )
             price_values = [p.get("close", 0) for p in prices if p.get("close")]
+            logger.info(
+                f"Extracted {len(price_values)} valid close prices for {symbol}"
+            )
             if len(price_values) < 2:
+                logger.warning(
+                    f"Skipping {symbol}: insufficient valid close prices ({len(price_values)} valid)"
+                )
                 continue
 
             returns = np.diff(price_values) / price_values[:-1]
+            mean_return = float(np.mean(returns)) * 252
+            volatility = float(np.std(returns)) * np.sqrt(252)
+
+            logger.info(
+                f"Calculated returns for {symbol}: mean_return={mean_return:.4f}, volatility={volatility:.4f}"
+            )
 
             returns_data[symbol] = {
-                "mean_return": float(np.mean(returns)) * 252,  # Annualized
-                "volatility": float(np.std(returns)) * np.sqrt(252),  # Annualized
+                "mean_return": mean_return,  # Annualized
+                "volatility": volatility,  # Annualized
                 "returns": returns.tolist(),
             }
 
+        logger.info(
+            f"Returns calculation complete: {len(returns_data)} symbols processed successfully"
+        )
         return returns_data
 
     def _run_simulation(
@@ -358,13 +460,31 @@ class ScenarioService:
         """Run Monte Carlo simulation and return final portfolio values"""
         import numpy as np
 
+        logger.info(
+            f"Running simulation with {len(holdings)} holdings and {len(returns_data)} return datasets"
+        )
+        logger.info(
+            f"Holdings details: {[(h.get('symbol'), h.get('allocation')) for h in holdings]}"
+        )
+        logger.info(f"Returns data available for: {list(returns_data.keys())}")
+
         # Portfolio weights
         weights = {}
         total_allocation = sum(h.get("allocation", 0) for h in holdings)
+        logger.info(f"Total allocation: {total_allocation}")
+
         for h in holdings:
             symbol = h.get("symbol")
+            allocation = h.get("allocation", 0)
+            logger.info(f"Processing holding: {symbol} with allocation {allocation}")
             if symbol in returns_data:
-                weights[symbol] = h.get("allocation", 0) / max(total_allocation, 1)
+                weight = allocation / max(total_allocation, 1)
+                weights[symbol] = weight
+                logger.info(f"Added weight for {symbol}: {weight}")
+            else:
+                logger.warning(f"No returns data found for {symbol}")
+
+        logger.info(f"Final weights: {weights}")
 
         if not weights:
             logger.warning(
