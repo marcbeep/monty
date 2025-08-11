@@ -28,7 +28,7 @@ async def run_monte_carlo(params: MonteCarloParams):
 
     Generates probabilistic projections based on historical data and correlation patterns.
     """
-    result = scenario_service.run_monte_carlo(params)
+    result = await scenario_service.run_monte_carlo(params)
     return MonteCarloResponse(success=True, data=result)
 
 
