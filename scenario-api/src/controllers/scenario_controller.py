@@ -1,5 +1,6 @@
 from fastapi import APIRouter
-from ..services.scenario_service import scenario_service
+from ..services.stress_test_service import stress_test_service
+from ..services.monte_carlo_service import monte_carlo_service
 from ..dto.scenario import (
     StressTestParams,
     StressTestResponse,
@@ -17,7 +18,7 @@ async def run_stress_test(params: StressTestParams):
 
     Supports both historical period analysis and predefined scenario testing.
     """
-    result = await scenario_service.run_stress_test(params)
+    result = await stress_test_service.run_stress_test(params)
     return StressTestResponse(success=True, data=result)
 
 
@@ -28,22 +29,7 @@ async def run_monte_carlo(params: MonteCarloParams):
 
     Generates probabilistic projections based on historical data and correlation patterns.
     """
-    import logging
-
-    print(
-        f"🔥 DEBUG: Monte Carlo controller received request: portfolio_id={params.portfolio_id}"
-    )
-    print(f"🔥 DEBUG: Full request params: {params}")
-    print(f"🔥 DEBUG: Request params dict: {params.model_dump()}")
-
-    logger = logging.getLogger(__name__)
-    logger.info(
-        f"Monte Carlo controller received request: portfolio_id={params.portfolio_id}"
-    )
-    logger.info(f"Full request params: {params}")
-    logger.info(f"Request params dict: {params.model_dump()}")
-
-    result = await scenario_service.run_monte_carlo(params)
+    result = await monte_carlo_service.run_monte_carlo(params)
     return MonteCarloResponse(success=True, data=result)
 
 
