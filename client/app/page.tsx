@@ -25,8 +25,8 @@ export default function Home() {
               Welcome to Monty
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-lg mx-auto px-4">
-              Your AI-powered investment companion. Build, analyze, and optimize
-              your portfolio with intelligent insights.
+              Build, analyse, and stress-test your investment portfolios with
+              advanced backtesting tools and real-time performance tracking.
             </p>
           </div>
         </div>
@@ -57,10 +57,13 @@ export default function Home() {
             Portfolio building
           </Badge>
           <Badge variant="secondary" className="text-xs">
-            Market analysis
+            Stress testing
           </Badge>
           <Badge variant="secondary" className="text-xs">
-            Investment simulation
+            Monte Carlo simulation
+          </Badge>
+          <Badge variant="secondary" className="text-xs">
+            Performance tracking
           </Badge>
         </div>
       </div>
