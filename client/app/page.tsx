@@ -51,20 +51,41 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Feature Tags */}
-        <div className="pt-8 flex flex-wrap items-center justify-center gap-2">
-          <Badge variant="secondary" className="text-xs">
-            Portfolio building
-          </Badge>
-          <Badge variant="secondary" className="text-xs">
-            Stress testing
-          </Badge>
-          <Badge variant="secondary" className="text-xs">
-            Monte Carlo simulation
-          </Badge>
-          <Badge variant="secondary" className="text-xs">
-            Performance tracking
-          </Badge>
+        {/* Attribution and Technologies */}
+        <div className="pt-6 space-y-3">
+          {/* Attribution */}
+          <p className="text-sm text-muted-foreground/70 max-w-md mx-auto">
+            Built by{" "}
+            <a
+              href="https://marc.tt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground transition-colors"
+            >
+              Marc Beepath
+            </a>{" "}
+            for his Final Master&apos;s Project at the University of Liverpool.
+            Made with:
+          </p>
+
+          {/* Technology Badges */}
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <Badge variant="secondary" className="text-xs">
+              Next.js
+            </Badge>
+            <Badge variant="secondary" className="text-xs">
+              FastAPI
+            </Badge>
+            <Badge variant="secondary" className="text-xs">
+              Supabase
+            </Badge>
+            <Badge variant="secondary" className="text-xs">
+              Python
+            </Badge>
+            <Badge variant="secondary" className="text-xs">
+              TypeScript
+            </Badge>
+          </div>
         </div>
       </div>
     </div>
