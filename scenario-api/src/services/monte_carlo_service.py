@@ -9,6 +9,7 @@ from ..dto.scenario import (
 )
 from ..utils.errors import BadRequest
 from .base_service import BaseService
+from ..config.settings import BASE_PORTFOLIO_AMOUNT
 from typing import Dict, List
 import logging
 
@@ -74,7 +75,7 @@ class MonteCarloService(BaseService):
         logger.info(f"Calculated returns for {len(returns_data)} assets")
 
         # Run Monte Carlo simulation
-        base_amount = 100000.0
+        base_amount = BASE_PORTFOLIO_AMOUNT
         final_values = self._run_simulation(
             holdings, returns_data, params.simulations, params.time_horizon, base_amount
         )
@@ -365,7 +366,8 @@ class MonteCarloService(BaseService):
 
         # Create return buckets
         returns = [
-            (v - 100000) / 100000 * 100 for v in final_values
+            (v - BASE_PORTFOLIO_AMOUNT) / BASE_PORTFOLIO_AMOUNT * 100
+            for v in final_values
         ]  # Percentage returns
 
         # Create histogram

@@ -8,6 +8,7 @@ from ..dto.scenario import (
 )
 from ..utils.errors import BadRequest
 from .base_service import BaseService
+from ..config.settings import BASE_PORTFOLIO_AMOUNT
 import math
 from typing import Dict, List, Tuple, Any
 import logging
@@ -48,7 +49,7 @@ class StressTestService(BaseService):
         history_map = await self._fetch_histories(symbols, timeframe)
 
         # Compute combined portfolio series
-        base_amount = 100000.0
+        base_amount = BASE_PORTFOLIO_AMOUNT
         portfolio_series = self._compute_portfolio_series(
             holdings, history_map, base_amount
         )
