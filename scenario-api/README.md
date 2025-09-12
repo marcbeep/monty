@@ -19,18 +19,6 @@ PORT=8002          # Server port
 CORS_ORIGINS=http://localhost:3000,http://localhost:8000
 ```
 
-## Structure
-
-```
-src/
-├── config/         # Settings
-├── controllers/    # API endpoints
-├── dto/           # Data models
-├── middleware/    # Request/response handling
-├── services/      # Business logic
-└── utils/         # Helper functions
-```
-
 ## Development
 
 ```bash
