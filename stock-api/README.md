@@ -18,18 +18,6 @@ ENV=development    # development/production
 PORT=8001          # Server port
 ```
 
-## Structure
-
-```
-src/
-├── config/         # Settings
-├── controllers/    # API endpoints
-├── dto/           # Data models
-├── middleware/    # Request/response handling
-├── services/      # Business logic
-└── utils/         # Helper functions
-```
-
 ## Development
 
 ```bash
